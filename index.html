@@ -1594,7 +1594,7 @@
 
     // ==================== CORE FUNCTIONS (ASLI) ====================
     function enterSystem() {
-        updateAccent(localStorage.getItem('user_accent') || config.accent);
+        updateAccentAndSync(localStorage.getItem('user_accent') || config.accent || '#00eaff');
         
         const video = document.getElementById('bg-vid');
         const audio = document.getElementById('anime-music');
@@ -1636,25 +1636,21 @@
     }
 
     function updateAccentAndSync(color) {
-        if (!color) return;
+        if (!color || color.length < 4) return;
+        // Simpan ke localStorage dan config
         updateAccent(color);
+        config.accent = color;
+        saveLocal();
 
-        // Update hex input text
+        // Update semua elemen UI
         const hexInput = document.getElementById('hexColorInput');
         if (hexInput) hexInput.value = color;
-
-        // Update color picker
         const picker = document.getElementById('customColorPicker');
         if (picker) picker.value = color;
-
-        // Update preview box
         const preview = document.getElementById('color-preview-box');
         if (preview) preview.style.background = color;
-
-        // Update selected dot
         document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-        const dotId = 'dot-' + color.replace('#','');
-        const dot = document.getElementById(dotId);
+        const dot = document.getElementById('dot-' + color.replace('#',''));
         if (dot) dot.classList.add('selected');
     }
 
@@ -1698,6 +1694,19 @@
     }
 
     function syncUI() {
+        // Sync warna tersimpan ke semua elemen color picker
+        const savedColor = localStorage.getItem('user_accent') || '#00eaff';
+        updateAccent(savedColor);
+        const colorPicker = document.getElementById('customColorPicker');
+        if (colorPicker) colorPicker.value = savedColor;
+        const hexInput = document.getElementById('hexColorInput');
+        if (hexInput) hexInput.value = savedColor;
+        const preview = document.getElementById('color-preview-box');
+        if (preview) preview.style.background = savedColor;
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+        const dot = document.getElementById('dot-' + savedColor.replace('#',''));
+        if (dot) dot.classList.add('selected');
+
         const userNameEl = document.getElementById('display-user-name');
         if (userNameEl) userNameEl.innerText = currentUser.name || 'USER';
         
