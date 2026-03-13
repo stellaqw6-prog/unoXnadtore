@@ -1594,7 +1594,9 @@
 
     // ==================== CORE FUNCTIONS (ASLI) ====================
     function enterSystem() {
-        updateAccentAndSync(localStorage.getItem('user_accent') || config.accent || '#00eaff');
+        // Baca warna - prioritas: user_accent > config.accent > default
+        const savedAccent = localStorage.getItem('user_accent') || config.accent || '#00eaff';
+        updateAccentAndSync(savedAccent);
         
         const video = document.getElementById('bg-vid');
         const audio = document.getElementById('anime-music');
@@ -1632,6 +1634,13 @@
         if (color) {
             document.documentElement.style.setProperty('--accent', color);
             localStorage.setItem('user_accent', color);
+            // Simpan juga langsung ke uno_cfg supaya persist saat reload
+            try {
+                const raw = localStorage.getItem('uno_cfg');
+                const cfg = raw ? JSON.parse(raw) : {};
+                cfg.accent = color;
+                localStorage.setItem('uno_cfg', JSON.stringify(cfg));
+            } catch(e) {}
         }
     }
 
@@ -3191,7 +3200,7 @@ Terima kasih! 🙏
                 store_name: document.querySelector('.logo')?.innerText || 'UNO-STOREZZ',
                 bg_video: config.bgVideo || '',
                 bg_music: config.bgMusic || '',
-                accent_color: config.accent || '#00eaff',
+                accent_color: '',  // Per-user preference, tidak di-publish ke Firebase
                 wa_number: window.WA_NUMBER || '6283856169422',
                 account_number: config.payment?.accountNumber || '',
                 account_name: config.payment?.accountName || '',
@@ -3286,7 +3295,11 @@ Terima kasih! 🙏
                     config.bgMusic = cfg.bg_music;
                     updateMusicBackground();
                 }
-                if (cfg.accent_color) updateAccent(cfg.accent_color);
+                // accent_color dari Firebase hanya sebagai default jika user belum pernah set
+                // Jangan overwrite pilihan warna user yang sudah tersimpan
+                if (cfg.accent_color && !localStorage.getItem('user_accent')) {
+                    updateAccent(cfg.accent_color);
+                }
                 if (cfg.wa_number) window.WA_NUMBER = cfg.wa_number;
                 if (cfg.account_number) config.payment.accountNumber = cfg.account_number;
                 if (cfg.account_name) config.payment.accountName = cfg.account_name;
