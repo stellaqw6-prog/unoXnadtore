@@ -112,8 +112,10 @@
         input, select, textarea { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 12px; border-radius: 10px; color: #fff; margin-bottom: 8px; outline: none; font-size: 16px !important; }
 
         .color-picker-container { display: flex; gap: 6px; justify-content: center; margin: 12px 0; flex-wrap: wrap; }
-        .color-dot { width: 26px; height: 26px; border-radius: 6px; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.1); transition: 0.2s; }
+        .color-dot { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: 0.2s; position: relative; }
         .color-dot:active { transform: scale(0.9); }
+        .color-dot.selected::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #000; font-weight: 900; font-size: 14px; text-shadow: 0 0 3px rgba(255,255,255,0.5); }
+        .color-dot.selected { border: 2px solid #fff; box-shadow: 0 0 10px rgba(255,255,255,0.4); transform: scale(1.1); }
 
         .tab-nav { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 5px; }
         .tab-item { white-space: nowrap; padding: 7px 12px; background: var(--glass); border-radius: 8px; font-size: 9px; font-family: 'Orbitron'; cursor: pointer; }
@@ -442,17 +444,30 @@
             <!-- MY SUBSCRIPTION SECTION -->
             <div id="my-subscription-section" class="my-subs-section"></div>
 
-            <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; text-align: left; margin-bottom: 8px;">CUSTOM THEME</p>
+            <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; text-align: left; margin-bottom: 10px; letter-spacing:1px;">🎨 CUSTOM THEME</p>
             <div class="color-picker-container">
-                <div class="color-dot" style="background:#00eaff" onclick="updateAccent('#00eaff')"></div>
-                <div class="color-dot" style="background:#ff0055" onclick="updateAccent('#ff0055')"></div>
-                <div class="color-dot" style="background:#00ff88" onclick="updateAccent('#00ff88')"></div>
-                <div class="color-dot" style="background:#ffcc00" onclick="updateAccent('#ffcc00')"></div>
-                <div class="color-dot" style="background:#ae00ff" onclick="updateAccent('#ae00ff')"></div>
-                
-                <div style="display: flex; align-items: center; margin-top: 8px; width: 100%;">
-                    <input type="color" id="customColorPicker" style="width: 36px; height: 36px; border-radius: 6px; background: transparent; border: 1px solid var(--glass-border); cursor: pointer;" onchange="updateAccent(this.value)">
-                    <span style="margin-left: 8px; font-size: 10px; color: var(--accent);">Custom</span>
+                <!-- Preset warna -->
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:12px;">
+                    <div class="color-dot" id="dot-00eaff" style="background:#00eaff" onclick="updateAccentAndSync('#00eaff')"></div>
+                    <div class="color-dot" id="dot-ff0055" style="background:#ff0055" onclick="updateAccentAndSync('#ff0055')"></div>
+                    <div class="color-dot" id="dot-00ff88" style="background:#00ff88" onclick="updateAccentAndSync('#00ff88')"></div>
+                    <div class="color-dot" id="dot-ffcc00" style="background:#ffcc00" onclick="updateAccentAndSync('#ffcc00')"></div>
+                    <div class="color-dot" id="dot-ae00ff" style="background:#ae00ff" onclick="updateAccentAndSync('#ae00ff')"></div>
+                    <div class="color-dot" id="dot-ff6600" style="background:#ff6600" onclick="updateAccentAndSync('#ff6600')"></div>
+                    <div class="color-dot" id="dot-00bfff" style="background:#00bfff" onclick="updateAccentAndSync('#00bfff')"></div>
+                    <div class="color-dot" id="dot-ff69b4" style="background:#ff69b4" onclick="updateAccentAndSync('#ff69b4')"></div>
+                </div>
+
+                <!-- Custom color input -->
+                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:12px; padding:10px; display:flex; align-items:center; gap:10px;">
+                    <input type="color" id="customColorPicker" style="width:42px; height:42px; border-radius:8px; border:2px solid var(--accent); cursor:pointer; background:transparent; padding:2px;" oninput="updateAccentAndSync(this.value)">
+                    <div style="flex:1;">
+                        <div style="font-size:8px; color:#aaa; font-family:'Orbitron'; margin-bottom:4px;">HEX COLOR</div>
+                        <input type="text" id="hexColorInput" placeholder="#00eaff" maxlength="7"
+                            style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--accent); color:var(--accent); font-family:'Orbitron'; font-size:12px; font-weight:900; padding:2px 0; outline:none; margin-bottom:0;"
+                            oninput="onHexInput(this.value)">
+                    </div>
+                    <div id="color-preview-box" style="width:36px; height:36px; border-radius:8px; border:2px solid rgba(255,255,255,0.2); background:var(--accent); flex-shrink:0;"></div>
                 </div>
             </div>
 
@@ -504,13 +519,13 @@
             </div>
         </div>
         
-        <div class="upload-section" onclick="document.getElementById('payment-proof').click()">
-            <i class="fa-solid fa-cloud-upload-alt"></i>
-            <p>Klik untuk upload bukti transfer</p>
-            <p style="font-size:7px; opacity:0.5;">Format: JPG, PNG (Max 5MB)</p>
+        <div class="upload-section" onclick="document.getElementById('payment-proof').click()" id="upload-box">
+            <i class="fa-solid fa-file-arrow-up" style="font-size:2rem; color:var(--accent); margin-bottom:6px;"></i>
+            <p style="font-size:10px; font-weight:700;">Klik untuk pilih file bukti</p>
+            <p style="font-size:7px; opacity:0.5; margin-top:4px;">JPG, PNG, PDF, atau screenshot (Max 10MB)</p>
             <div id="file-name-display" class="file-name"></div>
         </div>
-        <input type="file" id="payment-proof" accept="image/*" onchange="handleFileUpload(this)">
+        <input type="file" id="payment-proof" accept="image/*,.pdf,.jpg,.jpeg,.png,.webp" onchange="handleFileUpload(this)">
         
         <div class="qr-code-section">
             <img src="" id="qr-code-image" alt="QR Code">
@@ -1620,6 +1635,41 @@
         }
     }
 
+    function updateAccentAndSync(color) {
+        if (!color) return;
+        updateAccent(color);
+
+        // Update hex input text
+        const hexInput = document.getElementById('hexColorInput');
+        if (hexInput) hexInput.value = color;
+
+        // Update color picker
+        const picker = document.getElementById('customColorPicker');
+        if (picker) picker.value = color;
+
+        // Update preview box
+        const preview = document.getElementById('color-preview-box');
+        if (preview) preview.style.background = color;
+
+        // Update selected dot
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+        const dotId = 'dot-' + color.replace('#','');
+        const dot = document.getElementById(dotId);
+        if (dot) dot.classList.add('selected');
+    }
+
+    function onHexInput(val) {
+        const hex = val.startsWith('#') ? val : '#' + val;
+        if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+            updateAccentAndSync(hex);
+        }
+        // Update preview live
+        const preview = document.getElementById('color-preview-box');
+        if (preview && hex.length >= 4) {
+            try { preview.style.background = hex; } catch(e) {}
+        }
+    }
+
     function login(u) {
         currentUser = u;
         localStorage.setItem('uno_session', JSON.stringify(u));
@@ -1976,21 +2026,39 @@ Terima kasih! 🙏
     function handleFileUpload(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
-            
-            if (file.size > 5 * 1024 * 1024) {
-                alert("⚠️ File terlalu besar! Maksimal 5MB.");
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert("⚠️ File terlalu besar! Maksimal 10MB.");
                 return;
             }
-            
-            if (!file.type.match('image.*')) {
-                alert("⚠️ Hanya file gambar yang diperbolehkan!");
-                return;
-            }
-            
+
             uploadedFile = file;
+
+            // Tentukan icon berdasarkan tipe file
+            const isPDF = file.type === 'application/pdf';
+            const isImg = file.type.match('image.*');
+            const icon = isPDF ? 'fa-file-pdf' : isImg ? 'fa-file-image' : 'fa-file';
+            const iconColor = isPDF ? '#ff5555' : 'var(--gold)';
+            const sizeKB = (file.size / 1024).toFixed(1);
+
             const fileNameDisplay = document.getElementById('file-name-display');
             if (fileNameDisplay) {
-                fileNameDisplay.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--gold);"></i> ${file.name}`;
+                fileNameDisplay.innerHTML = `
+                    <div style="background:rgba(0,234,255,0.08); border:1px solid var(--accent); border-radius:8px; padding:8px 10px; margin-top:8px; display:flex; align-items:center; gap:8px; text-align:left;">
+                        <i class="fa-solid ${icon}" style="font-size:1.4rem; color:${iconColor};"></i>
+                        <div>
+                            <div style="font-size:9px; color:#fff; font-weight:700; word-break:break-all;">${file.name}</div>
+                            <div style="font-size:7px; color:#aaa; margin-top:2px;">${sizeKB} KB • Siap dikirim</div>
+                        </div>
+                        <i class="fa-solid fa-check-circle" style="color:#00ff88; margin-left:auto; font-size:1rem;"></i>
+                    </div>`;
+            }
+
+            // Update upload box style
+            const uploadBox = document.getElementById('upload-box');
+            if (uploadBox) {
+                uploadBox.style.borderColor = '#00ff88';
+                uploadBox.style.background = 'rgba(0,255,136,0.05)';
             }
         }
     }
@@ -2064,6 +2132,8 @@ Terima kasih! 🙏
             uploadedFile = null;
             const fileNameDisplay = document.getElementById('file-name-display');
             if (fileNameDisplay) fileNameDisplay.innerHTML = '';
+            const uploadBox = document.getElementById('upload-box');
+            if (uploadBox) { uploadBox.style.borderColor = ''; uploadBox.style.background = ''; }
             
             closeModal('paymentModal');
         };
@@ -3263,10 +3333,18 @@ Terima kasih! 🙏
 
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', function() {
+        // Sync color picker dengan warna aktif saat load
+        const savedColor = localStorage.getItem('user_accent') || '#00eaff';
         const colorPicker = document.getElementById('customColorPicker');
-        if (colorPicker) {
-            colorPicker.addEventListener('input', function(e) { updateAccent(e.target.value); });
-        }
+        if (colorPicker) colorPicker.value = savedColor;
+        const hexInput = document.getElementById('hexColorInput');
+        if (hexInput) hexInput.value = savedColor;
+        const preview = document.getElementById('color-preview-box');
+        if (preview) preview.style.background = savedColor;
+        // Mark selected dot
+        const dotId = 'dot-' + savedColor.replace('#','');
+        const dot = document.getElementById(dotId);
+        if (dot) dot.classList.add('selected');
 
         // Load semua data dari Firebase
         loadProductsFromCloud();
