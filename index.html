@@ -27,38 +27,101 @@
         button, .cat-btn, .dock-item, .buy-btn, .claim-btn { min-height: 44px; touch-action: manipulation; }
         input, select, textarea { font-size: 16px !important; }
 
-        #welcome-overlay { 
-            position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s ease-in-out;
-            background: radial-gradient(circle at 50% 50%, #0a1a2a, #000000); overflow: hidden;
+        /* ===== LOADING SCREEN ===== */
+        #welcome-overlay {
+            position: fixed; inset: 0; z-index: 10000;
+            background: radial-gradient(ellipse at 50% 40%, #080020 0%, #000510 50%, #000000 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease; overflow: hidden;
         }
+        /* Animated bg grid */
         #welcome-overlay::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,234,255,0.1) 0%, transparent 70%); animation: rotate 20s linear infinite;
+            content:''; position:absolute; inset:0;
+            background-image: linear-gradient(rgba(0,234,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,234,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 8s linear infinite;
         }
+        @keyframes gridMove { from{background-position:0 0} to{background-position:40px 40px} }
+
+        /* Bottom scanline */
         #welcome-overlay::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), var(--dev-color), var(--gold), transparent); animation: scanline 3s linear infinite;
+            content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+            background: linear-gradient(90deg, transparent, var(--accent), #ae00ff, var(--gold), transparent);
+            animation: scanline 2s linear infinite;
         }
-        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes scanline { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        
-        .premium-loader { position: relative; width: 150px; height: 150px; margin-bottom: 30px; z-index: 10; }
-        .premium-loader .ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid transparent; animation: ringRotate 2s linear infinite; }
-        .premium-loader .ring:nth-child(1) { border-top-color: var(--accent); border-bottom-color: var(--dev-color); animation-duration: 2s; }
-        .premium-loader .ring:nth-child(2) { border-left-color: var(--gold); border-right-color: var(--accent); width: 110px; height: 110px; top: 20px; left: 20px; animation-duration: 3s; animation-direction: reverse; }
-        .premium-loader .ring:nth-child(3) { border-top-color: var(--dev-color); border-bottom-color: var(--gold); width: 70px; height: 70px; top: 40px; left: 40px; animation-duration: 4s; }
-        .premium-loader .core { position: absolute; width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent), var(--dev-color)); border-radius: 50%; top: 50px; left: 50px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 20px; font-weight: 900; box-shadow: 0 0 30px var(--accent); animation: pulse 1.5s ease-in-out infinite; }
-        @keyframes ringRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 30px var(--accent); } 50% { transform: scale(1.1); box-shadow: 0 0 50px var(--accent), 0 0 50px var(--dev-color); } 100% { transform: scale(1); box-shadow: 0 0 30px var(--accent); } }
-        
-        .premium-title { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 6px; margin-bottom: 15px; position: relative; z-index: 10; background: linear-gradient(135deg, #fff, var(--accent), var(--dev-color), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 30px rgba(0,234,255,0.3); animation: glow 3s ease-in-out infinite; }
-        @keyframes glow { 0% { filter: brightness(1); } 50% { filter: brightness(1.2); } 100% { filter: brightness(1); } }
-        
-        .premium-subtitle { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 3px; color: #ccc; margin-bottom: 30px; position: relative; z-index: 10; text-transform: uppercase; }
-        .premium-subtitle span { color: var(--accent); font-weight: 900; }
-        
-        .enter-btn { background: rgba(255,255,255,0.03); border: 2px solid var(--accent); color: var(--accent); padding: 15px 40px; font-family: 'Orbitron'; font-size: 12px; font-weight: 900; letter-spacing: 3px; border-radius: 50px; cursor: pointer; transition: 0.3s; position: relative; z-index: 10; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(0,234,255,0.2); min-height: 50px; }
-        .enter-btn:active { background: var(--accent); color: #000; transform: scale(0.98); }
+        @keyframes scanline { 0%{transform:scaleX(0);opacity:0} 50%{opacity:1} 100%{transform:scaleX(1);opacity:0} }
+
+        /* Logo */
+        .load-logo-wrap { position:relative; z-index:10; margin-bottom:24px; animation: fadeUp 0.8s both; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+        .load-logo-icon {
+            width:90px; height:90px; margin:0 auto 0;
+            background: linear-gradient(135deg, var(--accent), #ae00ff);
+            border-radius:24px; display:flex; align-items:center; justify-content:center;
+            font-size:38px; color:#000; position:relative;
+            box-shadow: 0 0 40px rgba(0,234,255,0.5), 0 0 80px rgba(174,0,255,0.3);
+            animation: logoBounce 2s ease-in-out infinite;
+        }
+        @keyframes logoBounce { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-8px) scale(1.03)} }
+
+        /* Orbiting dot */
+        .load-logo-orbit {
+            position:absolute; width:120px; height:120px;
+            top:-15px; left:-15px; border-radius:50%;
+            border:1px solid rgba(0,234,255,0.3);
+            animation: orbit 3s linear infinite;
+        }
+        .load-logo-orbit::after {
+            content:''; position:absolute; width:8px; height:8px;
+            background:var(--accent); border-radius:50%; top:-4px; left:50%;
+            box-shadow:0 0 10px var(--accent);
+        }
+        @keyframes orbit { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+        .load-title {
+            font-family:'Orbitron'; font-size:28px; font-weight:900; letter-spacing:5px;
+            background: linear-gradient(90deg, #fff, var(--accent), #ae00ff, var(--gold), #fff);
+            background-size:300% auto;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            animation: gradFlow 3s linear infinite, fadeUp 0.8s 0.2s both;
+            position:relative; z-index:10; margin-top:18px; text-align:center;
+        }
+        @keyframes gradFlow { to{background-position:300% center} }
+
+        .load-subtitle {
+            font-family:'Orbitron'; font-size:10px; letter-spacing:4px;
+            color:rgba(255,255,255,0.3); margin-top:6px; margin-bottom:32px;
+            position:relative; z-index:10; text-align:center;
+            animation: fadeUp 0.8s 0.4s both;
+        }
+
+        /* Progress bar */
+        .load-progress-wrap {
+            width:220px; position:relative; z-index:10;
+            animation: fadeUp 0.8s 0.5s both;
+        }
+        .load-progress-track {
+            width:100%; height:4px; background:rgba(255,255,255,0.06);
+            border-radius:10px; overflow:hidden; margin-bottom:10px;
+        }
+        .load-progress-bar {
+            height:100%; width:0%; border-radius:10px;
+            background:linear-gradient(90deg, var(--accent), #ae00ff, var(--gold));
+            box-shadow:0 0 10px var(--accent);
+            transition: width 0.15s ease;
+        }
+        .load-status-text {
+            font-family:'Orbitron'; font-size:8px; color:rgba(0,234,255,0.5);
+            text-align:center; letter-spacing:2px; min-height:14px;
+        }
+
+        /* Floating particles */
+        .load-particle {
+            position:absolute; border-radius:50%; pointer-events:none;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 10%{opacity:1} 90%{opacity:0.3} 100%{transform:translateY(-10vh) scale(1);opacity:0} }
 
         header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; background: rgba(2,4,6,0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); }
         .logo { font-family: 'Orbitron'; font-size: 1rem; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -347,6 +410,336 @@
         .benefit-row .del-benefit-btn { width: 28px; height: 28px; background: rgba(255,0,85,0.15); border: 1px solid var(--dev-color); color: var(--dev-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 11px; }
         .add-benefit-row-btn { background: rgba(0,234,255,0.08); border: 1px dashed var(--accent); color: var(--accent); width: 100%; padding: 7px; border-radius: 8px; font-size: 9px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; margin-top: 4px; }
         .benefit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,234,255,0.08); border: 1px solid rgba(0,234,255,0.2); border-radius: 16px; padding: 2px 8px; font-size: 8px; color: var(--accent); margin: 2px; }
+
+        /* ===== MENU ORDER DRAG DROP ===== */
+        .menu-order-item { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; padding:10px 12px; cursor:grab; transition:0.2s; user-select:none; }
+        .menu-order-item:active { cursor:grabbing; }
+        .menu-order-item.dragging { opacity:0.4; border:1px dashed var(--accent); }
+        .menu-order-item.drag-over { border:1px solid var(--accent); background:rgba(0,234,255,0.08); transform:scale(1.02); }
+        .menu-order-item .drag-handle { color:#555; font-size:14px; cursor:grab; }
+        .menu-order-item .menu-icon { font-size:16px; width:24px; text-align:center; }
+        .menu-order-item .menu-label { flex:1; font-family:'Orbitron'; font-size:10px; font-weight:700; }
+        .menu-order-item .menu-badge { font-size:7px; background:rgba(255,255,255,0.07); padding:2px 7px; border-radius:10px; color:#aaa; }
+
+
+        /* ===== PRODUCT ORDER DRAG DROP ===== */
+        .product-item { cursor: grab; }
+        .product-item.prod-dragging { opacity: 0.35; border: 1px dashed var(--accent) !important; cursor: grabbing; }
+        .product-item.prod-drag-over { border: 1px solid var(--accent) !important; background: rgba(0,234,255,0.07) !important; transform: scale(1.01); }
+        .prod-drag-handle { color: #555; font-size: 15px; cursor: grab; margin-right: 2px; flex-shrink:0; }
+
+
+        /* ===== ANIME/GAMING LOGIN SCREEN ===== */
+        #login-screen {
+            background: linear-gradient(135deg, #0a0010 0%, #000820 40%, #0a0015 100%) !important;
+            overflow: hidden;
+        }
+
+        /* Particle canvas */
+        #login-particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+        /* Scan line effect */
+        #login-screen::before {
+            content:'';
+            position:fixed; inset:0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,234,255,0.015) 2px, rgba(0,234,255,0.015) 4px);
+            pointer-events:none; z-index:1;
+            animation: scanMove 8s linear infinite;
+        }
+        @keyframes scanMove { from{background-position:0 0} to{background-position:0 100px} }
+
+        /* Corner decorations */
+        .login-corner { position:fixed; width:60px; height:60px; z-index:2; pointer-events:none; }
+        .login-corner.tl { top:16px; left:16px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
+        .login-corner.tr { top:16px; right:16px; border-top:2px solid var(--accent); border-right:2px solid var(--accent); }
+        .login-corner.bl { bottom:16px; left:16px; border-bottom:2px solid var(--accent); border-left:2px solid var(--accent); }
+        .login-corner.br { bottom:16px; right:16px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
+
+        /* Login card */
+        .login-card {
+            position:relative; z-index:10;
+            width:100%; max-width:320px;
+            background: rgba(5,5,20,0.85);
+            border: 1px solid rgba(0,234,255,0.3);
+            border-radius:24px;
+            padding: 28px 22px 22px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 60px rgba(0,234,255,0.15), 0 0 120px rgba(174,0,255,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+            animation: cardSlideIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        @keyframes cardSlideIn { from{opacity:0;transform:translateY(40px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        /* Logo area */
+        .login-logo-wrap {
+            display:flex; flex-direction:column; align-items:center; margin-bottom:20px;
+            animation: fadeInDown 0.7s 0.2s both;
+        }
+        @keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+
+        .login-logo-icon {
+            width:72px; height:72px;
+            background: linear-gradient(135deg, var(--accent), #ae00ff);
+            border-radius:20px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:30px; color:#000; font-weight:900;
+            box-shadow: 0 0 30px rgba(0,234,255,0.5), 0 0 60px rgba(174,0,255,0.2);
+            margin-bottom:12px;
+            animation: logoPulse 3s ease-in-out infinite;
+            position:relative; overflow:hidden;
+        }
+        .login-logo-icon::after {
+            content:'';
+            position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+            animation: logoShine 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse { 0%,100%{box-shadow:0 0 30px rgba(0,234,255,0.5),0 0 60px rgba(174,0,255,0.2)} 50%{box-shadow:0 0 50px rgba(0,234,255,0.8),0 0 100px rgba(174,0,255,0.4)} }
+        @keyframes logoShine { 0%{transform:translateX(-100%) rotate(45deg)} 100%{transform:translateX(100%) rotate(45deg)} }
+
+        .login-store-name {
+            font-family:'Orbitron'; font-size:18px; font-weight:900; letter-spacing:3px;
+            background: linear-gradient(90deg, var(--accent), #ae00ff, var(--accent));
+            background-size:200% auto;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            animation: gradientShift 3s linear infinite;
+        }
+        @keyframes gradientShift { to{background-position:200% center} }
+
+        /* Glitch text */
+        .glitch-text {
+            position:relative; font-family:'Orbitron'; font-size:10px;
+            color:rgba(255,255,255,0.4); letter-spacing:2px; margin-top:4px;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position:absolute; top:0; left:0; width:100%;
+        }
+        .glitch-text::before { color:#ff0055; animation:glitch1 4s infinite; clip-path:polygon(0 0,100% 0,100% 35%,0 35%); }
+        .glitch-text::after  { color:#00eaff; animation:glitch2 4s infinite; clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%); }
+        @keyframes glitch1 { 0%,90%,100%{transform:translate(0)} 92%{transform:translate(-2px,1px)} 94%{transform:translate(2px,-1px)} 96%{transform:translate(-1px,0)} }
+        @keyframes glitch2 { 0%,90%,100%{transform:translate(0)} 93%{transform:translate(2px,1px)} 95%{transform:translate(-2px,-1px)} 97%{transform:translate(1px,0)} }
+
+        /* Typing quote */
+        .login-quote {
+            font-size:9px; color:rgba(0,234,255,0.6); text-align:center;
+            min-height:14px; margin-bottom:16px; font-style:italic;
+        }
+        .typing-cursor { display:inline-block; width:2px; height:10px; background:var(--accent); animation:blink 0.7s infinite; vertical-align:middle; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        /* Auth tabs */
+        .auth-tabs { display:flex; gap:4px; margin-bottom:16px; background:rgba(255,255,255,0.03); padding:4px; border-radius:12px; }
+        .auth-tab {
+            flex:1; text-align:center; padding:8px; border-radius:9px;
+            font-family:'Orbitron'; font-size:9px; font-weight:700; cursor:pointer;
+            transition:0.3s; color:#555;
+        }
+        .auth-tab.active { background:linear-gradient(135deg,var(--accent),#7c3aed); color:#000; box-shadow:0 0 15px rgba(0,234,255,0.3); }
+
+        /* Input fields */
+        .login-input-wrap { position:relative; margin-bottom:10px; }
+        .login-input-wrap i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--accent); font-size:12px; z-index:1; }
+        .login-input-wrap input {
+            width:100%; padding:12px 14px 12px 38px;
+            background:rgba(0,234,255,0.05);
+            border:1px solid rgba(0,234,255,0.2);
+            border-radius:12px; color:#fff; font-size:13px;
+            transition:0.3s; margin-bottom:0;
+        }
+        .login-input-wrap input:focus { border-color:var(--accent); background:rgba(0,234,255,0.08); box-shadow:0 0 15px rgba(0,234,255,0.15); outline:none; }
+
+        /* Buttons */
+        .login-btn-main {
+            width:100%; padding:13px; border:none; border-radius:12px;
+            background:linear-gradient(135deg, var(--accent), #7c3aed);
+            color:#000; font-family:'Orbitron'; font-size:11px; font-weight:900;
+            cursor:pointer; letter-spacing:2px; margin-bottom:8px;
+            box-shadow:0 0 20px rgba(0,234,255,0.3);
+            transition:0.3s; position:relative; overflow:hidden;
+        }
+        .login-btn-main::before {
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+            transform:translateX(-100%); transition:0.4s;
+        }
+        .login-btn-main:active::before { transform:translateX(100%); }
+        .login-btn-main:active { transform:scale(0.98); }
+
+        .login-btn-reg {
+            width:100%; padding:13px; border:1px solid var(--gold); border-radius:12px;
+            background:rgba(255,204,0,0.08); color:var(--gold);
+            font-family:'Orbitron'; font-size:11px; font-weight:900;
+            cursor:pointer; letter-spacing:2px; margin-bottom:8px; transition:0.3s;
+        }
+        .login-btn-reg:active { background:rgba(255,204,0,0.15); transform:scale(0.98); }
+
+        /* Progress bar */
+        .login-progress-bar {
+            width:100%; height:3px; background:rgba(255,255,255,0.05);
+            border-radius:10px; overflow:hidden; margin-bottom:14px;
+        }
+        .login-progress-fill {
+            height:100%; width:0%;
+            background:linear-gradient(90deg, var(--accent), #ae00ff);
+            border-radius:10px; transition:width 0.3s;
+            box-shadow:0 0 8px var(--accent);
+        }
+
+        /* Device verify box */
+        .device-verify-box {
+            background:rgba(255,170,0,0.06); border:1px solid rgba(255,170,0,0.3);
+            border-radius:14px; padding:14px; margin-bottom:12px; text-align:center;
+            animation: fadeInDown 0.4s both;
+        }
+
+        /* Dev access */
+        .dev-access-section {
+            margin-top:14px; padding-top:12px;
+            border-top:1px solid rgba(255,255,255,0.05);
+            text-align:center;
+        }
+
+        /* HUD lines */
+        .login-hud-line {
+            position:fixed; z-index:1; pointer-events:none;
+            background:linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity:0.15; height:1px;
+            animation:hudScan 6s ease-in-out infinite;
+        }
+        @keyframes hudScan { 0%,100%{top:20%;opacity:0} 50%{top:80%;opacity:0.3} }
+
+
+        /* ===== GLOBAL CHAT ===== */
+        #chat-fab {
+            position: fixed; bottom: 82px; right: 16px; z-index: 2000;
+            width: 52px; height: 52px; border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent), #ae00ff);
+            border: none; cursor: pointer; display: none;
+            align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(0,234,255,0.4), 0 4px 15px rgba(0,0,0,0.5);
+            transition: 0.3s; font-size: 20px; color: #000;
+        }
+        #chat-fab:active { transform: scale(0.92); }
+        #chat-unread-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: #ff0055; color: #fff; border-radius: 10px;
+            font-size: 9px; font-weight: 900; padding: 2px 5px;
+            font-family: 'Orbitron'; display: none; min-width: 16px; text-align: center;
+        }
+        #chat-panel {
+            position: fixed; bottom: 144px; right: 16px; z-index: 1999;
+            width: calc(100vw - 32px); max-width: 380px;
+            height: 65vh; max-height: 520px;
+            background: rgba(5,5,20,0.97);
+            border: 1px solid rgba(0,234,255,0.25);
+            border-radius: 20px; display: none; flex-direction: column;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 40px rgba(0,234,255,0.1), 0 20px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+            animation: chatSlideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes chatSlideUp { from{opacity:0;transform:translateY(20px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        /* Chat header */
+        .chat-header {
+            padding: 12px 14px; display: flex; align-items: center; gap:10px;
+            background: rgba(0,234,255,0.05);
+            border-bottom: 1px solid rgba(0,234,255,0.1); flex-shrink:0;
+        }
+        .chat-header-title { font-family:'Orbitron'; font-size:11px; font-weight:900; color:var(--accent); flex:1; }
+        .chat-online-dot { width:8px; height:8px; background:#00ff88; border-radius:50%; box-shadow:0 0 6px #00ff88; }
+        .chat-online-count { font-size:8px; color:#00ff88; font-family:'Orbitron'; }
+        .chat-close-btn { width:28px; height:28px; background:rgba(255,0,85,0.15); border:1px solid rgba(255,0,85,0.3); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#ff5555; font-size:12px; }
+
+        /* Messages area */
+        #chat-messages {
+            flex:1; overflow-y:auto; padding:10px 10px 4px;
+            display:flex; flex-direction:column; gap:8px;
+            scroll-behavior: smooth;
+        }
+        #chat-messages::-webkit-scrollbar { width:3px; }
+        #chat-messages::-webkit-scrollbar-thumb { background:rgba(0,234,255,0.2); border-radius:10px; }
+
+        /* Message bubble */
+        .chat-msg { display:flex; gap:8px; align-items:flex-end; animation: msgFadeIn 0.3s both; }
+        @keyframes msgFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .chat-msg.mine { flex-direction:row-reverse; }
+        .chat-avatar { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--accent),#ae00ff); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900; color:#000; flex-shrink:0; }
+        .chat-bubble-wrap { max-width:75%; display:flex; flex-direction:column; gap:3px; }
+        .chat-mine-wrap { align-items:flex-end; }
+        .chat-sender { font-size:8px; color:var(--accent); font-family:'Orbitron'; font-weight:700; margin-bottom:2px; }
+        .chat-bubble {
+            background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
+            border-radius:14px 14px 14px 4px; padding:8px 11px;
+            font-size:12px; color:#eee; line-height:1.4; word-break:break-word;
+            position:relative;
+        }
+        .chat-msg.mine .chat-bubble { background:rgba(0,234,255,0.12); border-color:rgba(0,234,255,0.2); border-radius:14px 14px 4px 14px; }
+        .chat-time { font-size:7px; color:#555; }
+        .chat-msg.mine .chat-time { text-align:right; }
+
+        /* Image in chat */
+        .chat-img { max-width:200px; max-height:160px; border-radius:10px; cursor:pointer; object-fit:cover; }
+
+        /* Reply preview */
+        .chat-reply-preview { background:rgba(0,234,255,0.06); border-left:2px solid var(--accent); border-radius:0 8px 8px 0; padding:4px 8px; font-size:9px; color:#aaa; margin-bottom:3px; }
+        .chat-reply-preview strong { color:var(--accent); }
+
+        /* Reactions */
+        .chat-reactions { display:flex; gap:4px; flex-wrap:wrap; margin-top:3px; }
+        .chat-reaction { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2px 7px; font-size:11px; cursor:pointer; transition:0.2s; display:flex; align-items:center; gap:3px; }
+        .chat-reaction:active { transform:scale(0.9); }
+        .chat-reaction span { font-size:8px; color:#aaa; }
+        .chat-reaction.mine-react { background:rgba(0,234,255,0.1); border-color:rgba(0,234,255,0.3); }
+
+        /* Message actions (long press / hover) */
+        .chat-msg-actions { display:none; gap:4px; margin-top:3px; }
+        .chat-msg-actions.show { display:flex; }
+        .msg-action-btn { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:4px 8px; font-size:9px; color:#ccc; cursor:pointer; }
+        .msg-action-btn.del { color:#ff5555; border-color:rgba(255,0,85,0.2); }
+
+        /* Reply bar */
+        #chat-reply-bar {
+            display:none; padding:6px 12px; background:rgba(0,234,255,0.05);
+            border-top:1px solid rgba(0,234,255,0.1); flex-shrink:0;
+            font-size:9px; color:#aaa; align-items:center; gap:8px;
+        }
+        #chat-reply-bar .reply-text { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #chat-reply-cancel { cursor:pointer; color:#ff5555; font-size:14px; }
+
+        /* Emoji picker */
+        #emoji-picker-chat {
+            position:absolute; bottom:70px; left:10px; z-index:10;
+            background:rgba(10,10,25,0.98); border:1px solid rgba(0,234,255,0.2);
+            border-radius:14px; padding:10px; display:none; flex-wrap:wrap;
+            gap:4px; width:220px; box-shadow:0 0 20px rgba(0,0,0,0.5);
+        }
+        .emoji-btn { font-size:20px; cursor:pointer; width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:8px; transition:0.15s; }
+        .emoji-btn:active { background:rgba(255,255,255,0.1); transform:scale(1.2); }
+
+        /* Input area */
+        .chat-input-area {
+            padding:8px 10px; border-top:1px solid rgba(0,234,255,0.1);
+            display:flex; gap:6px; align-items:flex-end; flex-shrink:0;
+        }
+        #chat-input {
+            flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+            border-radius:12px; padding:9px 12px; color:#fff; font-size:12px;
+            resize:none; max-height:80px; outline:none; font-family:inherit; transition:0.2s;
+        }
+        #chat-input:focus { border-color:rgba(0,234,255,0.3); background:rgba(0,234,255,0.05); }
+        .chat-send-btn { width:36px; height:36px; border-radius:10px; border:none; background:linear-gradient(135deg,var(--accent),#7c3aed); color:#000; font-size:14px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+        .chat-send-btn:active { transform:scale(0.9); }
+        .chat-img-btn { width:36px; height:36px; border-radius:10px; border:1px solid rgba(0,234,255,0.2); background:rgba(0,234,255,0.05); color:var(--accent); font-size:14px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+        .chat-emoji-btn { width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:#aaa; font-size:16px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+        #chat-img-input { display:none; }
+
+        /* System message */
+        .chat-system-msg { text-align:center; font-size:8px; color:#555; font-family:'Orbitron'; letter-spacing:1px; padding:2px 0; }
+
+        /* Date divider */
+        .chat-date-divider { text-align:center; font-size:7px; color:#444; margin:4px 0; display:flex; align-items:center; gap:8px; }
+        .chat-date-divider::before, .chat-date-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
     </style>
 </head>
 <body class="android-optimized">
@@ -357,41 +750,112 @@
 
 <!-- PREMIUM WELCOME OVERLAY -->
 <div id="welcome-overlay">
-    <div class="floating-elements">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+    <!-- Floating particles -->
+    <div id="load-particles-wrap"></div>
+
+    <!-- Logo -->
+    <div class="load-logo-wrap">
+        <div class="load-logo-icon">
+            <div class="load-logo-orbit"></div>
+            <i class="fa-solid fa-store"></i>
+        </div>
     </div>
-    <div class="premium-loader">
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <div class="ring"></div>
-        <div class="core">U</div>
+
+    <!-- Title -->
+    <div class="load-title" id="load-store-name">UNO-STOREZZ</div>
+    <div class="load-subtitle">PREMIUM GAMING STORE</div>
+
+    <!-- Progress -->
+    <div class="load-progress-wrap">
+        <div class="load-progress-track">
+            <div class="load-progress-bar" id="load-bar"></div>
+        </div>
+        <div class="load-status-text" id="load-status">INITIALIZING...</div>
     </div>
-    <div class="premium-title">UNO XALYA</div>
-    <div class="premium-subtitle"><span>UNO-STOREZZ</span> • EDITION</div>
-    <button class="enter-btn" onclick="enterSystem()">ENTER THE GRID</button>
 </div>
 
 <!-- LOGIN SCREEN -->
-<div id="login-screen" style="display:none; position: fixed; inset: 0; background: #000; z-index: 15000; align-items: center; justify-content: center; padding: 20px;">
-    <div class="modal-content" style="max-width: 300px;">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--accent), var(--dev-color)); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-                <i class="fa-solid fa-user-astronaut" style="font-size: 26px; color: #000;"></i>
+<div id="login-screen" style="display:none; position:fixed; inset:0; z-index:15000; align-items:center; justify-content:center; padding:20px;">
+
+    <!-- Particles canvas -->
+    <canvas id="login-particles"></canvas>
+
+    <!-- HUD decorations -->
+    <div class="login-corner tl"></div>
+    <div class="login-corner tr"></div>
+    <div class="login-corner bl"></div>
+    <div class="login-corner br"></div>
+    <div class="login-hud-line" style="width:100%;"></div>
+
+    <!-- Main card -->
+    <div class="login-card">
+
+        <!-- Logo -->
+        <div class="login-logo-wrap">
+            <div class="login-logo-icon">
+                <i class="fa-solid fa-store"></i>
             </div>
-            <h2 style="font-family:'Orbitron'; color:var(--accent); font-size: 14px; letter-spacing: 2px;">WELCOME BACK</h2>
-            <p style="font-size: 9px; opacity: 0.5; margin-top: 4px;">MASUKKAN NAMA ANDA</p>
+            <div class="login-store-name" id="login-store-title">UNO-STOREZZ</div>
+            <div class="glitch-text" data-text="PREMIUM GAMING STORE" id="login-glitch">PREMIUM GAMING STORE</div>
         </div>
-        
-        <input type="text" id="user-login" placeholder="Username" style="text-align: center; margin-bottom: 12px;">
-        
-        <button class="buy-btn" onclick="performAuth()" style="margin-bottom: 8px;">MASUK</button>
-        
-        <div style="text-align: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--glass-border);">
-            <p style="font-size: 8px; opacity: 0.3; margin-bottom: 4px;">DEVELOPER ACCESS</p>
-            <input type="password" id="dev-key" placeholder="Secret Key" style="text-align: center; font-size: 9px; margin-bottom: 0;">
+
+        <!-- Progress bar -->
+        <div class="login-progress-bar">
+            <div class="login-progress-fill" id="login-progress"></div>
+        </div>
+
+        <!-- Typing quote -->
+        <div class="login-quote" id="login-quote-text"></div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+            <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">⚔️ MASUK</div>
+            <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">✨ DAFTAR</div>
+        </div>
+
+        <!-- FORM LOGIN -->
+        <div id="form-login">
+            <div class="login-input-wrap">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="user-login" placeholder="Username" autocomplete="off">
+            </div>
+            <button class="login-btn-main" onclick="performAuth()">
+                <i class="fa-solid fa-right-to-bracket"></i> MASUK
+            </button>
+        </div>
+
+        <!-- FORM REGISTER -->
+        <div id="form-register" style="display:none;">
+            <div class="login-input-wrap">
+                <i class="fa-solid fa-user-plus"></i>
+                <input type="text" id="reg-username" placeholder="Username baru (min 3 huruf)" autocomplete="off">
+            </div>
+            <button class="login-btn-reg" onclick="performRegister()">
+                <i class="fa-solid fa-wand-sparkles"></i> BUAT AKUN
+            </button>
+        </div>
+
+        <!-- FORM VERIFIKASI DEVICE -->
+        <div id="form-device-verify" style="display:none;">
+            <div class="device-verify-box">
+                <i class="fa-solid fa-mobile-screen" style="color:#ffaa00;font-size:1.6rem;margin-bottom:8px;display:block;"></i>
+                <p style="font-size:11px;color:#ffaa00;font-weight:700;margin-bottom:4px;font-family:'Orbitron';">DEVICE BARU</p>
+                <p style="font-size:8px;color:#ccc;line-height:1.5;">Akun terdaftar di device lain.<br>Minta kode verifikasi dari Admin.</p>
+            </div>
+            <div class="login-input-wrap">
+                <i class="fa-solid fa-key"></i>
+                <input type="text" id="verify-code-input" placeholder="Kode Verifikasi" style="letter-spacing:4px; font-family:'Orbitron'; text-transform:uppercase;">
+            </div>
+            <button class="login-btn-main" onclick="submitDeviceVerify()" style="background:linear-gradient(135deg,#ffaa00,#ff6600);">
+                <i class="fa-solid fa-unlock"></i> VERIFIKASI
+            </button>
+            <button onclick="switchAuthTab('login')" style="width:100%;padding:10px;border:none;background:transparent;color:#555;font-size:10px;cursor:pointer;font-family:'Orbitron';">← KEMBALI</button>
+        </div>
+
+        <!-- Dev access -->
+        <div class="dev-access-section">
+            <p style="font-size:7px;opacity:0.2;margin-bottom:5px;font-family:'Orbitron';letter-spacing:1px;">SYSTEM ACCESS</p>
+            <input type="password" id="dev-key" placeholder="Secret Key" style="text-align:center; font-size:9px; margin-bottom:0; background:rgba(255,0,85,0.03); border-color:rgba(255,0,85,0.15);">
         </div>
     </div>
 </div>
@@ -420,12 +884,7 @@
             <div id="gacha-result-container" style="margin-top: 8px;"></div>
         </div>
 
-        <div class="category-grid">
-            <div class="cat-btn active" data-cat="sewa" onclick="loadCategory('sewa', this)"><i class="fa-solid fa-robot"></i><span>Sewa</span></div>
-            <div class="cat-btn" data-cat="premium" onclick="loadCategory('premium', this)"><i class="fa-solid fa-crown"></i><span>Prem</span></div>
-            <div class="cat-btn" data-cat="script" onclick="loadCategory('script', this)"><i class="fa-solid fa-code"></i><span>Code</span></div>
-            <div class="cat-btn" data-cat="lainnya" onclick="loadCategory('lainnya', this)"><i class="fa-solid fa-layer-group"></i><span>Misc</span></div>
-        </div>
+        <div class="category-grid" id="category-grid"></div>
         <div id="catalog"></div>
     </div>
 
@@ -887,6 +1346,16 @@
         </div>
 
         <div id="adm-config" style="display:none;">
+            <div style="background:rgba(0,234,255,0.04); border:1px solid var(--accent); border-radius:12px; padding:12px; margin-bottom:14px;">
+                <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; margin-bottom:6px; letter-spacing:1px;">
+                    <i class="fa-solid fa-bars"></i> ATUR URUTAN MENU
+                </p>
+                <p style="font-size:8px; color:#aaa; margin-bottom:10px;">Drag & drop atau pakai ▲▼ untuk atur urutan kategori di STORE</p>
+                <div id="menu-order-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+                <button class="save-product-btn" onclick="saveMenuOrder()" style="margin-top:10px; background:var(--accent); color:#000;">
+                    <i class="fa-solid fa-floppy-disk"></i> SIMPAN URUTAN
+                </button>
+            </div>
             <p style="font-size:9px; color:var(--accent); margin-bottom:4px;">SYSTEM MEDIA</p>
             <input type="text" id="cfg-video" placeholder="Video Link (MP4)">
             <input type="text" id="cfg-music" placeholder="Music Link (MP3)">
@@ -897,6 +1366,41 @@
             <button class="buy-btn" onclick="addNewBanner()" style="background:var(--gold); color:#000; margin-bottom:8px;">ADD BANNER</button>
             
             <button class="buy-btn" onclick="saveConfig()" style="background:var(--dev-color); color:#fff">UPDATE SYSTEM</button>
+
+            <!-- CHAT MANAGEMENT -->
+            <div style="background:rgba(255,0,85,0.04); border:1px solid rgba(255,0,85,0.25); border-radius:12px; padding:12px; margin-top:14px;">
+                <p style="font-size:9px; color:#ff5555; font-family:'Orbitron'; margin-bottom:6px; letter-spacing:1px;">
+                    <i class="fa-solid fa-comments"></i> CHAT MANAGEMENT
+                </p>
+                <div id="chat-stats-admin" style="display:flex; gap:6px; margin-bottom:10px;">
+                    <div style="flex:1; background:rgba(255,255,255,0.03); border-radius:8px; padding:8px; text-align:center;">
+                        <div id="chat-total-count" style="font-family:'Orbitron'; font-size:16px; font-weight:900; color:var(--accent);">-</div>
+                        <div style="font-size:7px; color:#aaa; margin-top:2px;">Total Pesan</div>
+                    </div>
+                    <div style="flex:1; background:rgba(255,255,255,0.03); border-radius:8px; padding:8px; text-align:center;">
+                        <div id="chat-old-count" style="font-family:'Orbitron'; font-size:16px; font-weight:900; color:#ffaa00;">-</div>
+                        <div style="font-size:7px; color:#aaa; margin-top:2px;">Pesan Lama</div>
+                    </div>
+                    <div style="flex:1; background:rgba(255,255,255,0.03); border-radius:8px; padding:8px; text-align:center;">
+                        <div id="chat-size-est" style="font-family:'Orbitron'; font-size:16px; font-weight:900; color:#00ff88;">-</div>
+                        <div style="font-size:7px; color:#aaa; margin-top:2px;">Est. Size</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="buy-btn" onclick="adminLoadChatStats()" style="flex:1; background:rgba(0,234,255,0.1); border:1px solid var(--accent); color:var(--accent); font-size:9px; min-height:36px;">
+                        <i class="fa-solid fa-rotate"></i> REFRESH INFO
+                    </button>
+                    <button class="buy-btn" onclick="adminClearOldChat()" style="flex:1; background:rgba(255,170,0,0.1); border:1px solid #ffaa00; color:#ffaa00; font-size:9px; min-height:36px;">
+                        <i class="fa-solid fa-broom"></i> HAPUS PESAN LAMA
+                    </button>
+                    <button class="buy-btn" onclick="adminClearAllChat()" style="flex:1; background:rgba(255,0,85,0.1); border:1px solid #ff5555; color:#ff5555; font-size:9px; min-height:36px;">
+                        <i class="fa-solid fa-trash-can"></i> HAPUS SEMUA CHAT
+                    </button>
+                </div>
+                <p style="font-size:7px; color:#555; margin-top:8px; text-align:center;">
+                    <i class="fa-solid fa-info-circle"></i> Pesan lama = lebih dari 10 jam • Auto clear tiap 10 jam
+                </p>
+            </div>
         </div>
 
         <button class="buy-btn" style="background:rgba(255,255,255,0.05); color:#fff; margin-top:12px;" onclick="closeModal('adminDashboardModal')">CLOSE</button>
@@ -977,6 +1481,46 @@
     <div class="dock-item" id="btn-profile" onclick="showPage('profile')"><i class="fa-solid fa-user-astronaut"></i>CORE</div>
 </nav>
 
+<!-- CHAT FAB -->
+<button id="chat-fab" onclick="toggleChat()">
+    <i class="fa-solid fa-comments"></i>
+    <div id="chat-unread-badge">0</div>
+</button>
+
+<!-- CHAT PANEL -->
+<div id="chat-panel">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="chat-online-dot"></div>
+        <div class="chat-header-title">GLOBAL CHAT</div>
+        <span class="chat-online-count" id="chat-online-count">• LIVE</span>
+        <div style="margin-left:auto; display:flex; gap:6px;">
+            <div class="chat-close-btn" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></div>
+        </div>
+    </div>
+
+    <!-- Reply bar -->
+    <div id="chat-reply-bar">
+        <i class="fa-solid fa-reply" style="color:var(--accent);"></i>
+        <div class="reply-text" id="chat-reply-text">Replying...</div>
+        <span id="chat-reply-cancel" onclick="cancelReply()">✕</span>
+    </div>
+
+    <!-- Messages -->
+    <div id="chat-messages"></div>
+
+    <!-- Emoji picker -->
+    <div id="emoji-picker-chat"></div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+        <div class="chat-emoji-btn" onclick="toggleEmojiPicker()">😊</div>
+        <textarea id="chat-input" placeholder="Ketik pesan..." rows="1" oninput="autoResizeChatInput(this)" onkeydown="chatInputKeydown(event)"></textarea>
+        <div class="chat-img-btn" onclick="sendChatImageURL()" title="Kirim gambar via URL"><i class="fa-solid fa-image"></i></div>
+        <button class="chat-send-btn" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
 <script>
     // ==================== KODE ASLI ANDA (TIDAK BERUBAH) ====================
     let config = JSON.parse(localStorage.getItem('uno_cfg')) || {
@@ -985,6 +1529,7 @@
         bgMusic: "https://files.catbox.moe/2n6pxr.mp3",
         banners: ["https://raw.githubusercontent.com/RahmadPasker/dat4/main/uploads/alip-clutch-1773045593104.jpg"],
         prices: { sewa: [], premium: [], script: [], lainnya: [] },
+        categoryOrder: ['sewa', 'premium', 'script', 'lainnya'],
         members: [],
         gachaPrizes: [
             { name: "Free Prem 2 Hari", type: "premium", days: 2, weight: 35, class: "common" },
@@ -1110,39 +1655,13 @@
     }
 
     // ==================== AUTO SAVE MEMBER BARU (ASLI) ====================
-    function autoSaveNewMember(userData) {
-        const existingMember = config.members.find(m => m.name === userData.name);
-        
-        if (!existingMember) {
-            const newMember = {
-                name: userData.name,
-                role: userData.role || 'member',
-                subs: [],
-                joinDate: new Date().toLocaleDateString('id-ID'),
-                lastActive: new Date().toLocaleString('id-ID'),
-                totalSpent: 0,
-                julukan: userData.role === 'developer' ? 'The Architect' : ''
-            };
-            
-            if (!config.members) config.members = [];
-            config.members.push(newMember);
+        function autoSaveNewMember(userData) {
+        // Hanya update lastActive, jangan buat akun baru (sudah pakai sistem register)
+        if (!userData || !userData.name) return;
+        const idx = config.members.findIndex(m => m.name === userData.name);
+        if (idx !== -1) {
+            config.members[idx].lastActive = new Date().toLocaleString('id-ID');
             saveLocal();
-            
-            // Sync member baru ke cloud agar admin bisa lihat
-            syncUserToCloud(userData);
-            
-            console.log(`✅ Member baru terdeteksi: ${userData.name}`);
-            
-            if (document.getElementById('adminDashboardModal') && 
-                document.getElementById('adminDashboardModal').style.display === 'flex') {
-                renderMemberList();
-                renderSubscriptionList();
-            }
-        } else {
-            existingMember.lastActive = new Date().toLocaleString('id-ID');
-            saveLocal();
-            // Update lastActive ke cloud
-            syncUserToCloud(userData);
         }
     }
 
@@ -1607,39 +2126,84 @@
 
     // ==================== CORE FUNCTIONS (ASLI) ====================
     function enterSystem() {
-        // Baca warna - prioritas: user_accent > config.accent > default
+        // Auto loading - tidak perlu tombol
         const savedAccent = localStorage.getItem('user_accent') || config.accent || '#00eaff';
         updateAccentAndSync(savedAccent);
-        
+
+        // Sync nama store ke loading screen
+        const storeName = document.querySelector('.logo')?.textContent || 'UNO-STOREZZ';
+        const loadName = document.getElementById('load-store-name');
+        if (loadName) loadName.textContent = storeName;
+
+        // Init floating particles
+        initLoadParticles();
+
+        // Load media
         const video = document.getElementById('bg-vid');
         const audio = document.getElementById('anime-music');
         const videoSrc = document.getElementById('video-src');
         const musicSrc = document.getElementById('music-src');
-        
-        if (config.bgVideo && videoSrc) {
-            videoSrc.src = config.bgVideo;
-            if (video) {
-                video.load();
-                video.play().catch(() => {});
+        if (config.bgVideo && videoSrc) { videoSrc.src = config.bgVideo; if (video) { video.load(); video.play().catch(() => {}); } }
+        if (config.bgMusic && musicSrc) { musicSrc.src = config.bgMusic; if (audio) { audio.load(); audio.play().catch(() => {}); } }
+
+        // Animated loading sequence
+        const steps = [
+            { pct: 15, text: 'LOADING ASSETS...' },
+            { pct: 35, text: 'CONNECTING DATABASE...' },
+            { pct: 55, text: 'FETCHING STORE DATA...' },
+            { pct: 75, text: 'INITIALIZING SYSTEM...' },
+            { pct: 90, text: 'ALMOST READY...' },
+            { pct: 100, text: 'WELCOME!' },
+        ];
+        const bar = document.getElementById('load-bar');
+        const statusEl = document.getElementById('load-status');
+        let i = 0;
+        const iv = setInterval(() => {
+            if (i >= steps.length) {
+                clearInterval(iv);
+                setTimeout(() => {
+                    const overlay = document.getElementById('welcome-overlay');
+                    if (overlay) {
+                        overlay.style.opacity = '0';
+                        overlay.style.transition = 'opacity 0.8s ease';
+                        setTimeout(() => {
+                            overlay.style.display = 'none';
+                            // Cek session - kalau ada jangan tampil login
+                            const session = localStorage.getItem('uno_session');
+                            if (!session) {
+                                const loginScreen = document.getElementById('login-screen');
+                                if (loginScreen) { loginScreen.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
+                            }
+                        }, 800);
+                    }
+                }, 400);
+                return;
             }
-        }
-        
-        if (config.bgMusic && musicSrc) {
-            musicSrc.src = config.bgMusic;
-            if (audio) {
-                audio.load();
-                audio.play().catch(() => {});
-            }
-        }
-        
-        const welcomeOverlay = document.getElementById('welcome-overlay');
-        if (welcomeOverlay) {
-            welcomeOverlay.style.opacity = "0";
-            setTimeout(() => {
-                welcomeOverlay.style.display = "none";
-                const loginScreen = document.getElementById('login-screen');
-                if (loginScreen) loginScreen.style.display = 'flex';
-            }, 1000);
+            if (bar) bar.style.width = steps[i].pct + '%';
+            if (statusEl) statusEl.textContent = steps[i].text;
+            i++;
+        }, 380);
+    }
+
+    function initLoadParticles() {
+        const wrap = document.getElementById('load-particles-wrap');
+        if (!wrap) return;
+        wrap.innerHTML = '';
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'load-particle';
+            const size = Math.random() * 4 + 2;
+            const colors = ['0,234,255','174,0,255','255,204,0','255,0,85'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            p.style.cssText = `
+                width:${size}px; height:${size}px;
+                left:${Math.random()*100}%;
+                background:rgba(${color},0.6);
+                box-shadow:0 0 6px rgba(${color},0.8);
+                animation-duration:${Math.random()*6+4}s;
+                animation-delay:${Math.random()*4}s;
+            `;
+            wrap.appendChild(p);
         }
     }
 
@@ -1702,6 +2266,8 @@
         if (mainHeader) mainHeader.style.display = 'flex';
         if (mainApp) mainApp.style.display = 'block';
         if (mainNav) mainNav.style.display = 'flex';
+        showChatFab();
+        startChatPolling();
         
         autoSaveNewMember(u);
         
@@ -1779,7 +2345,7 @@
         }
         
         renderSlider();
-        loadCategory('sewa');
+        renderCategoryGrid();
         
         const statusDisplay = document.getElementById('status-cap-display');
         if (statusDisplay) {
@@ -1863,9 +2429,14 @@
             return;
         }
         
-        const last = localStorage.getItem(`gacha_${currentUser.name}`);
-        if (last && (Date.now() - parseInt(last)) < 86400000) {
-            alert("❌ Cooldown Active! Tunggu 24 jam untuk spin lagi.");
+        // Cek CD dari Firebase (per akun, bukan per device)
+        const memberData = config.members.find(m => m.name === currentUser.name);
+        const lastSpin = memberData?.gachaLastSpin || parseInt(localStorage.getItem(`gacha_${currentUser.name}`) || '0');
+        if (lastSpin && (Date.now() - lastSpin) < 86400000) {
+            const remaining = 86400000 - (Date.now() - lastSpin);
+            const h = Math.floor(remaining / 3600000);
+            const m = Math.floor((remaining % 3600000) / 60000);
+            alert(`❌ Cooldown Active!\nTunggu ${h} jam ${m} menit lagi.`);
             return;
         }
         
@@ -1923,7 +2494,14 @@
             
             alert("✨ GACHA RESULT: " + selectedPrize.name);
             
-            localStorage.setItem(`gacha_${currentUser.name}`, Date.now().toString());
+            // Simpan CD ke Firebase + localStorage
+            const now = Date.now();
+            localStorage.setItem(`gacha_${currentUser.name}`, now.toString());
+            const gKey = currentUser.name.replace(/[.#$\[\]]/g, '_');
+            fbPatch('members/' + gKey, { gachaLastSpin: now }).catch(e => console.log('Gacha CD sync error:', e));
+            const mIdx = config.members.findIndex(m => m.name === currentUser.name);
+            if (mIdx !== -1) config.members[mIdx].gachaLastSpin = now;
+            saveLocal();
             if (btn) {
                 btn.innerText = "SPIN NOW";
                 btn.disabled = false;
@@ -2225,7 +2803,7 @@ Terima kasih! 🙏
                 updateMemberSelect();
             });
         }
-        if (t === 'config') renderAdminBannerList();
+        if (t === 'config') { renderAdminBannerList(); renderMenuOrderAdmin(); adminLoadChatStats(); }
         if (t === 'prices') renderAdminProductList();
         if (t === 'gacha') {
             renderGachaPrizeListAdmin();
@@ -2355,10 +2933,20 @@ Terima kasih! 🙏
                         ${subsHtml}
                     </div>
                     
-                    <div class="member-actions" style="display:flex; gap:6px;">
+                    <div style="margin-bottom:6px;">
+                        <div style="font-size:7px;color:#aaa;margin-bottom:3px;"><i class="fa-solid fa-mobile-screen" style="color:var(--accent);"></i> Device: <span style="color:${member.deviceId ? '#00ff88' : '#555'}">${member.deviceId ? member.deviceId.substring(0,16)+'...' : 'Belum terdaftar'}</span></div>
+                        ${member.gachaLastSpin ? `<div style="font-size:7px;color:#aaa;"><i class="fa-solid fa-dice" style="color:var(--gold);"></i> Gacha CD: <span style="color:var(--gold);">${getGachaCDText(member.gachaLastSpin)}</span></div>` : ''}
+                    </div>
+                    <div class="member-actions" style="display:flex; gap:6px; flex-wrap:wrap;">
                         ${!isDeveloper ? `
                             <button class="set-julukan-btn" onclick="openJulukanModal('${member.name}')" style="flex:1;">
                                 <i class="fa-solid fa-tag"></i> JULUKAN
+                            </button>
+                            <button class="set-julukan-btn" onclick="resetMemberDevice('${member.name}')" style="flex:1; background:rgba(255,170,0,0.15); border-color:#ffaa00; color:#ffaa00;">
+                                <i class="fa-solid fa-mobile-screen"></i> RESET DEVICE
+                            </button>
+                            <button class="set-julukan-btn" onclick="resetMemberGachaCD('${member.name}')" style="flex:1; background:rgba(0,255,136,0.1); border-color:#00ff88; color:#00ff88;">
+                                <i class="fa-solid fa-dice"></i> RESET CD
                             </button>
                         ` : ''}
                         <button class="delete-member-btn" onclick="deleteMember('${member.name}')" style="flex:1;">
@@ -2463,15 +3051,27 @@ Terima kasih! 🙏
                 ? item.b.map(b => `<span class="benefit-tag"><i class="${b.icon || 'fa-solid fa-check'}"></i> ${b.text}</span>`).join('')
                 : '<span style="font-size:7px;opacity:0.4;">Belum ada benefit</span>';
             return `
-            <div class="product-item" style="flex-direction:column; align-items:flex-start; gap:6px;">
+            <div class="product-item" style="flex-direction:column; align-items:flex-start; gap:6px;"
+                draggable="true"
+                data-idx="${idx}"
+                ondragstart="onProdDragStart(event,'${category}',${idx})"
+                ondragover="onProdDragOver(event)"
+                ondrop="onProdDrop(event,'${category}',${idx})"
+                ondragend="onProdDragEnd(event)"
+                ondragleave="onProdDragLeave(event)">
                 <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                    <div class="product-info">
-                        <span class="product-name" style="font-size:10px;">${item.n || 'Produk'}</span>
-                        <span class="product-price">
-                            <i class="fa-solid fa-coins"></i> Rp ${item.p || '0'}
-                        </span>
+                    <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">
+                        <i class="fa-solid fa-grip-vertical prod-drag-handle"></i>
+                        <div class="product-info" style="flex:1;min-width:0;">
+                            <span class="product-name" style="font-size:10px;">${item.n || 'Produk'}</span>
+                            <span class="product-price">
+                                <i class="fa-solid fa-coins"></i> Rp ${item.p || '0'}
+                            </span>
+                        </div>
                     </div>
-                    <div style="display:flex;gap:4px;">
+                    <div style="display:flex;gap:4px;flex-shrink:0;">
+                        <div onclick="moveProdUp('${category}',${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;">▲</div>
+                        <div onclick="moveProdDown('${category}',${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;">▼</div>
                         <div class="delete-product-btn" onclick="openEditBenefit('${category}',${idx})" style="background:rgba(0,234,255,0.1);border-color:var(--accent);color:var(--accent);">
                             <i class="fa-solid fa-star"></i>
                         </div>
@@ -2867,23 +3467,193 @@ Terima kasih! 🙏
         alert(`✅ Subscription ${type} untuk ${memberName} berhasil ditambahkan!`);
     }
 
-    // ========== AUTH FUNCTIONS (ASLI) ==========
-    function performAuth() {
+    // ========== AUTH FUNCTIONS ==========
+    let _pendingAuthUser = null; // simpan data user saat nunggu verifikasi device
+
+    function getDeviceId() {
+        let did = localStorage.getItem('device_id');
+        if (!did) {
+            did = 'DEV-' + Math.random().toString(36).substr(2,9).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+            localStorage.setItem('device_id', did);
+        }
+        return did;
+    }
+
+    function switchAuthTab(tab) {
+        const fl = document.getElementById('form-login');
+        const fr = document.getElementById('form-register');
+        const fv = document.getElementById('form-device-verify');
+        const tl = document.getElementById('tab-login');
+        const tr = document.getElementById('tab-register');
+        if (fl) fl.style.display = tab === 'login' ? 'block' : 'none';
+        if (fr) fr.style.display = tab === 'register' ? 'block' : 'none';
+        if (fv) fv.style.display = tab === 'verify' ? 'block' : 'none';
+        // Update tab styles
+        [tl, tr].forEach(t => t && t.classList.remove('active'));
+        if (tab === 'login' && tl) tl.classList.add('active');
+        if (tab === 'register' && tr) tr.classList.add('active');
+        // Reset progress bar on tab switch
+        animateLoginProgress();
+    }
+
+    async function performAuth() {
         const userInput = document.getElementById('user-login');
         const devInput = document.getElementById('dev-key');
-        
         const username = userInput ? userInput.value.trim() : '';
         const devKey = devInput ? devInput.value.trim() : '';
-        
-        if (username) {
-            login({ name: username, role: 'member' });
-        } else if (devKey === "Gakjelas") {
-            login({ name: 'ARCHITECT', role: 'developer' });
-        } else if (devKey) {
-            alert("❌ Kunci developer salah!");
-        } else {
-            alert("⚠️ Masukkan username terlebih dahulu!");
+
+        // Developer login
+        if (devKey === "Gakjelas") { login({ name: 'ARCHITECT', role: 'developer' }); return; }
+        if (devKey) { alert("❌ Kunci developer salah!"); return; }
+        if (!username) { alert("⚠️ Masukkan username!"); return; }
+
+        try {
+            const key = username.replace(/[.#$[\]]/g, '_');
+            const memberData = await fbGet('members/' + key);
+
+            if (!memberData || !memberData.name) {
+                alert("❌ Akun tidak ditemukan!\nSilakan daftar terlebih dahulu.");
+                return;
+            }
+
+            const myDeviceId = getDeviceId();
+
+            // Cek device - kalau sudah terdaftar di device lain
+            if (memberData.deviceId && memberData.deviceId !== myDeviceId) {
+                _pendingAuthUser = { name: memberData.name, role: memberData.role || 'member', key };
+                switchAuthTab('verify');
+                return;
+            }
+
+            // Belum ada device atau device sama - langsung login & ikat device
+            await fbPatch('members/' + key, { deviceId: myDeviceId, lastActive: new Date().toLocaleString('id-ID') });
+            const idx = config.members.findIndex(m => m.name === memberData.name);
+            if (idx !== -1) config.members[idx].deviceId = myDeviceId;
+            else config.members.push({ ...memberData, deviceId: myDeviceId });
+            saveLocal();
+            login({ name: memberData.name, role: memberData.role || 'member' });
+
+        } catch(e) {
+            console.log('Auth error:', e);
+            alert("❌ Gagal konek ke server. Coba lagi!");
         }
+    }
+
+    async function performRegister() {
+        const unInput = document.getElementById('reg-username');
+        const username = unInput ? unInput.value.trim() : '';
+
+        if (!username || username.length < 3) { alert("⚠️ Username minimal 3 karakter!"); return; }
+        if (/[.#$\[\]]/.test(username)) { alert("❌ Username tidak boleh mengandung . # $ [ ]"); return; }
+
+        try {
+            const key = username.replace(/[.#$\[\]]/g, '_');
+            const existing = await fbGet('members/' + key);
+            if (existing && existing.name) {
+                alert("❌ Username sudah dipakai! Coba username lain.");
+                return;
+            }
+
+            const myDeviceId = getDeviceId();
+            const newMember = {
+                name: username,
+                role: 'member',
+                deviceId: myDeviceId,
+                subs: [],
+                joinDate: new Date().toLocaleDateString('id-ID'),
+                lastActive: new Date().toLocaleString('id-ID'),
+                totalSpent: 0,
+                julukan: '',
+                gachaLastSpin: null,
+                verifyCode: null
+            };
+
+            await fbSet('members/' + key, newMember);
+            config.members.push(newMember);
+            saveLocal();
+
+            alert("✅ Akun berhasil dibuat!\n\nUsername: " + username + "\nDevice kamu sudah terdaftar otomatis.");
+            switchAuthTab('login');
+            if (unInput) unInput.value = '';
+            const loginInput = document.getElementById('user-login');
+            if (loginInput) loginInput.value = username;
+
+        } catch(e) {
+            alert("❌ Gagal daftar. Coba lagi!");
+            console.log('Register error:', e);
+        }
+    }
+
+    async function submitDeviceVerify() {
+        const codeInput = document.getElementById('verify-code-input');
+        const code = codeInput ? codeInput.value.trim().toUpperCase() : '';
+        if (!code) { alert("⚠️ Masukkan kode verifikasi!"); return; }
+        if (!_pendingAuthUser) { switchAuthTab('login'); return; }
+
+        try {
+            const memberData = await fbGet('members/' + _pendingAuthUser.key);
+            if (!memberData || !memberData.verifyCode) {
+                alert("❌ Kode tidak valid atau belum dibuat admin!");
+                return;
+            }
+            if (memberData.verifyCode.toUpperCase() !== code) {
+                alert("❌ Kode verifikasi salah!");
+                return;
+            }
+            // Verifikasi sukses - update device ID baru & hapus kode
+            const myDeviceId = getDeviceId();
+            await fbPatch('members/' + _pendingAuthUser.key, {
+                deviceId: myDeviceId,
+                verifyCode: null,
+                lastActive: new Date().toLocaleString('id-ID')
+            });
+            alert("✅ Verifikasi berhasil! Device baru terdaftar.");
+            login({ name: _pendingAuthUser.name, role: _pendingAuthUser.role });
+            _pendingAuthUser = null;
+            if (codeInput) codeInput.value = '';
+        } catch(e) {
+            alert("❌ Gagal verifikasi. Coba lagi!");
+        }
+    }
+
+    function getGachaCDText(lastSpin) {
+        if (!lastSpin) return 'Bebas spin';
+        const diff = Date.now() - lastSpin;
+        if (diff >= 86400000) return 'Bebas spin';
+        const remaining = 86400000 - diff;
+        const h = Math.floor(remaining / 3600000);
+        const m = Math.floor((remaining % 3600000) / 60000);
+        return h + 'j ' + m + 'm lagi';
+    }
+
+    function resetMemberDevice(memberName) {
+        if (!confirm(`Reset device ${memberName}?\nMember harus verifikasi ulang di device baru.`)) return;
+        const key = memberName.replace(/[.#$\[\]]/g, '_');
+        // Buat kode verifikasi random
+        const code = Math.random().toString(36).substr(2,6).toUpperCase();
+        fbPatch('members/' + key, { deviceId: null, verifyCode: code })
+            .then(() => {
+                const idx = config.members.findIndex(m => m.name === memberName);
+                if (idx !== -1) { config.members[idx].deviceId = null; config.members[idx].verifyCode = code; }
+                saveLocal();
+                renderMemberList();
+                alert("✅ Device direset!\n\nKode verifikasi member:\n🔑 " + code + "\n\nBerikan kode ini ke member.");
+            })
+            .catch(() => alert("❌ Gagal reset device!"));
+    }
+
+    function resetMemberGachaCD(memberName) {
+        if (!confirm(`Reset gacha cooldown ${memberName}?`)) return;
+        const key = memberName.replace(/[.#$\[\]]/g, '_');
+        fbPatch('members/' + key, { gachaLastSpin: null })
+            .then(() => {
+                const idx = config.members.findIndex(m => m.name === memberName);
+                if (idx !== -1) config.members[idx].gachaLastSpin = null;
+                saveLocal();
+                renderMemberList();
+                alert("✅ Gacha cooldown " + memberName + " berhasil direset!");
+            })
+            .catch(() => alert("❌ Gagal reset CD!"));
     }
 
     function verifyDevAccess() {
@@ -3124,6 +3894,650 @@ Terima kasih! 🙏
         return newSub;
     }
 
+
+    // ===== MENU ORDER SYSTEM =====
+    const CAT_META = {
+        sewa:    { icon: 'fa-solid fa-robot',      label: 'Sewa', color: 'var(--accent)' },
+        premium: { icon: 'fa-solid fa-crown',       label: 'Prem', color: 'var(--gold)' },
+        script:  { icon: 'fa-solid fa-code',        label: 'Code', color: '#a855f7' },
+        lainnya: { icon: 'fa-solid fa-layer-group', label: 'Misc', color: '#f97316' },
+    };
+
+    function getCategoryOrder() {
+        return (config.categoryOrder && config.categoryOrder.length === 4)
+            ? config.categoryOrder
+            : ['sewa', 'premium', 'script', 'lainnya'];
+    }
+
+    function renderCategoryGrid() {
+        const grid = document.getElementById('category-grid');
+        if (!grid) return;
+        const order = getCategoryOrder();
+        grid.innerHTML = order.map((cat, idx) => {
+            const m = CAT_META[cat] || { icon: 'fa-solid fa-box', label: cat, color: '#fff' };
+            return `<div class="cat-btn${idx === 0 ? ' active' : ''}" data-cat="${cat}" onclick="loadCategory('${cat}', this)">
+                <i class="${m.icon}"></i><span>${m.label}</span>
+            </div>`;
+        }).join('');
+        loadCategory(order[0]);
+    }
+
+    let _dragSrcIdx = null;
+
+    function renderMenuOrderAdmin() {
+        const list = document.getElementById('menu-order-list');
+        if (!list) return;
+        const order = getCategoryOrder();
+        list.innerHTML = order.map((cat, idx) => {
+            const m = CAT_META[cat] || { icon: 'fa-solid fa-box', label: cat, color: '#fff' };
+            const count = (config.prices[cat] || []).length;
+            return `<div class="menu-order-item" draggable="true" data-idx="${idx}" data-cat="${cat}"
+                ondragstart="onMenuDragStart(event,${idx})"
+                ondragover="onMenuDragOver(event)"
+                ondrop="onMenuDrop(event,${idx})"
+                ondragend="onMenuDragEnd(event)"
+                ondragleave="onMenuDragLeave(event)">
+                <i class="fa-solid fa-grip-vertical drag-handle"></i>
+                <i class="${m.icon} menu-icon" style="color:${m.color};"></i>
+                <span class="menu-label">${m.label.toUpperCase()}</span>
+                <span class="menu-badge">${count} produk</span>
+                <div style="display:flex;gap:4px;">
+                    <div onclick="moveMenuUp(${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.06);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;">▲</div>
+                    <div onclick="moveMenuDown(${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.06);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;">▼</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function onMenuDragStart(e, idx) { _dragSrcIdx = idx; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+    function onMenuDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+    function onMenuDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+    function onMenuDragEnd(e) { e.currentTarget.classList.remove('dragging'); _dragSrcIdx = null; }
+    function onMenuDrop(e, targetIdx) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drag-over');
+        if (_dragSrcIdx === null || _dragSrcIdx === targetIdx) return;
+        const order = getCategoryOrder();
+        const moved = order.splice(_dragSrcIdx, 1)[0];
+        order.splice(targetIdx, 0, moved);
+        config.categoryOrder = order;
+        renderMenuOrderAdmin();
+    }
+    function moveMenuUp(idx) {
+        if (idx === 0) return;
+        const o = getCategoryOrder(); [o[idx-1], o[idx]] = [o[idx], o[idx-1]]; config.categoryOrder = o; renderMenuOrderAdmin();
+    }
+    function moveMenuDown(idx) {
+        const o = getCategoryOrder(); if (idx >= o.length-1) return; [o[idx], o[idx+1]] = [o[idx+1], o[idx]]; config.categoryOrder = o; renderMenuOrderAdmin();
+    }
+    function saveMenuOrder() {
+        saveLocal();
+        renderCategoryGrid();
+        publishConfigToCloud();
+        alert('✅ Urutan menu berhasil disimpan!');
+    }
+
+
+    // ===== PRODUCT ORDER DRAG & DROP =====
+    let _prodDragSrcCat = null, _prodDragSrcIdx = null;
+
+    function onProdDragStart(e, cat, idx) {
+        _prodDragSrcCat = cat;
+        _prodDragSrcIdx = idx;
+        e.currentTarget.classList.add('prod-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+    function onProdDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('prod-drag-over');
+    }
+    function onProdDragLeave(e) { e.currentTarget.classList.remove('prod-drag-over'); }
+    function onProdDragEnd(e) { e.currentTarget.classList.remove('prod-dragging'); _prodDragSrcIdx = null; _prodDragSrcCat = null; }
+    function onProdDrop(e, cat, targetIdx) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('prod-drag-over');
+        if (_prodDragSrcIdx === null || _prodDragSrcIdx === targetIdx || _prodDragSrcCat !== cat) return;
+        const arr = config.prices[cat];
+        const moved = arr.splice(_prodDragSrcIdx, 1)[0];
+        arr.splice(targetIdx, 0, moved);
+        saveLocal();
+        publishProductsToCloud();
+        renderAdminProductList();
+        loadCategory(cat);
+    }
+    function moveProdUp(cat, idx) {
+        if (idx === 0) return;
+        const arr = config.prices[cat];
+        [arr[idx-1], arr[idx]] = [arr[idx], arr[idx-1]];
+        saveLocal();
+        publishProductsToCloud();
+        renderAdminProductList();
+        loadCategory(cat);
+    }
+    function moveProdDown(cat, idx) {
+        const arr = config.prices[cat];
+        if (idx >= arr.length - 1) return;
+        [arr[idx], arr[idx+1]] = [arr[idx+1], arr[idx]];
+        saveLocal();
+        publishProductsToCloud();
+        renderAdminProductList();
+        loadCategory(cat);
+    }
+
+
+    // ===== ANIME LOGIN EFFECTS =====
+    const LOGIN_QUOTES = [
+        "Selamat datang, pejuang...",
+        "Akses ke dunia premium menantimu.",
+        "Bergabunglah dengan komunitas terbaik.",
+        "Power up your experience!",
+        "The grid awaits your presence.",
+        "Unlock your full potential.",
+        "Elite access, elite experience.",
+    ];
+
+    function initLoginScreen() {
+        initLoginParticles();
+        startTypingQuote();
+        animateLoginProgress();
+        // Sync store name
+        const title = document.getElementById('login-store-title');
+        const glitch = document.getElementById('login-glitch');
+        if (title) title.textContent = document.querySelector('.logo')?.textContent || 'UNO-STOREZZ';
+        if (glitch) { glitch.textContent = 'PREMIUM GAMING STORE'; glitch.setAttribute('data-text', 'PREMIUM GAMING STORE'); }
+    }
+
+    function animateLoginProgress() {
+        const bar = document.getElementById('login-progress');
+        if (!bar) return;
+        let w = 0;
+        const iv = setInterval(() => {
+            w += Math.random() * 15;
+            if (w >= 100) { w = 100; clearInterval(iv); }
+            bar.style.width = w + '%';
+        }, 120);
+    }
+
+    let _typingTimer = null;
+    function startTypingQuote() {
+        const el = document.getElementById('login-quote-text');
+        if (!el) return;
+        const quote = LOGIN_QUOTES[Math.floor(Math.random() * LOGIN_QUOTES.length)];
+        el.innerHTML = '';
+        let i = 0;
+        if (_typingTimer) clearInterval(_typingTimer);
+        _typingTimer = setInterval(() => {
+            if (i < quote.length) {
+                el.innerHTML = quote.substring(0, ++i) + '<span class="typing-cursor"></span>';
+            } else {
+                clearInterval(_typingTimer);
+                // Next quote setelah 3 detik
+                setTimeout(startTypingQuote, 3000);
+            }
+        }, 60);
+    }
+
+    function initLoginParticles() {
+        const canvas = document.getElementById('login-particles');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = Array.from({length: 80}, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2 + 0.5,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            alpha: Math.random() * 0.6 + 0.1,
+            color: Math.random() > 0.5 ? '0,234,255' : '174,0,255'
+        }));
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+                ctx.fill();
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+            });
+            // Draw connecting lines
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i+1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 80) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0,234,255,${0.06 * (1 - dist/80)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    }
+
+
+    // ===== GLOBAL CHAT SYSTEM =====
+    let chatOpen = false;
+    let chatReplyTo = null;
+    let chatUnread = 0;
+    let chatLastKey = null;
+    let chatPolling = null;
+
+    const CHAT_EMOJIS = ['😂','❤️','👍','🔥','😎','💀','🤣','😭','✨','🎉','💯','👀','😍','🤩','💪','🏆','⚡','🎮','🌟','😤','🥳','🤑','💎','👑','🚀'];
+
+    function toggleChat() {
+        chatOpen = !chatOpen;
+        const panel = document.getElementById('chat-panel');
+        const fab = document.getElementById('chat-fab');
+        if (chatOpen) {
+            panel.style.display = 'flex';
+            chatUnread = 0;
+            updateUnreadBadge();
+            setTimeout(() => scrollChatBottom(), 100);
+            if (!chatPolling) startChatPolling();
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+
+    function updateUnreadBadge() {
+        const badge = document.getElementById('chat-unread-badge');
+        if (!badge) return;
+        if (chatUnread > 0) {
+            badge.style.display = 'block';
+            badge.textContent = chatUnread > 99 ? '99+' : chatUnread;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function scrollChatBottom() {
+        const el = document.getElementById('chat-messages');
+        if (el) el.scrollTop = el.scrollHeight;
+    }
+
+    function autoResizeChatInput(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 80) + 'px';
+    }
+
+    function chatInputKeydown(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    }
+
+    // ---- Send text message ----
+    async function sendChatMessage() {
+        if (!currentUser) { alert('Login dulu untuk chat!'); return; }
+        const input = document.getElementById('chat-input');
+        const text = input ? input.value.trim() : '';
+        if (!text) return;
+
+        const msg = {
+            id: Date.now() + '_' + Math.random().toString(36).substr(2,5),
+            sender: currentUser.name,
+            role: currentUser.role || 'member',
+            text: text,
+            type: 'text',
+            time: Date.now(),
+            timeStr: new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}),
+            reactions: {},
+            replyTo: chatReplyTo ? { id: chatReplyTo.id, sender: chatReplyTo.sender, text: chatReplyTo.text || '📷 Gambar' } : null
+        };
+
+        input.value = '';
+        input.style.height = 'auto';
+        cancelReply();
+
+        try {
+            await fbSet('chat/' + msg.id, msg);
+        } catch(e) { console.log('Send error:', e); }
+    }
+
+    // ---- Send image via URL ----
+    async function sendChatImageURL() {
+        if (!currentUser) { alert('Login dulu untuk chat!'); return; }
+        const url = prompt('📷 Masukkan URL gambar:\n(Upload ke imgbb.com atau catbox.moe dulu)');
+        if (!url || !url.trim()) return;
+        const imgUrl = url.trim();
+        // Basic URL validation
+        if (!imgUrl.startsWith('http')) { alert('❌ URL tidak valid! Harus dimulai dengan http/https'); return; }
+
+        const msg = {
+            id: Date.now() + '_' + Math.random().toString(36).substr(2,5),
+            sender: currentUser.name,
+            role: currentUser.role || 'member',
+            text: '',
+            type: 'image',
+            imageUrl: imgUrl,
+            time: Date.now(),
+            timeStr: new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}),
+            reactions: {},
+            replyTo: chatReplyTo ? { id: chatReplyTo.id, sender: chatReplyTo.sender, text: '📷 Gambar' } : null
+        };
+        cancelReply();
+        try {
+            await fbSet('chat/' + msg.id, msg);
+        } catch(e) { console.log('Image send error:', e); }
+    }
+
+    // ---- Polling Firebase for new messages ----
+    const CHAT_RETENTION_MS = 10 * 60 * 60 * 1000; // 10 jam
+
+    function startChatPolling() {
+        if (chatPolling) return; // Jangan dobel
+        loadChatMessages();
+        chatPolling = setInterval(loadChatMessages, 2000);
+        // Auto clear tiap 10 jam
+        setInterval(autoClearOldChats, CHAT_RETENTION_MS);
+        setTimeout(autoClearOldChats, 5000);
+    }
+
+    async function autoClearOldChats() {
+        try {
+            const data = await fbGet('chat');
+            if (!data) return;
+            const now = Date.now();
+            const cutoff = now - CHAT_RETENTION_MS;
+            const toDelete = Object.entries(data)
+                .filter(([k, v]) => v.time && v.time < cutoff)
+                .map(([k]) => k);
+            if (toDelete.length === 0) return;
+            await Promise.all(toDelete.map(id => fbDelete('chat/' + id)));
+            console.log('🧹 Auto cleared', toDelete.length, 'old chat messages');
+            loadChatMessages();
+        } catch(e) {
+            console.log('Auto clear error:', e);
+        }
+    }
+
+    async function loadChatMessages() {
+        try {
+            const data = await fbGet('chat');
+            if (!data) {
+                document.getElementById('chat-messages').innerHTML = '<div class="chat-system-msg">Belum ada pesan. Jadilah yang pertama! 👋</div>';
+                return;
+            }
+            const msgs = Object.values(data).sort((a,b) => a.time - b.time);
+            // Ambil 80 pesan terakhir
+            const recent = msgs.slice(-80);
+            renderChatMessages(recent);
+        } catch(e) { console.log('Chat load error:', e); }
+    }
+
+    function renderChatMessages(msgs) {
+        const container = document.getElementById('chat-messages');
+        if (!container) return;
+        const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+        const prevCount = container.querySelectorAll('.chat-msg').length;
+
+        container.innerHTML = '';
+        let lastDate = '';
+
+        msgs.forEach(msg => {
+            // Date divider
+            const msgDate = new Date(msg.time).toLocaleDateString('id-ID', {day:'numeric', month:'short'});
+            if (msgDate !== lastDate) {
+                lastDate = msgDate;
+                const div = document.createElement('div');
+                div.className = 'chat-date-divider';
+                div.textContent = msgDate;
+                container.appendChild(div);
+            }
+
+            const isMine = currentUser && msg.sender === currentUser.name;
+            const isDev = msg.role === 'developer';
+            const isAdmin = currentUser && (currentUser.role === 'developer');
+            const initial = (msg.sender || '?').charAt(0).toUpperCase();
+
+            const el = document.createElement('div');
+            el.className = 'chat-msg' + (isMine ? ' mine' : '');
+            el.setAttribute('data-id', msg.id);
+
+            // Reactions HTML
+            const reacts = msg.reactions || {};
+            const reactKeys = Object.keys(reacts);
+            const reactHTML = reactKeys.length > 0
+                ? `<div class="chat-reactions">${reactKeys.map(emoji => {
+                    const users = reacts[emoji] || {};
+                    const count = Object.keys(users).length;
+                    if (count === 0) return '';
+                    const iMine = currentUser && users[currentUser.name.replace(/[.#$[\]]/g,'_')];
+                    return count > 0 ? `<div class="chat-reaction${iMine?' mine-react':''}" onclick="toggleReaction('${msg.id}','${emoji}')">${emoji} <span>${count}</span></div>` : '';
+                }).join('')}</div>` : '';
+
+            // Reply HTML
+            const replyHTML = msg.replyTo
+                ? `<div class="chat-reply-preview"><strong>${msg.replyTo.sender}:</strong> ${msg.replyTo.text}</div>` : '';
+
+            // Content
+            const contentHTML = msg.type === 'image'
+                ? `<img src="${msg.imageUrl || msg.imageData || ''}" class="chat-img" onclick="viewChatImage('${msg.id}')" onerror="this.style.display='none'">`
+                : `<span>${msg.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</span>`;
+
+            // Actions
+            const actionsHTML = `
+                <div class="chat-msg-actions" id="actions-${msg.id}">
+                    <div class="msg-action-btn" onclick="replyToMsg('${msg.id}')">↩ Reply</div>
+                    <div class="msg-action-btn" onclick="showReactPicker('${msg.id}')">😊 React</div>
+                    ${isAdmin || isMine ? `<div class="msg-action-btn del" onclick="deleteMsg('${msg.id}')">🗑 Hapus</div>` : ''}
+                </div>`;
+
+            el.innerHTML = `
+                <div class="chat-avatar" style="${isDev ? 'background:linear-gradient(135deg,#ff0055,#ae00ff)' : ''}">${initial}</div>
+                <div class="chat-bubble-wrap ${isMine ? 'chat-mine-wrap' : ''}">
+                    ${!isMine ? `<div class="chat-sender">${isDev ? '👑 ' : ''}${msg.sender}</div>` : ''}
+                    ${replyHTML}
+                    <div class="chat-bubble" onclick="toggleMsgActions('${msg.id}')">${contentHTML}</div>
+                    ${reactHTML}
+                    ${actionsHTML}
+                    <div class="chat-time">${msg.timeStr}</div>
+                </div>`;
+
+            container.appendChild(el);
+        });
+
+        // Update unread
+        const newCount = container.querySelectorAll('.chat-msg').length;
+        if (!chatOpen && newCount > prevCount) {
+            chatUnread += newCount - prevCount;
+            updateUnreadBadge();
+        }
+
+        if (wasAtBottom || prevCount === 0) scrollChatBottom();
+    }
+
+    function toggleMsgActions(id) {
+        const el = document.getElementById('actions-' + id);
+        if (!el) return;
+        const isShow = el.classList.contains('show');
+        document.querySelectorAll('.chat-msg-actions').forEach(a => a.classList.remove('show'));
+        if (!isShow) el.classList.add('show');
+    }
+
+    // ---- Reply ----
+    let _chatReplyData = null;
+    function replyToMsg(id) {
+        const el = document.querySelector(`[data-id="${id}"]`);
+        if (!el) return;
+        const sender = el.querySelector('.chat-sender')?.textContent || currentUser?.name;
+        const bubble = el.querySelector('.chat-bubble')?.textContent?.trim() || '📷 Gambar';
+        _chatReplyData = { id, sender: sender.replace('👑 ',''), text: bubble.substring(0,50) };
+        chatReplyTo = _chatReplyData;
+        const bar = document.getElementById('chat-reply-bar');
+        const txt = document.getElementById('chat-reply-text');
+        if (bar) bar.style.display = 'flex';
+        if (txt) txt.textContent = `${_chatReplyData.sender}: ${_chatReplyData.text}`;
+        document.getElementById('chat-input')?.focus();
+        document.querySelectorAll('.chat-msg-actions').forEach(a => a.classList.remove('show'));
+    }
+
+    function cancelReply() {
+        chatReplyTo = null; _chatReplyData = null;
+        const bar = document.getElementById('chat-reply-bar');
+        if (bar) bar.style.display = 'none';
+    }
+
+    // ---- React ----
+    function showReactPicker(msgId) {
+        const picker = document.getElementById('emoji-picker-chat');
+        if (!picker) return;
+        picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
+        picker.innerHTML = CHAT_EMOJIS.map(e =>
+            `<div class="emoji-btn" onclick="toggleReaction('${msgId}','${e}'); document.getElementById('emoji-picker-chat').style.display='none';">${e}</div>`
+        ).join('');
+        document.querySelectorAll('.chat-msg-actions').forEach(a => a.classList.remove('show'));
+    }
+
+    async function toggleReaction(msgId, emoji) {
+        if (!currentUser) return;
+        const userKey = currentUser.name.replace(/[.#$[\]]/g, '_');
+        try {
+            const path = 'chat/' + msgId + '/reactions/' + emoji + '/' + userKey;
+            const existing = await fbGet(path);
+            if (existing) {
+                await fbDelete(path);
+            } else {
+                await fbSet(path, true);
+            }
+            loadChatMessages();
+        } catch(e) { console.log('React error:', e); }
+    }
+
+    // ---- Delete message ----
+    async function deleteMsg(msgId) {
+        if (!confirm('Hapus pesan ini?')) return;
+        try {
+            await fbDelete('chat/' + msgId);
+            loadChatMessages();
+        } catch(e) { alert('Gagal hapus pesan!'); }
+    }
+
+    // ---- Emoji picker for input ----
+    function toggleEmojiPicker() {
+        const picker = document.getElementById('emoji-picker-chat');
+        if (!picker) return;
+        picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
+        picker.innerHTML = CHAT_EMOJIS.map(e =>
+            `<div class="emoji-btn" onclick="insertEmoji('${e}')">${e}</div>`
+        ).join('');
+    }
+
+    function insertEmoji(e) {
+        const input = document.getElementById('chat-input');
+        if (input) { input.value += e; input.focus(); }
+        document.getElementById('emoji-picker-chat').style.display = 'none';
+    }
+
+    function viewChatImage(msgId) {
+        const el = document.querySelector(`[data-id="${msgId}"] img`);
+        if (el && el.src) window.open(el.src, '_blank');
+    }
+
+    // Show/hide FAB saat login
+    function showChatFab() {
+        const fab = document.getElementById('chat-fab');
+        if (fab) fab.style.display = 'flex';
+    }
+    function hideChatFab() {
+        const fab = document.getElementById('chat-fab');
+        if (fab) fab.style.display = 'none';
+        const panel = document.getElementById('chat-panel');
+        if (panel) panel.style.display = 'none';
+        chatOpen = false;
+        if (chatPolling) { clearInterval(chatPolling); chatPolling = null; }
+    }
+
+
+    // ===== ADMIN CHAT MANAGEMENT =====
+    async function adminLoadChatStats() {
+        const totalEl = document.getElementById('chat-total-count');
+        const oldEl = document.getElementById('chat-old-count');
+        const sizeEl = document.getElementById('chat-size-est');
+
+        if (totalEl) totalEl.textContent = '...';
+        if (oldEl) oldEl.textContent = '...';
+        if (sizeEl) sizeEl.textContent = '...';
+
+        try {
+            const data = await fbGet('chat');
+            if (!data) {
+                if (totalEl) totalEl.textContent = '0';
+                if (oldEl) oldEl.textContent = '0';
+                if (sizeEl) sizeEl.textContent = '0B';
+                return;
+            }
+            const msgs = Object.values(data);
+            const now = Date.now();
+            const cutoff = now - (10 * 60 * 60 * 1000);
+            const oldMsgs = msgs.filter(m => m.time && m.time < cutoff);
+            const sizeBytes = JSON.stringify(data).length;
+            const sizeStr = sizeBytes > 1024 ? (sizeBytes/1024).toFixed(1) + 'KB' : sizeBytes + 'B';
+
+            if (totalEl) totalEl.textContent = msgs.length;
+            if (oldEl) oldEl.textContent = oldMsgs.length;
+            if (sizeEl) sizeEl.textContent = sizeStr;
+        } catch(e) {
+            if (totalEl) totalEl.textContent = 'ERR';
+            console.log('Chat stats error:', e);
+        }
+    }
+
+    async function adminClearOldChat() {
+        if (!confirm('⚠️ Hapus semua pesan yang lebih dari 10 jam?')) return;
+        try {
+            const data = await fbGet('chat');
+            if (!data) { alert('Chat sudah kosong!'); return; }
+            const now = Date.now();
+            const cutoff = now - (10 * 60 * 60 * 1000);
+            const toDelete = Object.entries(data)
+                .filter(([k, v]) => v.time && v.time < cutoff)
+                .map(([k]) => k);
+            if (toDelete.length === 0) {
+                alert('✅ Tidak ada pesan lama untuk dihapus!');
+                adminLoadChatStats();
+                return;
+            }
+            await Promise.all(toDelete.map(id => fbDelete('chat/' + id)));
+            alert('✅ ' + toDelete.length + ' pesan lama berhasil dihapus!');
+            adminLoadChatStats();
+            if (chatOpen) loadChatMessages();
+        } catch(e) {
+            alert('❌ Gagal hapus pesan!');
+            console.log('Clear old chat error:', e);
+        }
+    }
+
+    async function adminClearAllChat() {
+        if (!confirm('⚠️ HAPUS SEMUA pesan chat?\n\nTindakan ini tidak bisa dibatalkan!')) return;
+        if (!confirm('⚠️ Yakin? Semua riwayat chat akan hilang permanen!')) return;
+        try {
+            await fbSet('chat', null);
+            alert('✅ Semua chat berhasil dihapus!');
+            adminLoadChatStats();
+            if (chatOpen) loadChatMessages();
+        } catch(e) {
+            alert('❌ Gagal hapus chat!');
+            console.log('Clear all chat error:', e);
+        }
+    }
+
     function saveLocal() {
         localStorage.setItem('uno_cfg', JSON.stringify(config));
     }
@@ -3156,6 +4570,7 @@ Terima kasih! 🙏
     }
 
     function logout() {
+        hideChatFab();
         if (confirm("⚠️ Yakin ingin keluar?")) {
             currentUser = null;
             localStorage.removeItem('uno_session');
@@ -3481,6 +4896,9 @@ Terima kasih! 🙏
 
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', function() {
+        // Auto start loading screen
+        setTimeout(enterSystem, 300);
+
         // Sync color picker dengan warna aktif saat load
         const savedColor = localStorage.getItem('user_accent') || '#00eaff';
         const colorPicker = document.getElementById('customColorPicker');
@@ -3508,9 +4926,36 @@ Terima kasih! 🙏
             try {
                 const user = JSON.parse(session);
                 if (user && user.name) {
-                    setTimeout(() => { login(user); }, 1500);
+                    // Tunggu loading screen selesai (~2.8 detik) baru restore session
+                    setTimeout(async () => {
+                        try {
+                            if (user.role === 'developer') {
+                                login(user);
+                                return;
+                            }
+                            // Verifikasi device
+                            const key = user.name.replace(/[.#$[\]]/g, '_');
+                            const memberData = await fbGet('members/' + key);
+                            const myDeviceId = getDeviceId();
+                            if (memberData && memberData.deviceId && memberData.deviceId !== myDeviceId) {
+                                // Device direset - tampilkan login screen
+                                localStorage.removeItem('uno_session');
+                                const ls = document.getElementById('login-screen');
+                                if (ls) { ls.style.display = 'flex'; initLoginScreen(); }
+                                return;
+                            }
+                            login(user);
+                        } catch(e) {
+                            // Gagal verifikasi - tetap login pakai session lokal
+                            console.log('Session verify error, using local session:', e);
+                            login(user);
+                        }
+                    }, 3200);
                 }
-            } catch (e) { console.log('Session error:', e); }
+            } catch (e) {
+                console.log('Session error:', e);
+                localStorage.removeItem('uno_session');
+            }
         }
 
         setInterval(() => {
