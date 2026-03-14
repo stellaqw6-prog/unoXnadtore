@@ -3540,25 +3540,41 @@ Terima kasih! 🙏
         if (!username) { alert("⚠️ Masukkan username!"); return; }
 
         try {
+            const myDeviceId = getDeviceId();
             const key = username.replace(/[.#$[\]]/g, '_');
             const memberData = await fbGet('members/' + key);
 
+            // Akun tidak ditemukan
             if (!memberData || !memberData.name) {
                 alert("❌ Akun tidak ditemukan!\nSilakan daftar terlebih dahulu.");
                 return;
             }
 
-            const myDeviceId = getDeviceId();
-
-            // Cek device - kalau sudah terdaftar di device lain
+            // RULE 1: Device beda dari yang terdaftar → tolak, minta verifikasi
             if (memberData.deviceId && memberData.deviceId !== myDeviceId) {
                 _pendingAuthUser = { name: memberData.name, role: memberData.role || 'member', key };
                 switchAuthTab('verify');
                 return;
             }
 
-            // Belum ada device atau device sama - langsung login & ikat device
-            await fbPatch('members/' + key, { deviceId: myDeviceId, lastActive: new Date().toLocaleString('id-ID') });
+            // RULE 2: Device ini sudah terdaftar di akun username LAIN → tolak
+            // Cek apakah device ini sudah dipakai akun lain
+            const deviceOwner = localStorage.getItem('device_owner');
+            if (deviceOwner && deviceOwner !== username) {
+                alert("❌ Device ini sudah terdaftar untuk akun lain!\n\nSatu device hanya bisa digunakan oleh 1 akun.\nHubungi Admin untuk reset device.");
+                return;
+            }
+
+            // RULE 3: Device sama, username sama → langsung login (termasuk setelah logout)
+            // Simpan device owner di localStorage
+            localStorage.setItem('device_owner', username);
+
+            // Update device di Firebase
+            await fbPatch('members/' + key, {
+                deviceId: myDeviceId,
+                lastActive: new Date().toLocaleString('id-ID')
+            });
+
             const idx = config.members.findIndex(m => m.name === memberData.name);
             if (idx !== -1) config.members[idx].deviceId = myDeviceId;
             else config.members.push({ ...memberData, deviceId: myDeviceId });
@@ -3604,6 +3620,9 @@ Terima kasih! 🙏
             config.members.push(newMember);
             saveLocal();
 
+            // Ikat device ke username ini
+            localStorage.setItem('device_owner', username);
+
             alert("✅ Akun berhasil dibuat!\n\nUsername: " + username + "\nDevice kamu sudah terdaftar otomatis.");
             switchAuthTab('login');
             if (unInput) unInput.value = '';
@@ -3639,6 +3658,8 @@ Terima kasih! 🙏
                 verifyCode: null,
                 lastActive: new Date().toLocaleString('id-ID')
             });
+            // Update device owner ke username baru
+            localStorage.setItem('device_owner', _pendingAuthUser.name);
             alert("✅ Verifikasi berhasil! Device baru terdaftar.");
             login({ name: _pendingAuthUser.name, role: _pendingAuthUser.role });
             _pendingAuthUser = null;
@@ -3669,7 +3690,7 @@ Terima kasih! 🙏
                 if (idx !== -1) { config.members[idx].deviceId = null; config.members[idx].verifyCode = code; }
                 saveLocal();
                 renderMemberList();
-                alert("✅ Device direset!\n\nKode verifikasi member:\n🔑 " + code + "\n\nBerikan kode ini ke member.");
+                alert("✅ Device direset!\n\nKode verifikasi member:\n🔑 " + code + "\n\nBerikan kode ini ke member untuk login di device baru.");
             })
             .catch(() => alert("❌ Gagal reset device!"));
     }
@@ -4606,6 +4627,17 @@ Terima kasih! 🙏
 
                 if (memberData.deviceId && memberData.deviceId !== myDeviceId) {
                     // Device direset admin - paksa login ulang
+                    localStorage.removeItem('uno_session');
+                    localStorage.removeItem('device_owner');
+                    const ls = document.getElementById('login-screen');
+                    if (ls) { ls.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
+                    return;
+                }
+
+                // Cek device_owner cocok dengan session username
+                const deviceOwner = localStorage.getItem('device_owner');
+                if (deviceOwner && deviceOwner !== user.name) {
+                    // Ada konflik - device owner beda dengan session
                     localStorage.removeItem('uno_session');
                     const ls = document.getElementById('login-screen');
                     if (ls) { ls.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
