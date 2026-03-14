@@ -2381,13 +2381,20 @@ Terima kasih! 🙏
             config.members = config.members.filter(m => m.name !== memberName);
             saveLocal();
             
-            // ========== TAMBAHAN: SYNC KE CLOUD ==========
-            syncMembersToCloud();
+            // Hapus langsung dari Firebase pakai fbDelete
+            const key = memberName.replace(/[.#$\[\]]/g, '_');
+            fbDelete('members/' + key)
+                .then(() => console.log('✅ Member', memberName, 'dihapus dari Firebase'))
+                .catch(e => {
+                    console.log('❌ Gagal hapus dari Firebase:', e);
+                    // Fallback: sync semua member
+                    syncMembersToCloud();
+                });
             
             renderMemberList();
             updateSubscriptionStats();
             updateMemberSelect();
-            alert("✅ Member berhasil dihapus!");
+            alert("✅ Member berhasil dihapus permanen!");
         }
     }
 
@@ -2785,26 +2792,23 @@ Terima kasih! 🙏
         alert("✅ Subscription berhasil diperbarui!");
     }
 
-    function deleteSubscription(memberName, subIndex) {
-        if (!confirm(`⚠️ Hapus subscription ini?`)) return;
-        
-        const member = config.members.find(m => m.name === memberName);
-        if (member && member.subs) {
-            member.subs.splice(subIndex, 1);
-            saveLocal();
-            
-            // ========== TAMBAHAN: SYNC KE CLOUD ==========
-            syncMembersToCloud();
-            
-            renderMemberList();
-            renderSubscriptionList();
-            updateSubscriptionStats();
-            
-            if (currentUser && currentUser.name === memberName) {
-                syncUI();
+        function deleteSubscription(memberName, subIndex) {
+        if (confirm("⚠️ Hapus subscription ini?")) {
+            const memberIdx = config.members.findIndex(m => m.name === memberName);
+            if (memberIdx !== -1 && config.members[memberIdx].subs) {
+                config.members[memberIdx].subs.splice(subIndex, 1);
+                saveLocal();
+                
+                // Sync ke Firebase
+                const key = memberName.replace(/[.#$\[\]]/g, '_');
+                fbPatch('members/' + key, { subs: config.members[memberIdx].subs })
+                    .then(() => console.log('✅ Subs deleted from Firebase'))
+                    .catch(e => console.log('❌ Delete subs error:', e));
+                
+                renderSubscriptionList();
+                updateSubscriptionStats();
+                alert("✅ Subscription berhasil dihapus!");
             }
-            
-            alert("✅ Subscription dihapus!");
         }
     }
 
@@ -3080,22 +3084,39 @@ Terima kasih! 🙏
             expiry: expiry.toISOString().split('T')[0]
         };
         
-        // Update config.members
+        // Cari atau buat member di config.members
         let memberIdx = config.members.findIndex(m => m.name === currentUser.name);
         if (memberIdx === -1) {
-            config.members.push({ name: currentUser.name, subs: [newSub] });
+            // Member belum ada di lokal - buat baru
+            config.members.push({
+                name: currentUser.name,
+                role: currentUser.role || 'member',
+                subs: [],
+                joinDate: new Date().toLocaleDateString('id-ID'),
+                totalSpent: 0,
+                julukan: ''
+            });
             memberIdx = config.members.length - 1;
-        } else {
-            if (!config.members[memberIdx].subs) config.members[memberIdx].subs = [];
-            config.members[memberIdx].subs.push(newSub);
         }
+        
+        if (!config.members[memberIdx].subs) config.members[memberIdx].subs = [];
+        config.members[memberIdx].subs.push(newSub);
         
         saveLocal();
         
-        // Sync ke Firebase
-        const memberKey = currentUser.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        fbPatch('members/' + memberKey, { subs: config.members[memberIdx].subs })
-            .catch(e => console.log('Sync subs error:', e));
+        // Sync FULL member data ke Firebase (bukan hanya subs)
+        const memberKey = currentUser.name.replace(/[.#$\[\]]/g, '_');
+        const memberData = config.members[memberIdx];
+        fbPatch('members/' + memberKey, {
+            name: memberData.name,
+            role: memberData.role || 'member',
+            subs: memberData.subs,
+            joinDate: memberData.joinDate || new Date().toLocaleDateString('id-ID'),
+            lastActive: new Date().toLocaleString('id-ID'),
+            totalSpent: memberData.totalSpent || 0,
+            julukan: memberData.julukan || ''
+        }).then(() => console.log('✅ Subs synced to Firebase'))
+          .catch(e => console.log('❌ Sync subs error:', e));
         
         // Refresh tampilan subs
         renderMySubscription();
@@ -3248,16 +3269,16 @@ Terima kasih! 🙏
             if (data && typeof data === 'object') {
                 const cloudMembers = Object.values(data).filter(m => m && m.name);
                 if (cloudMembers.length > 0) {
-                    // Merge: cloud lebih prioritas, tambahkan lokal yang belum ada di cloud
-                    const merged = [...cloudMembers];
-                    config.members.forEach(local => {
-                        if (!cloudMembers.some(c => c.name === local.name)) {
-                            merged.push(local);
-                        }
-                    });
-                    config.members = merged;
+                    // Cloud adalah sumber kebenaran - JANGAN merge lokal
+                    // Member yang dihapus dari cloud tidak boleh balik
+                    config.members = cloudMembers;
                     saveLocal();
                     console.log('✅', cloudMembers.length, 'member diambil dari Firebase');
+                    return true;
+                } else {
+                    // Cloud kosong (semua member dihapus) - kosongkan local juga
+                    config.members = [];
+                    saveLocal();
                     return true;
                 }
             }
