@@ -324,6 +324,14 @@
         .my-sub-info-text { margin-top: 8px; padding: 6px; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 7px; color: #999; text-align: center; border: 1px dashed var(--glass-border); }
         .my-sub-info-text i { color: var(--gold); margin-right: 4px; }
 
+        /* ===== SUBS TYPE COLORS ===== */
+        .my-sub-card.script { border-left: 3px solid #a855f7 !important; }
+        .my-sub-card.script .sub-type-badge { background: rgba(168,85,247,0.15); color: #a855f7; }
+        .my-sub-card.lainnya { border-left: 3px solid #f97316 !important; }
+        .my-sub-card.lainnya .sub-type-badge { background: rgba(249,115,22,0.15); color: #f97316; }
+        .my-sub-card.misc { border-left: 3px solid #f97316 !important; }
+        .my-sub-card.misc .sub-type-badge { background: rgba(249,115,22,0.15); color: #f97316; }
+
         /* ===== BENEFIT STYLES ===== */
         .benefit-list { display: flex; flex-direction: column; gap: 5px; margin: 10px 0 12px; }
         .benefit-item { display: flex; align-items: center; gap: 7px; font-size: 10px; color: #ccc; }
@@ -413,10 +421,10 @@
         </div>
 
         <div class="category-grid">
-            <div class="cat-btn active" onclick="loadCategory('sewa', this)"><i class="fa-solid fa-robot"></i><span>Sewa</span></div>
-            <div class="cat-btn" onclick="loadCategory('premium', this)"><i class="fa-solid fa-crown"></i><span>Prem</span></div>
-            <div class="cat-btn" onclick="loadCategory('script', this)"><i class="fa-solid fa-code"></i><span>Code</span></div>
-            <div class="cat-btn" onclick="loadCategory('lainnya', this)"><i class="fa-solid fa-layer-group"></i><span>Misc</span></div>
+            <div class="cat-btn active" data-cat="sewa" onclick="loadCategory('sewa', this)"><i class="fa-solid fa-robot"></i><span>Sewa</span></div>
+            <div class="cat-btn" data-cat="premium" onclick="loadCategory('premium', this)"><i class="fa-solid fa-crown"></i><span>Prem</span></div>
+            <div class="cat-btn" data-cat="script" onclick="loadCategory('script', this)"><i class="fa-solid fa-code"></i><span>Code</span></div>
+            <div class="cat-btn" data-cat="lainnya" onclick="loadCategory('lainnya', this)"><i class="fa-solid fa-layer-group"></i><span>Misc</span></div>
         </div>
         <div id="catalog"></div>
     </div>
@@ -797,7 +805,7 @@
                 <span style="font-size:10px;">SUBSCRIPTION MANAGEMENT</span>
             </div>
             
-            <div class="members-stats" style="margin-bottom:12px;">
+            <div class="members-stats" style="margin-bottom:12px; display:grid; grid-template-columns: repeat(3,1fr); gap:6px;">
                 <div class="stat-card" onclick="filterSubsByType('all')" style="cursor:pointer;">
                     <i class="fa-solid fa-layer-group"></i>
                     <div class="stat-value" id="total-subs-count">0</div>
@@ -812,6 +820,21 @@
                     <i class="fa-solid fa-robot" style="color:var(--accent);"></i>
                     <div class="stat-value" id="sewa-subs-count">0</div>
                     <div class="stat-label" style="font-size:7px;">Sewa</div>
+                </div>
+                <div class="stat-card" onclick="filterSubsByType('script')" style="cursor:pointer;">
+                    <i class="fa-solid fa-code" style="color:#a855f7;"></i>
+                    <div class="stat-value" id="script-subs-count">0</div>
+                    <div class="stat-label" style="font-size:7px;">Script</div>
+                </div>
+                <div class="stat-card" onclick="filterSubsByType('misc')" style="cursor:pointer;">
+                    <i class="fa-solid fa-wrench" style="color:#f97316;"></i>
+                    <div class="stat-value" id="misc-subs-count">0</div>
+                    <div class="stat-label" style="font-size:7px;">Misc</div>
+                </div>
+                <div class="stat-card" onclick="filterSubsByType('lainnya')" style="cursor:pointer;">
+                    <i class="fa-solid fa-box" style="color:#94a3b8;"></i>
+                    <div class="stat-value" id="lainnya-subs-count">0</div>
+                    <div class="stat-label" style="font-size:7px;">Lainnya</div>
                 </div>
             </div>
             
@@ -836,6 +859,9 @@
                     <select id="sub-type-select" style="flex:2;">
                         <option value="premium">👑 PREMIUM</option>
                         <option value="sewa">🤖 SEWA BOT</option>
+                        <option value="script">💜 SCRIPT</option>
+                        <option value="misc">🔧 MISC</option>
+                        <option value="lainnya">📦 LAINNYA</option>
                     </select>
                     
                     <div style="flex:1; position:relative;">
@@ -1129,26 +1155,13 @@
         
         const legendHTML = `
             <div class="my-subs-legend">
-                <div class="legend-item">
-                    <div class="legend-color gold"></div>
-                    <span class="legend-text">Premium</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color cyan"></div>
-                    <span class="legend-text">Sewa Bot</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color green"></div>
-                    <span class="legend-text">Aktif</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color orange"></div>
-                    <span class="legend-text">Hampir Habis</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color red"></div>
-                    <span class="legend-text">Expired</span>
-                </div>
+                <div class="legend-item"><div class="legend-color gold"></div><span class="legend-text">Premium</span></div>
+                <div class="legend-item"><div class="legend-color cyan"></div><span class="legend-text">Sewa Bot</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#a855f7;"></div><span class="legend-text">Script</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#f97316;"></div><span class="legend-text">Misc/Lainnya</span></div>
+                <div class="legend-item"><div class="legend-color green"></div><span class="legend-text">Aktif</span></div>
+                <div class="legend-item"><div class="legend-color orange"></div><span class="legend-text">Hampir Habis</span></div>
+                <div class="legend-item"><div class="legend-color red"></div><span class="legend-text">Expired</span></div>
             </div>
         `;
         
@@ -1164,7 +1177,7 @@
                     <p style="font-size:8px; margin-top:5px;">Silakan melakukan pembelian di halaman STORE</p>
                 </div>
                 <div class="my-sub-info-text">
-                    <i class="fa-solid fa-info-circle"></i> Premium: <span style="color:var(--gold)">Kuning</span> | Sewa: <span style="color:var(--accent)">Biru</span> | Aktif: <span style="color:#00ff00">Hijau</span> | Hampir Habis: <span style="color:#ffaa00">Oranye (Berkedip)</span> | Expired: <span style="color:#ff5555">Merah</span>
+                    <i class="fa-solid fa-info-circle"></i> Premium: <span style="color:var(--gold)">Kuning</span> | Sewa: <span style="color:var(--accent)">Biru</span> | Script: <span style="color:#a855f7">Ungu</span> | Misc: <span style="color:#f97316">Oranye</span> | Aktif: <span style="color:#00ff00">Hijau</span> | Hampir Habis: <span style="color:#ffaa00">Berkedip</span>
                 </div>
             `;
             return;
@@ -1974,8 +1987,14 @@ Terima kasih! 🙏
         
         const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
         window.open(waLink, '_blank');
-        
-        alert("✅ Silakan kirim pesan klaim hadiah ke WhatsApp Admin!");
+
+        // Auto tambah subs dari hadiah gacha
+        const gachaSub = addSubsToMember(prize.name, prize.type, prize.days);
+        if (gachaSub) {
+            alert(`✅ Klaim terkirim ke Admin!\n\n🎁 ${prize.name}\n⏳ Subs ${prize.days} hari ditambahkan ke akun kamu\n📅 Berlaku hingga: ${gachaSub.expiry}\n\nTunggu konfirmasi admin ya!`);
+        } else {
+            alert("✅ Silakan kirim pesan klaim hadiah ke WhatsApp Admin!");
+        }
         
         lastGachaResult = null;
         const resultContainer = document.getElementById('gacha-result-container');
@@ -2144,9 +2163,19 @@ Terima kasih! 🙏
             
             const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
             window.open(waLink, '_blank');
-            
-            alert("✅ Silakan kirim file bukti transfer secara manual setelah chat terbuka!");
-            
+
+            // Auto tambah subs berdasarkan produk yang dibeli
+            const activeCat = document.querySelector('.cat-btn.active')?.dataset?.cat || 
+                              (tempProd.toLowerCase().includes('prem') ? 'premium' :
+                               tempProd.toLowerCase().includes('sewa') ? 'sewa' :
+                               tempProd.toLowerCase().includes('script') ? 'script' : 'lainnya');
+            const newSub = addSubsToMember(tempProd, activeCat);
+            if (newSub) {
+                alert(`✅ Konfirmasi terkirim!\n\n📦 ${tempProd}\n⏳ Subs ${newSub.days} hari ditambahkan\n📅 Berlaku hingga: ${newSub.expiry}\n\nSilakan kirim bukti transfer setelah chat terbuka!`);
+            } else {
+                alert("✅ Silakan kirim file bukti transfer secara manual setelah chat terbuka!");
+            }
+
             uploadedFile = null;
             const fileNameDisplay = document.getElementById('file-name-display');
             if (fileNameDisplay) fileNameDisplay.innerHTML = '';
@@ -2619,28 +2648,29 @@ Terima kasih! 🙏
         container.innerHTML = html;
     }
 
-    function updateSubscriptionStats() {
-        let total = 0;
-        let premium = 0;
-        let sewa = 0;
-        
-        config.members.forEach(member => {
-            if (member.subs) {
-                const now = new Date();
-                const active = member.subs.filter(s => new Date(s.expiry) > now);
-                total += active.length;
-                premium += active.filter(s => s.type === 'premium').length;
-                sewa += active.filter(s => s.type === 'sewa').length;
-            }
+        function updateSubscriptionStats() {
+        const now = new Date();
+        let total = 0, premium = 0, sewa = 0, script = 0, misc = 0, lainnya = 0;
+        config.members.forEach(m => {
+            if (!m.subs) return;
+            m.subs.forEach(s => {
+                if (new Date(s.expiry) > now) {
+                    total++;
+                    if (s.type === 'premium') premium++;
+                    else if (s.type === 'sewa') sewa++;
+                    else if (s.type === 'script') script++;
+                    else if (s.type === 'misc') misc++;
+                    else lainnya++;
+                }
+            });
         });
-        
-        const totalEl = document.getElementById('total-subs-count');
-        const premiumEl = document.getElementById('premium-subs-count');
-        const sewaEl = document.getElementById('sewa-subs-count');
-        
-        if (totalEl) totalEl.innerText = total;
-        if (premiumEl) premiumEl.innerText = premium;
-        if (sewaEl) sewaEl.innerText = sewa;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+        set('total-subs-count', total);
+        set('premium-subs-count', premium);
+        set('sewa-subs-count', sewa);
+        set('script-subs-count', script);
+        set('misc-subs-count', misc);
+        set('lainnya-subs-count', lainnya);
     }
 
     function updateMemberSelect() {
@@ -2996,6 +3026,81 @@ Terima kasih! 🙏
         loadCategory(cat);
         document.getElementById('editBenefitModal').style.display = 'none';
         alert('✅ Benefit berhasil disimpan!');
+    }
+
+
+    // ===== SUBS SYSTEM =====
+    function detectDuration(productName) {
+        // Auto detect durasi dari nama produk
+        // Contoh: "Sewa 30 Hari", "Premium 7 hari", "1 Bulan", "1 Week"
+        const name = productName.toLowerCase();
+        
+        // Cari pola "X hari" / "X days"
+        const hariMatch = name.match(/(\d+)\s*hari/i) || name.match(/(\d+)\s*day/i);
+        if (hariMatch) return parseInt(hariMatch[1]);
+        
+        // Cari pola "X minggu" / "X week"
+        const mingguMatch = name.match(/(\d+)\s*minggu/i) || name.match(/(\d+)\s*week/i);
+        if (mingguMatch) return parseInt(mingguMatch[1]) * 7;
+        
+        // Cari pola "X bulan" / "X month"
+        const bulanMatch = name.match(/(\d+)\s*bulan/i) || name.match(/(\d+)\s*month/i);
+        if (bulanMatch) return parseInt(bulanMatch[1]) * 30;
+        
+        // Cari angka saja di nama (fallback)
+        const numMatch = name.match(/(\d+)/);
+        if (numMatch) return parseInt(numMatch[1]);
+        
+        return 30; // Default 30 hari jika tidak ada angka
+    }
+
+    function detectSubsType(productName, category) {
+        const name = productName.toLowerCase();
+        if (category === 'premium' || name.includes('prem')) return 'premium';
+        if (category === 'sewa' || name.includes('sewa') || name.includes('bot')) return 'sewa';
+        if (category === 'script' || name.includes('script') || name.includes('code')) return 'script';
+        if (category === 'lainnya' || category === 'misc') return 'misc';
+        return category || 'misc';
+    }
+
+    function addSubsToMember(productName, category, days) {
+        if (!currentUser) return;
+        
+        const duration = days || detectDuration(productName);
+        const type = detectSubsType(productName, category);
+        
+        const now = new Date();
+        const expiry = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000);
+        
+        const newSub = {
+            name: productName,
+            type: type,
+            days: duration,
+            start: now.toISOString().split('T')[0],
+            expiry: expiry.toISOString().split('T')[0]
+        };
+        
+        // Update config.members
+        let memberIdx = config.members.findIndex(m => m.name === currentUser.name);
+        if (memberIdx === -1) {
+            config.members.push({ name: currentUser.name, subs: [newSub] });
+            memberIdx = config.members.length - 1;
+        } else {
+            if (!config.members[memberIdx].subs) config.members[memberIdx].subs = [];
+            config.members[memberIdx].subs.push(newSub);
+        }
+        
+        saveLocal();
+        
+        // Sync ke Firebase
+        const memberKey = currentUser.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        fbPatch('members/' + memberKey, { subs: config.members[memberIdx].subs })
+            .catch(e => console.log('Sync subs error:', e));
+        
+        // Refresh tampilan subs
+        renderMySubscription();
+        
+        return newSub;
     }
 
     function saveLocal() {
