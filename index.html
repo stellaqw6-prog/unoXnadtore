@@ -2143,8 +2143,10 @@
         const audio = document.getElementById('anime-music');
         const videoSrc = document.getElementById('video-src');
         const musicSrc = document.getElementById('music-src');
-        if (config.bgVideo && videoSrc) { videoSrc.src = config.bgVideo; if (video) { video.load(); video.play().catch(() => {}); } }
-        if (config.bgMusic && musicSrc) { musicSrc.src = config.bgMusic; if (audio) { audio.load(); audio.play().catch(() => {}); } }
+        // Apply media dari config lokal dulu (cepat)
+        updateVideoBackground();
+        // Load config Firebase di background, update media kalau ada yang baru
+        loadConfigFromCloud();
 
         // Animated loading sequence
         const steps = [
@@ -2168,9 +2170,13 @@
                         overlay.style.transition = 'opacity 0.8s ease';
                         setTimeout(() => {
                             overlay.style.display = 'none';
-                            // Cek session - kalau ada jangan tampil login
+                            // Cek session - kalau ada langsung restore, kalau tidak tampil login
                             const session = localStorage.getItem('uno_session');
-                            if (!session) {
+                            if (session) {
+                                // Ada session - restore otomatis (tidak tampil login)
+                                restoreSession();
+                            } else {
+                                // Tidak ada session - wajib login
                                 const loginScreen = document.getElementById('login-screen');
                                 if (loginScreen) { loginScreen.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
                             }
@@ -2255,30 +2261,43 @@
     function login(u) {
         currentUser = u;
         localStorage.setItem('uno_session', JSON.stringify(u));
-        
+
         const loginScreen = document.getElementById('login-screen');
         if (loginScreen) loginScreen.style.display = 'none';
-        
+
         const mainHeader = document.getElementById('main-header');
         const mainApp = document.getElementById('main-app');
         const mainNav = document.getElementById('main-nav');
-        
+
         if (mainHeader) mainHeader.style.display = 'flex';
         if (mainApp) mainApp.style.display = 'block';
         if (mainNav) mainNav.style.display = 'flex';
         showChatFab();
         startChatPolling();
-        
+
         autoSaveNewMember(u);
-        
-        // ========== TAMBAHAN: SYNC KE CLOUD SAAT LOGIN ==========
         syncUserToCloud(u);
         if (u.role === 'developer') {
             setTimeout(fetchAllMembersFromCloud, 2000);
         }
-        
+
+        // Load semua konten dari Firebase saat login
         syncUI();
         startSlideShow();
+
+        // Load config Firebase → apply musik & video
+        loadConfigFromCloud().then(() => {
+            updateVideoBackground();
+            updateMusicBackground();
+        }).catch(() => {
+            updateVideoBackground();
+            updateMusicBackground();
+        });
+
+        // Load konten lain
+        loadBannersFromCloud();
+        loadProductsFromCloud();
+        loadGachaFromCloud();
     }
 
     function syncUI() {
@@ -2344,7 +2363,6 @@
             devBtn.style.display = currentUser.role === 'developer' ? 'block' : 'none';
         }
         
-        renderSlider();
         renderCategoryGrid();
         
         const statusDisplay = document.getElementById('status-cap-display');
@@ -2803,7 +2821,16 @@ Terima kasih! 🙏
                 updateMemberSelect();
             });
         }
-        if (t === 'config') { renderAdminBannerList(); renderMenuOrderAdmin(); adminLoadChatStats(); }
+        if (t === 'config') {
+            renderAdminBannerList();
+            renderMenuOrderAdmin();
+            adminLoadChatStats();
+            // Isi input dengan nilai yang tersimpan
+            const vi = document.getElementById('cfg-video');
+            const mi = document.getElementById('cfg-music');
+            if (vi && config.bgVideo) vi.value = config.bgVideo;
+            if (mi && config.bgMusic) mi.value = config.bgMusic;
+        }
         if (t === 'prices') renderAdminProductList();
         if (t === 'gacha') {
             renderGachaPrizeListAdmin();
@@ -3154,14 +3181,19 @@ Terima kasih! 🙏
     function saveConfig() {
         const videoInput = document.getElementById('cfg-video');
         const musicInput = document.getElementById('cfg-music');
-        
-        if (videoInput && videoInput.value) config.bgVideo = videoInput.value;
-        if (musicInput && musicInput.value) config.bgMusic = musicInput.value;
-        
+
+        // Update kalau ada isi baru, kalau kosong tetap pakai yang lama
+        if (videoInput && videoInput.value.trim()) config.bgVideo = videoInput.value.trim();
+        if (musicInput && musicInput.value.trim()) config.bgMusic = musicInput.value.trim();
+
         saveLocal();
         updatePublicDisplay();
         publishConfigToCloud();
-        
+
+        // Langsung apply musik baru tanpa tunggu refresh
+        updateMusicBackground();
+        updateVideoBackground();
+
         alert("✅ Konfigurasi disimpan dan di-publish ke cloud!");
     }
 
@@ -4538,6 +4570,65 @@ Terima kasih! 🙏
         }
     }
 
+
+    // ===== SESSION RESTORE =====
+    async function restoreSession() {
+        const raw = localStorage.getItem('uno_session');
+        if (!raw) {
+            // Tidak ada session - tampil login
+            const ls = document.getElementById('login-screen');
+            if (ls) { ls.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
+            return;
+        }
+        try {
+            const user = JSON.parse(raw);
+            if (!user || !user.name) throw new Error('Invalid session');
+
+            // Developer langsung masuk
+            if (user.role === 'developer') {
+                login(user);
+                return;
+            }
+
+            // Member - verifikasi device ke Firebase
+            try {
+                const key = user.name.replace(/[.#$[\]]/g, '_');
+                const memberData = await fbGet('members/' + key);
+                const myDeviceId = getDeviceId();
+
+                if (!memberData) {
+                    // Akun tidak ada di Firebase (mungkin dihapus admin)
+                    localStorage.removeItem('uno_session');
+                    const ls = document.getElementById('login-screen');
+                    if (ls) { ls.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
+                    return;
+                }
+
+                if (memberData.deviceId && memberData.deviceId !== myDeviceId) {
+                    // Device direset admin - paksa login ulang
+                    localStorage.removeItem('uno_session');
+                    const ls = document.getElementById('login-screen');
+                    if (ls) { ls.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
+                    return;
+                }
+
+                // Session valid - langsung masuk tanpa login ulang
+                login(user);
+
+            } catch(e) {
+                // Offline atau error Firebase - tetap pakai session lokal
+                console.log('Firebase verify failed, using local session');
+                login(user);
+            }
+
+        } catch(e) {
+            // Session rusak - hapus dan tampil login
+            localStorage.removeItem('uno_session');
+            const ls = document.getElementById('login-screen');
+            if (ls) { ls.style.display = 'flex'; setTimeout(initLoginScreen, 100); }
+        }
+    }
+
     function saveLocal() {
         localStorage.setItem('uno_cfg', JSON.stringify(config));
     }
@@ -4570,29 +4661,42 @@ Terima kasih! 🙏
     }
 
     function logout() {
+        if (!confirm("⚠️ Yakin ingin keluar?")) return;
+
+        // Hapus session PERTAMA sebelum apapun
+        localStorage.removeItem('uno_session');
+        currentUser = null;
+
+        // Stop musik saat logout
+        const audio = document.getElementById('anime-music');
+        if (audio) { audio.pause(); audio.currentTime = 0; }
+
+        // Stop chat & sembunyikan FAB
         hideChatFab();
-        if (confirm("⚠️ Yakin ingin keluar?")) {
-            currentUser = null;
-            localStorage.removeItem('uno_session');
-            
-            const mainHeader = document.getElementById('main-header');
-            const mainApp = document.getElementById('main-app');
-            const mainNav = document.getElementById('main-nav');
-            if (mainHeader) mainHeader.style.display = 'none';
-            if (mainApp) mainApp.style.display = 'none';
-            if (mainNav) mainNav.style.display = 'none';
-            
-            // Tutup semua modal dulu
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-            
-            const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) loginScreen.style.display = 'flex';
-            
-            const userInput = document.getElementById('user-login');
-            const devInput = document.getElementById('dev-key');
-            if (userInput) userInput.value = '';
-            if (devInput) devInput.value = '';
+
+        // Sembunyikan app
+        const mainHeader = document.getElementById('main-header');
+        const mainApp = document.getElementById('main-app');
+        const mainNav = document.getElementById('main-nav');
+        if (mainHeader) mainHeader.style.display = 'none';
+        if (mainApp) mainApp.style.display = 'none';
+        if (mainNav) mainNav.style.display = 'none';
+
+        // Tutup semua modal
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+
+        // Tampil login screen
+        const loginScreen = document.getElementById('login-screen');
+        if (loginScreen) {
+            loginScreen.style.display = 'flex';
+            setTimeout(initLoginScreen, 100);
         }
+
+        // Bersihkan input
+        const userInput = document.getElementById('user-login');
+        const devInput = document.getElementById('dev-key');
+        if (userInput) userInput.value = '';
+        if (devInput) devInput.value = '';
     }
 
     // ==================== FIREBASE REALTIME DATABASE ====================
@@ -4740,7 +4844,7 @@ Terima kasih! 🙏
             const cfg = {
                 store_name: document.querySelector('.logo')?.innerText || 'UNO-STOREZZ',
                 bg_video: config.bgVideo || '',
-                bg_music: config.bgMusic || '',
+                bg_music: config.bgMusic || 'https://files.catbox.moe/2n6pxr.mp3',
                 accent_color: '',  // Per-user preference, tidak di-publish ke Firebase
                 wa_number: window.WA_NUMBER || '6283856169422',
                 account_number: config.payment?.accountNumber || '',
@@ -4812,12 +4916,15 @@ Terima kasih! 🙏
             if (banners && Array.isArray(banners) && banners.length > 0) {
                 config.banners = banners;
                 saveLocal();
+                renderSlider();
                 console.log('✅ Banner dimuat dari Firebase');
+            } else {
+                renderSlider(); // Tetap render walau kosong
             }
         } catch (e) {
             console.log('⚠️ Firebase banner offline, pakai lokal');
+            renderSlider();
         }
-        renderSlider();
     }
 
     async function loadConfigFromCloud() {
@@ -4828,13 +4935,14 @@ Terima kasih! 🙏
                     const logo = document.querySelector('.logo');
                     if (logo) logo.innerText = cfg.store_name;
                 }
-                if (cfg.bg_video && cfg.bg_video !== config.bgVideo) {
+                if (cfg.bg_video) {
+                    // Hanya reload video kalau URL-nya benar-benar beda
+                    const isNewVideo = cfg.bg_video !== config.bgVideo;
                     config.bgVideo = cfg.bg_video;
-                    updateVideoBackground();
+                    if (isNewVideo) updateVideoBackground();
                 }
-                if (cfg.bg_music && cfg.bg_music !== config.bgMusic) {
+                if (cfg.bg_music) {
                     config.bgMusic = cfg.bg_music;
-                    updateMusicBackground();
                 }
                 // accent_color dari Firebase hanya sebagai default jika user belum pernah set
                 // Jangan overwrite pilihan warna user yang sudah tersimpan
@@ -4860,22 +4968,42 @@ Terima kasih! 🙏
         }
     }
 
+    let _currentVideoUrl = '';
     function updateVideoBackground() {
         const video = document.getElementById('bg-vid');
         const videoSrc = document.getElementById('video-src');
-        if (config.bgVideo && videoSrc) {
-            videoSrc.src = config.bgVideo;
-            if (video) { video.load(); video.play().catch(() => {}); }
-        }
+        if (!video || !videoSrc || !config.bgVideo) return;
+        // Jangan restart kalau URL sama persis
+        if (_currentVideoUrl === config.bgVideo) return;
+        _currentVideoUrl = config.bgVideo;
+        videoSrc.src = config.bgVideo;
+        video.load();
+        video.play().catch(() => {});
     }
 
+    let _currentMusicUrl = '';
     function updateMusicBackground() {
         const audio = document.getElementById('anime-music');
         const musicSrc = document.getElementById('music-src');
-        if (config.bgMusic && musicSrc) {
-            musicSrc.src = config.bgMusic;
-            if (audio) { audio.load(); audio.play().catch(() => {}); }
-        }
+        if (!audio || !musicSrc || !config.bgMusic) return;
+        // Jangan restart kalau URL sama dan sedang main
+        if (_currentMusicUrl === config.bgMusic && !audio.paused) return;
+        _currentMusicUrl = config.bgMusic;
+        musicSrc.src = config.bgMusic;
+        audio.load();
+        const tryPlay = () => {
+            audio.play().catch(() => {
+                document.addEventListener('touchstart', function onTouch() {
+                    audio.play().catch(() => {});
+                    document.removeEventListener('touchstart', onTouch);
+                }, { once: true });
+                document.addEventListener('click', function onClick() {
+                    audio.play().catch(() => {});
+                    document.removeEventListener('click', onClick);
+                }, { once: true });
+            });
+        };
+        setTimeout(tryPlay, 300);
     }
 
     // Auto sync member setiap 5 menit
@@ -4884,14 +5012,13 @@ Terima kasih! 🙏
     }, 300000);
 
     // Real-time refresh konten dari Firebase setiap 10 detik
+    // Config (video/musik) TIDAK di-refresh otomatis supaya video tidak patah-patah
     setInterval(async () => {
         await Promise.all([
             loadProductsFromCloud(),
             loadGachaFromCloud(),
             loadBannersFromCloud(),
-            loadConfigFromCloud()
         ]);
-        console.log('🔄 Real-time refresh dari Firebase');
     }, 10000);
 
     // ==================== INIT ====================
@@ -4912,51 +5039,17 @@ Terima kasih! 🙏
         const dot = document.getElementById(dotId);
         if (dot) dot.classList.add('selected');
 
-        // Load semua data dari Firebase
+        // Load konten dari Firebase
         loadProductsFromCloud();
         loadGachaFromCloud();
         loadBannersFromCloud();
-        loadConfigFromCloud();
+        // Config di-load oleh enterSystem()
 
         loadPaymentSettings();
         updateMemberSelect();
 
-        const session = localStorage.getItem('uno_session');
-        if (session) {
-            try {
-                const user = JSON.parse(session);
-                if (user && user.name) {
-                    // Tunggu loading screen selesai (~2.8 detik) baru restore session
-                    setTimeout(async () => {
-                        try {
-                            if (user.role === 'developer') {
-                                login(user);
-                                return;
-                            }
-                            // Verifikasi device
-                            const key = user.name.replace(/[.#$[\]]/g, '_');
-                            const memberData = await fbGet('members/' + key);
-                            const myDeviceId = getDeviceId();
-                            if (memberData && memberData.deviceId && memberData.deviceId !== myDeviceId) {
-                                // Device direset - tampilkan login screen
-                                localStorage.removeItem('uno_session');
-                                const ls = document.getElementById('login-screen');
-                                if (ls) { ls.style.display = 'flex'; initLoginScreen(); }
-                                return;
-                            }
-                            login(user);
-                        } catch(e) {
-                            // Gagal verifikasi - tetap login pakai session lokal
-                            console.log('Session verify error, using local session:', e);
-                            login(user);
-                        }
-                    }, 3200);
-                }
-            } catch (e) {
-                console.log('Session error:', e);
-                localStorage.removeItem('uno_session');
-            }
-        }
+        // Session restore dihandle oleh restoreSession() yang dipanggil
+        // setelah loading screen selesai - tidak perlu di sini
 
         setInterval(() => {
             if (document.getElementById('adminDashboardModal')?.style.display === 'flex') {
