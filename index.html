@@ -463,14 +463,8 @@
             display:flex; width:300%;
             transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform;
-            align-items: flex-start;
         }
-        .page-slide {
-            width:calc(100% / 3); flex-shrink:0; padding:14px 14px 0;
-            min-height:calc(100vh - 140px);
-            overflow-y:auto; overflow-x:hidden;
-            -webkit-overflow-scrolling:touch;
-        }
+        .page-slide { width:calc(100% / 3); flex-shrink:0; min-height:10px; padding:14px 14px 0; }
 
         /* Neon flash overlay */
         .slide-flash {
@@ -840,7 +834,7 @@
             background: rgba(255,255,255,0.025);
             border: 1px solid var(--glass-border);
             border-radius: 18px; padding: 14px; margin-bottom: 10px;
-            position: relative; overflow: visible;
+            position: relative; overflow: hidden;
         }
         .profile-section::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -1012,7 +1006,98 @@
         }
         @keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 10%{opacity:1} 90%{opacity:0.3} 100%{transform:translateY(-10vh) scale(1);opacity:0} }
 
-        /* ── CSS duplikat dihapus — definisi sudah ada di atas ── */
+        header {
+            padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(2,4,6,0.88); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        header::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--purple), transparent);
+            opacity: 0.4;
+        }
+        .logo {
+            font-family: 'Orbitron'; font-size: 1rem; font-weight: 900; letter-spacing: 2px;
+            background: linear-gradient(90deg, #fff, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .profile-btn {
+            width: 36px; height: 36px; border-radius: 10px;
+            border: 1.5px solid var(--accent); object-fit: cover;
+            box-shadow: 0 0 10px rgba(0,234,255,0.4);
+        }
+
+        .app-container { max-width: 480px; margin: 0 auto; padding: 14px; }
+
+        /* ── Hero Banner ── */
+        .hero-card {
+            border-radius: 22px; overflow: hidden; margin-bottom: 14px;
+            border: 1px solid rgba(255,255,255,0.1); height: 165px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6); position: relative;
+        }
+        .slider-wrapper { display: flex; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .slide { min-width: 100%; height: 100%; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ── Gacha Box (upgraded) ── */
+        .gacha-box {
+            background: linear-gradient(135deg, rgba(174,0,255,0.06), rgba(0,234,255,0.04));
+            border: 1px solid rgba(174,0,255,0.2);
+            padding: 14px; border-radius: 18px; margin-bottom: 14px;
+            position: relative; overflow: hidden;
+        }
+        .gacha-box::before {
+            content: ''; position: absolute; width: 220px; height: 220px; border-radius: 50%;
+            right: -60px; top: -60px;
+            background: radial-gradient(circle, rgba(174,0,255,0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .gacha-title {
+            font-family: 'Orbitron'; font-size: 11px; color: var(--accent);
+            margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-weight: 700;
+        }
+
+        .prize-list { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 12px; max-height: 180px; overflow-y: auto; }
+        .prize-item { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: rgba(255,255,255,0.02); border-radius: 8px; font-size: 8px; transition: 0.2s; }
+        .prize-item:hover { background: rgba(255,255,255,0.04); }
+        .prize-item i { width: 14px; color: var(--gold); }
+        .prize-item .prize-name { flex: 1; color: #fff; }
+        .prize-item .prize-chance { font-size: 7px; padding: 2px 6px; background: rgba(255,204,0,0.15); border-radius: 10px; color: var(--gold); }
+        .prize-legendary { border-left: 2px solid #ff00aa; }
+        .prize-epic { border-left: 2px solid #aa00ff; }
+        .prize-rare { border-left: 2px solid #00aaff; }
+        .prize-common { border-left: 2px solid #aaa; }
+
+        /* ── Category Grid (upgraded) ── */
+        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+        .cat-btn {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 12px 4px 10px; border-radius: 14px; text-align: center;
+            transition: all 0.25s; position: relative; overflow: hidden; cursor: pointer;
+        }
+        .cat-btn.active {
+            background: rgba(0,234,255,0.12); border-color: var(--accent);
+            box-shadow: 0 0 18px rgba(0,234,255,0.25);
+        }
+        .cat-btn.active i, .cat-btn.active span { color: var(--accent); }
+        .cat-btn::after {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 0; height: 2px; background: var(--accent); border-radius: 2px; transition: 0.3s;
+        }
+        .cat-btn.active::after { width: 55%; }
+        .cat-btn i { font-size: 1.2rem; margin-bottom: 5px; color: rgba(0,234,255,0.5); display: block; }
+        .cat-btn span { font-size: 8px; font-weight: 700; text-transform: uppercase; font-family: 'Orbitron'; color: rgba(255,255,255,0.5); }
+
+        /* ── Glass Cards (upgraded) ── */
+        .glass-card {
+            background: rgba(255,255,255,0.03); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 18px;
+            padding: 16px; margin-bottom: 12px; transition: 0.3s;
+        }
+        .glass-card:hover { border-color: rgba(0,234,255,0.15); }
+        .card-title { font-family: 'Orbitron'; font-size: 13px; margin-bottom: 4px; letter-spacing: 1px; }
+        .price-tag { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-bottom: 12px; font-family: 'Rajdhani'; }
 
         .buy-btn {
             width: 100%; padding: 12px; border-radius: 12px; border: none;
@@ -1103,9 +1188,35 @@
         .color-dot.selected::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #000; font-weight: 900; font-size: 14px; text-shadow: 0 0 3px rgba(255,255,255,0.5); }
         .color-dot.selected { border: 2px solid #fff; box-shadow: 0 0 10px rgba(255,255,255,0.4); transform: scale(1.1); }
 
-        .tab-nav { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 5px; }
-        .tab-item { white-space: nowrap; padding: 7px 12px; background: var(--glass); border-radius: 8px; font-size: 9px; font-family: 'Orbitron'; cursor: pointer; }
-        .tab-item.active { background: var(--dev-color); color: #fff; }
+        .tab-nav {
+            display: flex; gap: 5px;
+            overflow-x: auto; margin-bottom: 14px;
+            padding: 4px 0 8px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        .tab-nav::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,0,85,0.25), transparent);
+        }
+        .tab-nav::-webkit-scrollbar { display: none; }
+        .tab-item {
+            white-space: nowrap; padding: 8px 13px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px; font-size: 9px; font-family: 'Orbitron';
+            cursor: pointer; transition: 0.2s; flex-shrink: 0;
+            color: rgba(255,255,255,0.45); font-weight: 700; letter-spacing: 0.5px;
+            min-height: 36px; display: flex; align-items: center; justify-content: center;
+        }
+        .tab-item:active { transform: scale(0.96); }
+        .tab-item.active {
+            background: linear-gradient(135deg, var(--dev-color), #ff4400);
+            border-color: var(--dev-color); color: #fff;
+            box-shadow: 0 0 14px rgba(255,0,85,0.35);
+        }
 
         .payment-detail-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; margin-bottom: 16px; }
         .payment-method { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 10px; padding: 10px; margin: 12px 0; }
@@ -2256,7 +2367,7 @@
             </button>
         </div>
 
-        <div style="height:80px;"></div>
+        <div style="height:8px;"></div>
     </div><!-- end page-profile -->
 
         </div><!-- end pages-track -->
@@ -2668,6 +2779,21 @@
         </div>
 
         <div id="adm-config" style="display:none;">
+            <!-- RENAME STORE -->
+            <div style="background:linear-gradient(135deg,rgba(0,234,255,0.06),rgba(174,0,255,0.04)); border:1px solid rgba(0,234,255,0.25); border-radius:12px; padding:12px; margin-bottom:14px; position:relative; overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple));"></div>
+                <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; margin-bottom:6px; letter-spacing:1px; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-store"></i> GANTI NAMA TOKO
+                </p>
+                <p style="font-size:8px; color:#aaa; margin-bottom:10px;">Nama toko akan tampil di header, loading screen, dan login.</p>
+                <div style="position:relative; margin-bottom:8px;">
+                    <i class="fa-solid fa-pen" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--accent); font-size:11px; opacity:0.7;"></i>
+                    <input type="text" id="cfg-store-name" placeholder="Nama Toko (contoh: UNO-STOREZZ)" style="padding-left:32px;" maxlength="30">
+                </div>
+                <button onclick="saveStoreName()" style="background:linear-gradient(135deg,var(--accent),var(--purple)); color:#000; border:none; padding:10px; border-radius:10px; font-family:'Orbitron'; font-size:9px; font-weight:900; cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:6px; min-height:40px;">
+                    <i class="fa-solid fa-floppy-disk"></i> SIMPAN & PUBLISH NAMA TOKO
+                </button>
+            </div>
             <div style="background:rgba(0,234,255,0.04); border:1px solid var(--accent); border-radius:12px; padding:12px; margin-bottom:14px;">
                 <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; margin-bottom:6px; letter-spacing:1px;">
                     <i class="fa-solid fa-bars"></i> ATUR URUTAN MENU
@@ -3633,7 +3759,13 @@
 
         // Load konten lain
         loadBannersFromCloud();
-        loadProductsFromCloud();
+        loadProductsFromCloud().then(() => {
+            // Setelah produk dimuat, paksa render store grid
+            setTimeout(() => {
+                if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
+                if (typeof window.renderPopularProducts === 'function') window.renderPopularProducts();
+            }, 100);
+        });
         loadGachaFromCloud();
     }
 
@@ -4189,6 +4321,14 @@ Terima kasih! 🙏
             const mi = document.getElementById('cfg-music');
             if (vi && config.bgVideo) vi.value = config.bgVideo;
             if (mi && config.bgMusic) mi.value = config.bgMusic;
+            // Isi nama toko saat ini
+            const sn = document.getElementById('cfg-store-name');
+            if (sn) {
+                const currentName = document.getElementById('header-store-name')?.textContent
+                    || document.querySelector('.logo')?.textContent
+                    || config.storeName || 'UNO-STOREZZ';
+                sn.value = currentName;
+            }
         }
         if (t === 'prices') renderAdminProductList();
         if (t === 'gacha') {
@@ -4202,6 +4342,37 @@ Terima kasih! 🙏
             updateMemberSelect();
         }
     }
+
+    // ========== STORE NAME FUNCTIONS ==========
+    function saveStoreName() {
+        const input = document.getElementById('cfg-store-name');
+        if (!input) return;
+        const newName = input.value.trim();
+        if (!newName) { showToast('⚠️', 'Nama toko tidak boleh kosong!', 'error', 2500); return; }
+        if (newName.length > 30) { showToast('⚠️', 'Nama toko maksimal 30 karakter!', 'error', 2500); return; }
+
+        // Simpan ke config
+        config.storeName = newName;
+        saveLocal();
+
+        // Update semua elemen nama toko di halaman
+        const targets = [
+            document.getElementById('header-store-name'),
+            document.querySelector('.logo'),
+            document.getElementById('load-store-name'),
+            document.getElementById('login-store-title')
+        ];
+        targets.forEach(el => { if (el) el.textContent = newName; });
+
+        // Update title browser
+        document.title = newName + ' | PREMIUM STORE';
+
+        // Publish ke Firebase lewat publishConfigToCloud
+        publishConfigToCloud();
+
+        showToast('✅', 'Nama toko berhasil diubah ke "' + newName + '"!', 'success', 3000);
+    }
+    window.saveStoreName = saveStoreName;
 
     // ========== JULUKAN FUNCTIONS (ASLI) ==========
     function openJulukanModal(memberName) {
@@ -4408,11 +4579,17 @@ Terima kasih! 🙏
             document.getElementById('benefit-rows-container').innerHTML = '';
             
             const activeCat = document.querySelector('.cat-btn.active span')?.innerText.toLowerCase() || 'sewa';
-            if (activeCat === category) {
-                loadCategory(category);
-            }
+            if (activeCat === category) loadCategory(category);
             
-            alert("✅ Produk berhasil ditambahkan dan di-publish!");
+            // Update halaman STORE grid
+            if (typeof renderStoreGrid === 'function') renderStoreGrid();
+            else if (typeof renderStorePage === 'function') renderStorePage();
+            
+            // Update popular products
+            if (typeof renderPopularProducts === 'function') renderPopularProducts();
+            if (typeof updateQuickStats === 'function') updateQuickStats();
+            
+            showToast('PRODUK', 'Produk berhasil ditambahkan!', 'success', 2500);
         } else {
             alert("⚠️ Mohon isi nama dan harga produk!");
         }
@@ -4489,11 +4666,10 @@ Terima kasih! 🙏
                 publishProductsToCloud();
                 
                 const activeCat = document.querySelector('.cat-btn.active span')?.innerText.toLowerCase() || 'sewa';
-                if (activeCat === category) {
-                    loadCategory(category);
-                }
-                
-                alert("✅ Produk berhasil dihapus!");
+                if (activeCat === category) loadCategory(category);
+                if (typeof renderStoreGrid === 'function') renderStoreGrid();
+                if (typeof renderPopularProducts === 'function') renderPopularProducts();
+                showToast('HAPUS', 'Produk berhasil dihapus!', 'success', 2000);
             }
         }
     }
@@ -6033,12 +6209,6 @@ Terima kasih! 🙏
         localStorage.setItem('uno_cfg', JSON.stringify(config));
     }
 
-    // buyItem = alias openPay (dipanggil dari renderStoreGrid)
-    function buyItem(name, priceStr) {
-        const rawP = (priceStr||'0').toString().replace(/[^0-9]/g,'');
-        openPay(name, rawP || priceStr);
-    }
-
     function openModal(id) {
         const modal = document.getElementById(id);
         if (modal) modal.style.display = 'flex';
@@ -6084,7 +6254,13 @@ Terima kasih! 🙏
 
         // ── Logic hooks ──
         if (page === 'profile') syncUI();
-        if (page === 'store')   renderStorePage();
+        if (page === 'store') {
+            // Gunakan window.renderStoreGrid agar bisa akses dari scope manapun
+            setTimeout(() => {
+                if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
+                else if (typeof renderStorePage === 'function') renderStorePage();
+            }, 50);
+        }
 
         loadConfigFromCloud();
     }
@@ -6306,12 +6482,8 @@ Terima kasih! 🙏
 
     async function publishConfigToCloud() {
         try {
-            const storeName = document.getElementById('header-store-name')?.innerText
-                || document.querySelector('.logo-text')?.innerText
-                || document.querySelector('.logo')?.innerText
-                || 'UNO-STOREZZ';
             const cfg = {
-                store_name: storeName,
+                store_name: config.storeName || document.querySelector('.logo')?.innerText || 'UNO-STOREZZ',
                 bg_video: config.bgVideo || '',
                 bg_music: config.bgMusic || 'https://files.catbox.moe/2n6pxr.mp3',
                 accent_color: '',  // Per-user preference, tidak di-publish ke Firebase
@@ -6349,6 +6521,13 @@ Terima kasih! 🙏
 
     // ===== LOAD KONTEN DARI FIREBASE (dijalankan saat load & real-time refresh) =====
     async function loadProductsFromCloud() {
+        // ✅ Render dari lokal dulu (instant, tanpa tunggu Firebase)
+        const hasLocal = config.prices && Object.values(config.prices).some(arr => Array.isArray(arr) && arr.length > 0);
+        if (hasLocal) {
+            loadCategory('sewa');
+            if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
+            if (typeof window.renderPopularProducts === 'function') window.renderPopularProducts();
+        }
         try {
             const prices = await fbGet('konten/prices');
             if (prices && typeof prices === 'object') {
@@ -6362,7 +6541,10 @@ Terima kasih! 🙏
         } catch (e) {
             console.log('⚠️ Firebase produk offline, pakai lokal');
         }
+        // ✅ Render ulang setelah Firebase data masuk
         loadCategory('sewa');
+        if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
+        if (typeof window.renderPopularProducts === 'function') window.renderPopularProducts();
     }
 
     async function loadGachaFromCloud() {
@@ -6401,14 +6583,15 @@ Terima kasih! 🙏
             const cfg = await fbGet('konten/config');
             if (cfg && typeof cfg === 'object') {
                 if (cfg.store_name) {
-                    const logoText = document.getElementById('header-store-name');
-                    if (logoText) logoText.innerText = cfg.store_name;
-                    const logoOld = document.querySelector('.logo');
-                    if (logoOld) logoOld.innerText = cfg.store_name;
-                    const loadName = document.getElementById('load-store-name');
-                    if (loadName) loadName.textContent = cfg.store_name;
-                    const loginTitle = document.getElementById('login-store-title');
-                    if (loginTitle) loginTitle.textContent = cfg.store_name;
+                    config.storeName = cfg.store_name;
+                    const targets = [
+                        document.querySelector('.logo'),
+                        document.getElementById('header-store-name'),
+                        document.getElementById('load-store-name'),
+                        document.getElementById('login-store-title')
+                    ];
+                    targets.forEach(el => { if (el) el.textContent = cfg.store_name; });
+                    document.title = cfg.store_name + ' | PREMIUM STORE';
                 }
                 if (cfg.bg_video) {
                     // Hanya reload video kalau URL-nya benar-benar beda
@@ -6605,6 +6788,9 @@ Terima kasih! 🙏
             });
             wrap.innerHTML = hasItems ? `<div class="store-prod-grid">${cards}</div>` : '<div class="store-empty"><i class="fa-solid fa-box-open"></i>Belum ada produk.<br>Cek lagi nanti!</div>';
         }
+        // Expose ke global scope agar bisa dipanggil dari script lain
+        window.renderStoreGrid = renderStoreGrid;
+        window.renderStorePage = renderStorePage;
 
                 function updateQuickStats() {
             const prods = config.prices ? Object.values(config.prices).flat().length : 0;
@@ -6661,12 +6847,10 @@ Terima kasih! 🙏
 
         // ── Subscription Countdown ──
         function updateSubCountdown() {
-            if (!currentUser) return;
-            const memberData = config.members.find(m => m.name === currentUser.name);
-            if (!memberData || !memberData.subs || !memberData.subs.length) return;
+            if (!currentUser || !currentUser.subscriptions || !currentUser.subscriptions.length) return;
             const now = Date.now();
-            const active = memberData.subs
-                .map(s => ({ ...s, daysLeft: Math.ceil((new Date(s.expiry) - now) / 86400000) }))
+            const active = currentUser.subscriptions
+                .map(s => ({ ...s, daysLeft: Math.ceil((new Date(s.endDate) - now) / 86400000) }))
                 .filter(s => s.daysLeft > 0)
                 .sort((a,b) => a.daysLeft - b.daysLeft);
             if (!active.length) return;
@@ -6685,8 +6869,7 @@ Terima kasih! 🙏
             if (sub)   sub.textContent   = `Aktif · ${s.daysLeft} hari tersisa`;
             if (days)  days.textContent  = s.daysLeft;
             if (bar) {
-                const startMs = s.start ? new Date(s.start) : new Date(new Date(s.expiry) - (s.days||30)*86400000);
-                const total = Math.ceil((new Date(s.expiry) - startMs) / 86400000) || 30;
+                const total = Math.ceil((new Date(s.endDate) - new Date(s.startDate)) / 86400000) || 30;
                 bar.style.width = Math.max(5, (s.daysLeft / total) * 100) + '%';
                 bar.style.background = s.daysLeft <= 3
                     ? 'linear-gradient(90deg,#ff5555,#ff0055)'
@@ -6700,10 +6883,9 @@ Terima kasih! 🙏
             const wrap = document.getElementById('popular-products-scroll');
             if (!wrap || !config.prices) return;
             const allProds = Object.entries(config.prices).flatMap(([cat, items]) =>
-                (items||[]).map(item => ({...item, cat}))
+                items.map(item => ({...item, cat}))
             ).slice(0, 8);
             if (!allProds.length) { wrap.style.display = 'none'; return; }
-            wrap.style.display = '';
             const emojis = { sewa:'🤖', premium:'👑', script:'💜', lainnya:'🎁' };
             const gradients = {
                 sewa:  ['rgba(0,234,255,0.1)','rgba(0,100,255,0.07)'],
@@ -6714,23 +6896,19 @@ Terima kasih! 🙏
             wrap.innerHTML = allProds.map((p, i) => {
                 const [c1,c2] = gradients[p.cat] || gradients.lainnya;
                 const badge = i===0?'<div class="prod-badge badge-hot">HOT</div>':i===1?'<div class="prod-badge badge-new">NEW</div>':'';
-                const rawP = (p.p || p.price || p.harga || '0').toString().replace(/[^0-9]/g,'');
-                const priceNum = parseInt(rawP)||0;
-                const price = priceNum > 0 ? 'Rp '+priceNum.toLocaleString('id-ID') : (p.p||'—');
-                const name = p.n || p.name || p.nama || 'Produk';
-                const sn = name.replace(/'/g,"\\'");
-                return `<div class="prod-card" onclick="openPay('${sn}','${rawP}')">
+                const price = p.price ? 'Rp '+Number(p.price).toLocaleString('id-ID') : p.harga||'—';
+                return `<div class="prod-card" onclick="openModal('paymentModal')">
                     <div class="prod-img" style="--c1:${c1};--c2:${c2}">
                         <div class="prod-img-bg"></div>
                         ${badge}
                         <span style="position:relative;z-index:1;">${emojis[p.cat]||'🎁'}</span>
                     </div>
                     <div class="prod-body">
-                        <div class="prod-name">${name}</div>
+                        <div class="prod-name">${p.name||p.nama||'Produk'}</div>
                         <div class="prod-desc">${p.cat.toUpperCase()}</div>
                         <div class="prod-foot">
                             <div class="prod-price">${price}</div>
-                            <button class="prod-buy" onclick="event.stopPropagation();openPay('${sn}','${rawP}')"><i class="fa-solid fa-plus"></i></button>
+                            <button class="prod-buy" onclick="event.stopPropagation();"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
                 </div>`;
@@ -6787,8 +6965,18 @@ Terima kasih! 🙏
         };
         setTimeout(initBannerDots, 3200);
 
-        // ── Chat badge sync to header ──
+        // ── Chat badge sync ──
+        const _origCB = window.updateChatBadge;
         window.updateChatBadge = function(count) {
+            if (_origCB) _origCB(count);
+            const hb = document.getElementById('header-chat-badge');
+            if (hb) hb.style.display = count>0?'block':'none';
+        };
+
+        // ── Chat badge sync to header ──
+        const _origUpdateChatBadge = window.updateChatBadge;
+        window.updateChatBadge = function(count) {
+            if (_origUpdateChatBadge) _origUpdateChatBadge(count);
             const hb = document.getElementById('header-chat-badge');
             if (hb) hb.style.display = count > 0 ? 'block' : 'none';
         };
