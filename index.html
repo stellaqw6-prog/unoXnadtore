@@ -1306,6 +1306,52 @@
         .subs-item.expired { opacity: 0.5; border-color: rgba(255,0,0,0.3); }
         .delete-member-btn { background: rgba(255,0,85,0.1); border: 1px solid var(--dev-color); color: var(--dev-color); padding: 7px 12px; border-radius: 8px; font-size: 8px; font-family: 'Orbitron'; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 4px; min-height: 36px; }
         .delete-member-btn:active { background: var(--dev-color); color: #000; transform: scale(0.98); }
+        /* ── COIN ADMIN STYLES ── */
+        .members-stats { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .stat-card-coins { flex:1; min-width:60px; background:rgba(255,204,0,0.06); border:1px solid rgba(255,204,0,0.25); border-radius:10px; padding:8px; text-align:center; position:relative; overflow:hidden; }
+        .stat-card-coins .stat-value { font-family:'Orbitron'; font-size:13px; font-weight:900; color:var(--gold); }
+        .stat-card-coins .stat-label { font-size:7px; color:rgba(255,204,0,0.6); margin-top:2px; font-family:'Orbitron'; letter-spacing:1px; }
+        .member-coin-row { display:flex; align-items:center; gap:6px; background:rgba(255,204,0,0.06); border:1px solid rgba(255,204,0,0.18); border-radius:8px; padding:5px 8px; margin-bottom:8px; }
+        .member-coin-val { font-family:'Orbitron'; font-size:12px; font-weight:900; color:var(--gold); flex:1; }
+        .member-coin-level { font-size:9px; color:rgba(255,204,0,0.7); }
+        .edit-coin-btn { background:linear-gradient(90deg,rgba(255,204,0,0.15),rgba(255,136,0,0.15)); border:1px solid rgba(255,204,0,0.4); color:var(--gold); border-radius:7px; padding:4px 10px; font-family:'Orbitron'; font-size:8px; font-weight:700; cursor:pointer; transition:0.2s; display:flex; align-items:center; gap:4px; white-space:nowrap; }
+        .edit-coin-btn:hover { background:rgba(255,204,0,0.3); }
+        .member-search-wrap { position:relative; margin-bottom:10px; }
+        .member-search-wrap i { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:11px; pointer-events:none; }
+        .member-search-wrap input { padding-left:30px; }
+        /* Modal edit koin */
+        #coin-edit-overlay { position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); display:none; align-items:flex-end; justify-content:center; overflow:hidden; }
+        #coin-edit-overlay.open { display:flex; }
+        .coin-edit-sheet { background:#0a0f15; border:1px solid rgba(255,204,0,0.25); border-radius:22px 22px 0 0; padding:20px 18px 36px; width:100%; max-width:480px; position:relative; max-height:90dvh; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+        .coin-edit-sheet::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--gold),#ff8800,var(--gold)); border-radius:22px 22px 0 0; }
+        .coin-edit-handle { width:36px; height:4px; background:rgba(255,255,255,0.15); border-radius:2px; margin:0 auto 16px; }
+        .coin-edit-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+        .coin-edit-avatar { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--gold),#ff8800); display:flex; align-items:center; justify-content:center; font-size:20px; color:#000; font-weight:900; flex-shrink:0; box-shadow:0 0 15px rgba(255,204,0,0.4); }
+        .coin-edit-name { font-family:'Orbitron'; font-size:13px; font-weight:900; color:#fff; }
+        .coin-edit-current { font-size:10px; color:var(--gold); margin-top:2px; font-family:'Orbitron'; }
+        .coin-edit-section { background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:12px; padding:12px; margin-bottom:10px; }
+        .coin-edit-section-title { font-family:'Orbitron'; font-size:8px; color:var(--text-muted); letter-spacing:2px; margin-bottom:10px; display:flex; align-items:center; gap:5px; }
+        .coin-edit-input-row { display:flex; align-items:center; gap:8px; }
+        .coin-edit-input { flex:1; background:rgba(255,204,0,0.06); border:1.5px solid rgba(255,204,0,0.3); border-radius:10px; padding:10px 14px; color:var(--gold); font-family:'Orbitron'; font-size:18px; font-weight:900; text-align:center; outline:none; transition:0.2s; }
+        .coin-edit-input:focus { border-color:var(--gold); box-shadow:0 0 12px rgba(255,204,0,0.2); }
+        .coin-quick-btn { background:rgba(255,204,0,0.1); border:1px solid rgba(255,204,0,0.25); color:var(--gold); border-radius:8px; padding:6px 10px; font-family:'Orbitron'; font-size:8px; cursor:pointer; transition:0.2s; white-space:nowrap; }
+        .coin-quick-btn:hover { background:rgba(255,204,0,0.25); }
+        .coin-quick-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+        .coin-edit-reason { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:8px; padding:8px 10px; color:#fff; font-family:'Rajdhani'; font-size:13px; outline:none; margin-top:8px; resize:none; height:46px; }
+        .coin-edit-reason:focus { border-color:rgba(255,204,0,0.4); }
+        .coin-edit-actions { display:flex; gap:8px; margin-top:14px; }
+        .coin-edit-save { flex:1; background:linear-gradient(90deg,var(--gold),#ff8800); color:#000; border:none; padding:13px; border-radius:12px; font-family:'Orbitron'; font-size:10px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 0 16px rgba(255,204,0,0.3); transition:0.2s; }
+        .coin-edit-save:hover { transform:translateY(-1px); box-shadow:0 0 22px rgba(255,204,0,0.5); }
+        .coin-edit-cancel { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.7); border:1px solid var(--glass-border); padding:13px 18px; border-radius:12px; font-family:'Orbitron'; font-size:9px; cursor:pointer; transition:0.2s; }
+        .coin-edit-cancel:hover { background:rgba(255,255,255,0.1); }
+        .coin-log-item { display:flex; justify-content:space-between; align-items:center; padding:5px 8px; background:rgba(255,255,255,0.03); border-radius:6px; margin-bottom:4px; font-size:9px; }
+        .coin-log-plus { color:#00ff88; font-family:'Orbitron'; font-size:10px; font-weight:900; }
+        .coin-log-minus { color:var(--red); font-family:'Orbitron'; font-size:10px; font-weight:900; }
+        .coin-log-set { color:var(--gold); font-family:'Orbitron'; font-size:10px; font-weight:900; }
+        .coin-log-date { color:var(--text-muted); font-size:8px; }
+        .coin-log-reason { color:rgba(255,255,255,0.6); font-size:8px; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .coin-warning-banner { background:rgba(255,0,85,0.08); border:1px solid rgba(255,0,85,0.25); border-radius:8px; padding:8px 10px; margin-bottom:10px; font-size:8px; color:rgba(255,100,100,0.9); display:flex; align-items:flex-start; gap:6px; }
+        .coin-warning-banner i { color:var(--red); margin-top:1px; flex-shrink:0; }
 
         .price-header { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px solid var(--glass-border); }
         .price-header i { color: var(--dev-color); font-size: 1.1rem; }
@@ -1934,6 +1980,44 @@
         .redeem-admin-toggle{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;transition:0.2s;flex-shrink:0;position:relative;}
         .redeem-admin-toggle.on{background:linear-gradient(90deg,#00ff88,#00cc66);}
         .redeem-admin-toggle.off{background:rgba(255,255,255,0.1);}
+        .redeem-admin-action-btn{width:26px;height:26px;border-radius:6px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:0.2s;}
+        .redeem-edit-btn{background:rgba(0,234,255,0.12);color:var(--accent);}
+        .redeem-edit-btn:hover{background:rgba(0,234,255,0.25);}
+        .redeem-del-btn{background:rgba(255,0,85,0.12);color:var(--red);}
+        .redeem-del-btn:hover{background:rgba(255,0,85,0.28);}
+        .redeem-add-btn{width:100%;background:rgba(0,234,255,0.07);border:1px dashed rgba(0,234,255,0.3);border-radius:8px;padding:8px;color:var(--accent);font-family:'Orbitron';font-size:9px;cursor:pointer;transition:0.2s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px;}
+        .redeem-add-btn:hover{background:rgba(0,234,255,0.15);}
+        /* Modal edit hadiah */
+        #redeem-edit-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;overflow:hidden;}
+        #redeem-edit-overlay.open{display:flex;}
+        .redeem-edit-sheet{background:#0a1018;border:1px solid rgba(0,234,255,0.2);border-radius:20px 20px 0 0;padding:18px 16px 32px;width:100%;max-width:480px;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+        .redeem-edit-title{font-family:'Orbitron';font-size:10px;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+        .redeem-edit-field{margin-bottom:10px;}
+        .redeem-edit-field label{font-size:9px;color:var(--text-muted);font-family:'Orbitron';display:block;margin-bottom:4px;}
+        .redeem-edit-field input,.redeem-edit-field textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;color:#fff;font-family:'Rajdhani';font-size:13px;outline:none;}
+        .redeem-edit-field input:focus,.redeem-edit-field textarea:focus{border-color:var(--accent);}
+        .redeem-edit-field textarea{resize:none;height:52px;}
+        .redeem-edit-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+        .redeem-edit-actions{display:flex;gap:8px;margin-top:14px;}
+        .redeem-edit-save{flex:1;background:linear-gradient(90deg,var(--accent),var(--purple));color:#000;border:none;padding:10px;border-radius:10px;font-family:'Orbitron';font-size:9px;font-weight:900;cursor:pointer;}
+        .redeem-edit-cancel{background:rgba(255,255,255,0.07);color:#fff;border:1px solid rgba(255,255,255,0.1);padding:10px 16px;border-radius:10px;font-family:'Orbitron';font-size:9px;cursor:pointer;}
+        /* ── EMOJI PICKER ── */
+        .emoji-picker-label{font-size:9px;color:var(--text-muted);font-family:'Orbitron';display:block;margin-bottom:6px;letter-spacing:1px;}
+        .emoji-selected-preview{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(0,234,255,0.25);border-radius:10px;padding:8px 12px;cursor:pointer;transition:0.2s;margin-bottom:6px;user-select:none;}
+        .emoji-selected-preview:hover{border-color:var(--accent);background:rgba(0,234,255,0.07);}
+        .emoji-selected-big{font-size:26px;line-height:1;}
+        .emoji-selected-hint{font-size:9px;color:var(--text-muted);font-family:'Orbitron';}
+        .emoji-grid-wrap{display:none;background:rgba(6,12,16,0.98);border:1px solid rgba(0,234,255,0.2);border-radius:12px;padding:8px;margin-bottom:8px;}
+        .emoji-grid-wrap.open{display:block;}
+        .emoji-category-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+        .emoji-cat-btn{background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:6px;padding:4px 8px;color:rgba(255,255,255,0.5);font-size:9px;cursor:pointer;transition:0.15s;font-family:'Orbitron';letter-spacing:0.5px;}
+        .emoji-cat-btn.active{background:rgba(0,234,255,0.12);border-color:var(--accent);color:var(--accent);}
+        .emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:130px;overflow-y:auto;}
+        .emoji-grid::-webkit-scrollbar{width:3px;}
+        .emoji-grid::-webkit-scrollbar-thumb{background:rgba(0,234,255,0.3);border-radius:3px;}
+        .emoji-opt{font-size:22px;text-align:center;padding:5px;border-radius:8px;cursor:pointer;transition:0.15s;line-height:1.2;border:2px solid transparent;}
+        .emoji-opt:hover{background:rgba(0,234,255,0.1);transform:scale(1.15);}
+        .emoji-opt.selected{border-color:var(--accent);background:rgba(0,234,255,0.15);}
 
         /* Redeem confirm modal */
         .redeem-confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:7000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(6px);}
@@ -2781,9 +2865,63 @@
                     <div class="stat-value" id="total-regular-count">0</div>
                     <div class="stat-label" style="font-size:7px;">Member</div>
                 </div>
+                <div class="stat-card-coins stat-card">
+                    <i class="fa-solid fa-coins" style="color:var(--gold);font-size:14px;margin-bottom:2px;"></i>
+                    <div class="stat-value" id="total-coins-count" style="color:var(--gold);font-size:12px;">0</div>
+                    <div class="stat-label" style="font-size:7px;color:rgba(255,204,0,0.6);">Total Koin</div>
+                </div>
+            </div>
+
+            <!-- Search member -->
+            <div class="member-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="member-search-input" placeholder="Cari nama member..." oninput="renderMemberList()" style="font-size:12px;">
             </div>
             
             <div id="member-list-container" class="members-list"></div>
+
+            <!-- MODAL EDIT KOIN MEMBER -->
+            <div id="coin-edit-overlay" onclick="if(event.target===this)closeCoinEdit()">
+                <div class="coin-edit-sheet">
+                    <div class="coin-edit-handle"></div>
+                    <div class="coin-edit-header">
+                        <div class="coin-edit-avatar" id="ce-avatar">?</div>
+                        <div>
+                            <div class="coin-edit-name" id="ce-name">Member</div>
+                            <div class="coin-edit-current">Koin saat ini: <span id="ce-current-val" style="font-weight:900;">0</span> 🪙</div>
+                        </div>
+                    </div>
+                    <div class="coin-warning-banner">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Perubahan koin akan dicatat di log. Edit berlebihan bisa dilihat semua developer sebagai tanda kecurangan.</span>
+                    </div>
+                    <input type="hidden" id="ce-member-name">
+                    <div class="coin-edit-section">
+                        <div class="coin-edit-section-title"><i class="fa-solid fa-coins" style="color:var(--gold);"></i> SET JUMLAH KOIN BARU</div>
+                        <div class="coin-edit-input-row">
+                            <input class="coin-edit-input" type="number" id="ce-new-val" placeholder="0" min="0">
+                            <span style="font-size:20px;">🪙</span>
+                        </div>
+                        <div class="coin-quick-row">
+                            <button class="coin-quick-btn" onclick="coinQuickSet(0)">Reset 0</button>
+                            <button class="coin-quick-btn" onclick="coinQuickAdj(+50)">+50</button>
+                            <button class="coin-quick-btn" onclick="coinQuickAdj(+100)">+100</button>
+                            <button class="coin-quick-btn" onclick="coinQuickAdj(+500)">+500</button>
+                            <button class="coin-quick-btn" onclick="coinQuickAdj(-50)" style="color:var(--red);border-color:rgba(255,0,85,0.3);">-50</button>
+                            <button class="coin-quick-btn" onclick="coinQuickAdj(-100)" style="color:var(--red);border-color:rgba(255,0,85,0.3);">-100</button>
+                        </div>
+                        <textarea class="coin-edit-reason" id="ce-reason" placeholder="Alasan edit (wajib isi)..."></textarea>
+                    </div>
+                    <div class="coin-edit-section" id="ce-log-section" style="display:none;">
+                        <div class="coin-edit-section-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent);"></i> LOG PERUBAHAN TERAKHIR</div>
+                        <div id="ce-log-list"></div>
+                    </div>
+                    <div class="coin-edit-actions">
+                        <button class="coin-edit-cancel" onclick="closeCoinEdit()">BATAL</button>
+                        <button class="coin-edit-save" onclick="submitCoinEdit()"><i class="fa-solid fa-floppy-disk"></i> SIMPAN PERUBAHAN</button>
+                    </div>
+                </div>
+            </div>
             
             <div class="member-footer-note" style="font-size:7px;">
                 <i class="fa-solid fa-shield-halved"></i> Developer bisa memberi julukan khusus untuk member <i class="fa-solid fa-shield-halved"></i>
@@ -3076,41 +3214,49 @@
             <!-- REDEEM SETTINGS -->
             <div class="redeem-admin-card">
                 <div class="redeem-admin-title"><i class="fa-solid fa-coins"></i> PENGATURAN TUKAR KOIN</div>
-
-                <div class="redeem-admin-row">
-                    <div class="redeem-admin-label">🎰 Spin Gacha</div>
-                    <input class="redeem-admin-input" id="rc-spin" type="number" value="50" min="1">
-                    <span class="redeem-admin-unit">koin / spin</span>
-                    <button class="redeem-admin-toggle on" id="rt-spin" onclick="toggleRedeemType('spin',this)"></button>
-                </div>
-                <div class="redeem-admin-row">
-                    <div class="redeem-admin-label">💸 Diskon 10%</div>
-                    <input class="redeem-admin-input" id="rc-diskon" type="number" value="100" min="1">
-                    <span class="redeem-admin-unit">koin / 10%</span>
-                    <button class="redeem-admin-toggle on" id="rt-diskon" onclick="toggleRedeemType('diskon',this)"></button>
-                </div>
-                <div class="redeem-admin-row">
-                    <div class="redeem-admin-label">📅 Subs +1 Hari</div>
-                    <input class="redeem-admin-input" id="rc-subs1" type="number" value="200" min="1">
-                    <span class="redeem-admin-unit">koin / hari</span>
-                    <button class="redeem-admin-toggle on" id="rt-subs1" onclick="toggleRedeemType('subs1',this)"></button>
-                </div>
-                <div class="redeem-admin-row">
-                    <div class="redeem-admin-label">📅 Subs +3 Hari</div>
-                    <input class="redeem-admin-input" id="rc-subs3" type="number" value="500" min="1">
-                    <span class="redeem-admin-unit">koin / 3 hari</span>
-                    <button class="redeem-admin-toggle on" id="rt-subs3" onclick="toggleRedeemType('subs3',this)"></button>
-                </div>
-                <div class="redeem-admin-row">
-                    <div class="redeem-admin-label">📅 Subs +7 Hari</div>
-                    <input class="redeem-admin-input" id="rc-subs7" type="number" value="1000" min="1">
-                    <span class="redeem-admin-unit">koin / 7 hari</span>
-                    <button class="redeem-admin-toggle on" id="rt-subs7" onclick="toggleRedeemType('subs7',this)"></button>
-                </div>
-
+                <div id="redeem-admin-list"></div>
+                <button class="redeem-add-btn" onclick="openRedeemAddModal()">
+                    <i class="fa-solid fa-plus"></i> TAMBAH HADIAH BARU
+                </button>
                 <button class="save-product-btn" onclick="saveRedeemConfig()" style="margin-top:10px;background:linear-gradient(90deg,var(--gold),#ff8800);color:#000;">
                     <i class="fa-solid fa-floppy-disk"></i> SIMPAN PENGATURAN KOIN
                 </button>
+            </div>
+
+            <!-- Modal Edit / Tambah Hadiah Tukar Koin -->
+            <div id="redeem-edit-overlay" onclick="closeRedeemEditModal(event)">
+                <div class="redeem-edit-sheet">
+                    <div class="redeem-edit-title"><i class="fa-solid fa-pen-to-square"></i> <span id="redeem-edit-mode-label">EDIT HADIAH</span></div>
+                    <input type="hidden" id="re-type-key">
+                    <div class="redeem-edit-field" style="margin-bottom:10px;">
+                        <span class="emoji-picker-label"><i class="fa-solid fa-face-smile"></i> PILIH ICON HADIAH</span>
+                        <div class="emoji-selected-preview" onclick="toggleEmojiGrid()">
+                            <span class="emoji-selected-big" id="re-icon-preview">🎁</span>
+                            <span class="emoji-selected-hint">Tap untuk pilih icon →</span>
+                        </div>
+                        <input type="hidden" id="re-icon" value="🎁">
+                        <div class="emoji-grid-wrap" id="emoji-grid-wrap">
+                            <div class="emoji-category-tabs" id="emoji-cat-tabs"></div>
+                            <div class="emoji-grid" id="emoji-grid-list"></div>
+                        </div>
+                    </div>
+                    <div class="redeem-edit-field">
+                        <label>HARGA (koin)</label>
+                        <input type="number" id="re-cost" placeholder="100" min="1">
+                    </div>
+                    <div class="redeem-edit-field">
+                        <label>NAMA HADIAH</label>
+                        <input type="text" id="re-name" placeholder="Nama hadiah..." maxlength="40">
+                    </div>
+                    <div class="redeem-edit-field">
+                        <label>DESKRIPSI</label>
+                        <textarea id="re-desc" placeholder="Deskripsi singkat..."></textarea>
+                    </div>
+                    <div class="redeem-edit-actions">
+                        <button class="redeem-edit-cancel" onclick="closeRedeemEditModal()">BATAL</button>
+                        <button class="redeem-edit-save" onclick="submitRedeemEdit()"><i class="fa-solid fa-floppy-disk"></i> SIMPAN</button>
+                    </div>
+                </div>
             </div>
             <!-- RENAME STORE -->
             <div style="background:linear-gradient(135deg,rgba(0,234,255,0.06),rgba(174,0,255,0.04)); border:1px solid rgba(0,234,255,0.25); border-radius:12px; padding:12px; margin-bottom:14px; position:relative; overflow:hidden;">
@@ -4762,20 +4908,28 @@ Terima kasih! 🙏
         const container = document.getElementById('member-list-container');
         if (!container) return;
         
+        const searchVal = (document.getElementById('member-search-input')?.value || '').toLowerCase();
+        const filtered = searchVal
+            ? config.members.filter(m => (m.name||'').toLowerCase().includes(searchVal))
+            : config.members;
+
         const totalMembers = config.members.length;
         const totalDevelopers = config.members.filter(m => m.role === 'developer').length;
         const totalRegular = config.members.filter(m => m.role === 'member' || !m.role).length;
+        const totalCoins = config.members.reduce((s, m) => s + (m.coins || 0), 0);
         
         const totalMembersEl = document.getElementById('total-members-count');
         const totalDevelopersEl = document.getElementById('total-developers-count');
         const totalRegularEl = document.getElementById('total-regular-count');
+        const totalCoinsEl = document.getElementById('total-coins-count');
         
         if (totalMembersEl) totalMembersEl.innerText = totalMembers;
         if (totalDevelopersEl) totalDevelopersEl.innerText = totalDevelopers;
         if (totalRegularEl) totalRegularEl.innerText = totalRegular;
+        if (totalCoinsEl) totalCoinsEl.innerText = totalCoins.toLocaleString('id-ID');
         
         let html = '';
-        config.members.forEach((member) => {
+        filtered.forEach((member) => {
             const now = new Date();
             const activeSubs = (member.subs) ? member.subs.filter(s => new Date(s.expiry) > now) : [];
             const expiredSubs = (member.subs) ? member.subs.filter(s => new Date(s.expiry) <= now) : [];
@@ -4783,6 +4937,8 @@ Terima kasih! 🙏
             const isDeveloper = member.role === 'developer';
             const memberClass = isDeveloper ? 'developer' : 'member';
             const avatarInitial = member.name ? member.name.charAt(0).toUpperCase() : '?';
+            const memberCoins = member.coins || 0;
+            const lvlInfo = typeof getLevelInfo === 'function' ? getLevelInfo(memberCoins) : { name: '-', emoji: '🪙' };
             
             let subsHtml = '';
             if (member.subs && member.subs.length > 0) {
@@ -4828,6 +4984,16 @@ Terima kasih! 🙏
                             </div>
                         </div>
                     </div>
+
+                    <!-- KOIN ROW -->
+                    <div class="member-coin-row">
+                        <i class="fa-solid fa-coins" style="color:var(--gold);font-size:13px;"></i>
+                        <span class="member-coin-val">${memberCoins.toLocaleString('id-ID')} 🪙</span>
+                        <span class="member-coin-level">${lvlInfo.emoji} ${lvlInfo.name}</span>
+                        <button class="edit-coin-btn" onclick="openCoinEdit('${member.name}')">
+                            <i class="fa-solid fa-pen"></i> EDIT KOIN
+                        </button>
+                    </div>
                     
                     <div class="member-subscriptions">
                         <div class="subs-title"><i class="fa-solid fa-boxes"></i> SUBS</div>
@@ -4861,7 +5027,7 @@ Terima kasih! 🙏
         container.innerHTML = html || '<div class="empty-products"><i class="fa-solid fa-users"></i><p>Belum ada crew member</p></div>';
     }
 
-    function deleteMember(memberName) {
+        function deleteMember(memberName) {
         if (currentUser && currentUser.name === memberName) {
             alert("❌ Tidak bisa menghapus diri sendiri saat sedang login!");
             return;
@@ -8213,7 +8379,7 @@ async function executeReward(type, cost) {
     }
 }
 
-// ── Admin: toggle on/off reward ──
+// ── Admin: toggle on/off reward (via rendered list) ──
 function toggleRedeemType(type, btn) {
     if (!_redeemConfig[type]) return;
     _redeemConfig[type].enabled = !_redeemConfig[type].enabled;
@@ -8221,12 +8387,108 @@ function toggleRedeemType(type, btn) {
 }
 window.toggleRedeemType = toggleRedeemType;
 
-// ── Admin: simpan config ──
+// ── Admin: render list hadiah di admin panel ──
+function renderRedeemAdminList() {
+    const list = document.getElementById('redeem-admin-list');
+    if (!list) return;
+    const entries = Object.entries(_redeemConfig);
+    if (!entries.length) {
+        list.innerHTML = '<p style="font-size:9px;color:var(--text-muted);text-align:center;padding:8px;">Belum ada hadiah. Tambah baru!</p>';
+        return;
+    }
+    list.innerHTML = entries.map(([type, cfg]) => `
+        <div class="redeem-admin-row" id="radrow-${type}">
+            <div class="redeem-admin-label">${cfg.icon || '🎁'} ${cfg.name || type}</div>
+            <input class="redeem-admin-input" id="rc-${type}" type="number" value="${cfg.cost}" min="1">
+            <span class="redeem-admin-unit">koin</span>
+            <button class="redeem-admin-toggle ${cfg.enabled ? 'on' : 'off'}" id="rt-${type}" onclick="toggleRedeemType('${type}',this)"></button>
+            <button class="redeem-admin-action-btn redeem-edit-btn" onclick="openRedeemEditModal('${type}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+            <button class="redeem-admin-action-btn redeem-del-btn" onclick="deleteRedeemType('${type}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+        </div>
+    `).join('');
+}
+window.renderRedeemAdminList = renderRedeemAdminList;
+
+// ── Admin: hapus hadiah ──
+function deleteRedeemType(type) {
+    const cfg = _redeemConfig[type];
+    if (!cfg) return;
+    if (!confirm('Hapus hadiah "' + (cfg.name || type) + '"?\n\nHadiah ini tidak akan muncul di menu tukar koin.')) return;
+    delete _redeemConfig[type];
+    renderRedeemAdminList();
+    renderRedeemGrid();
+    showToast('🗑️ DIHAPUS', 'Hadiah berhasil dihapus. Klik Simpan untuk menyimpan.', 'error', 2500);
+}
+window.deleteRedeemType = deleteRedeemType;
+
+// ── Admin: buka modal edit hadiah ──
+function openRedeemEditModal(type) {
+    const cfg = _redeemConfig[type];
+    if (!cfg) return;
+    document.getElementById('re-type-key').value = type;
+    document.getElementById('re-icon').value = cfg.icon || '';
+    document.getElementById('re-cost').value = cfg.cost || '';
+    document.getElementById('re-name').value = cfg.name || '';
+    document.getElementById('re-desc').value = cfg.desc || '';
+    document.getElementById('redeem-edit-mode-label').textContent = 'EDIT HADIAH';
+    document.getElementById('redeem-edit-overlay').classList.add('open');
+}
+window.openRedeemEditModal = openRedeemEditModal;
+
+// ── Admin: buka modal tambah hadiah baru ──
+function openRedeemAddModal() {
+    document.getElementById('re-type-key').value = '';
+    document.getElementById('re-icon').value = '';
+    document.getElementById('re-cost').value = '';
+    document.getElementById('re-name').value = '';
+    document.getElementById('re-desc').value = '';
+    document.getElementById('redeem-edit-mode-label').textContent = 'TAMBAH HADIAH BARU';
+    document.getElementById('redeem-edit-overlay').classList.add('open');
+}
+window.openRedeemAddModal = openRedeemAddModal;
+
+// ── Admin: tutup modal edit ──
+function closeRedeemEditModal(e) {
+    if (e && e.target !== document.getElementById('redeem-edit-overlay')) return;
+    document.getElementById('redeem-edit-overlay').classList.remove('open');
+}
+window.closeRedeemEditModal = closeRedeemEditModal;
+
+// ── Admin: simpan edit / tambah hadiah ──
+function submitRedeemEdit() {
+    const existingKey = document.getElementById('re-type-key').value.trim();
+    const icon = document.getElementById('re-icon').value.trim() || '🎁';
+    const cost = parseInt(document.getElementById('re-cost').value) || 100;
+    const name = document.getElementById('re-name').value.trim();
+    const desc = document.getElementById('re-desc').value.trim();
+
+    if (!name) { alert('⚠️ Nama hadiah tidak boleh kosong!'); return; }
+
+    if (existingKey) {
+        // Mode edit — pertahankan type key & enabled status
+        _redeemConfig[existingKey] = {
+            ..._redeemConfig[existingKey],
+            icon, cost, name, desc
+        };
+    } else {
+        // Mode tambah baru — buat key unik dari nama
+        const newKey = 'custom_' + Date.now();
+        _redeemConfig[newKey] = { icon, cost, name, desc, enabled: true };
+    }
+
+    document.getElementById('redeem-edit-overlay').classList.remove('open');
+    renderRedeemAdminList();
+    renderRedeemGrid();
+    showToast('✏️ DIPERBARUI', 'Hadiah diperbarui. Klik Simpan untuk menyimpan ke Firebase.', 'success', 2500);
+}
+window.submitRedeemEdit = submitRedeemEdit;
+
+// ── Admin: simpan semua config ke Firebase ──
 async function saveRedeemConfig() {
-    const types = ['spin','diskon','subs1','subs3','subs7'];
-    types.forEach(t => {
+    // Sinkronkan nilai input cost yang mungkin diubah manual
+    Object.keys(_redeemConfig).forEach(t => {
         const inp = document.getElementById('rc-' + t);
-        if (inp) _redeemConfig[t].cost = parseInt(inp.value) || REDEEM_DEFAULTS[t].cost;
+        if (inp) _redeemConfig[t].cost = parseInt(inp.value) || _redeemConfig[t].cost;
     });
     localStorage.setItem('redeem_config', JSON.stringify(_redeemConfig));
     try {
@@ -8241,13 +8503,7 @@ window.saveRedeemConfig = saveRedeemConfig;
 
 // ── Load admin UI values ──
 function loadRedeemAdminUI() {
-    const types = ['spin','diskon','subs1','subs3','subs7'];
-    types.forEach(t => {
-        const inp = document.getElementById('rc-' + t);
-        const btn = document.getElementById('rt-' + t);
-        if (inp && _redeemConfig[t]) inp.value = _redeemConfig[t].cost;
-        if (btn && _redeemConfig[t]) btn.className = 'redeem-admin-toggle ' + (_redeemConfig[t].enabled ? 'on' : 'off');
-    });
+    renderRedeemAdminList();
 }
 window.loadRedeemAdminUI = loadRedeemAdminUI;
 
@@ -8284,6 +8540,254 @@ setTimeout(() => {
         loadRedeemConfig().then(() => { renderRedeemGrid(); loadRedeemAdminUI(); });
     }
 }, 2500);
+
+// ╔══════════════════════════════════════════════════╗
+// ║         ADMIN COIN MANAGEMENT SYSTEM            ║
+// ╚══════════════════════════════════════════════════╝
+
+// Ambil koin member (helper universal)
+function getMemberCoins(name) {
+    const m = config.members.find(x => x.name === name);
+    return m ? (m.coins || 0) : 0;
+}
+window.getMemberCoins = getMemberCoins;
+
+// ── Buka modal edit koin ──
+function openCoinEdit(memberName) {
+    const m = config.members.find(x => x.name === memberName);
+    if (!m) return;
+    const coins = m.coins || 0;
+    const lvl = typeof getLevelInfo === 'function' ? getLevelInfo(coins) : { name: '-', emoji: '🪙' };
+
+    document.getElementById('ce-member-name').value = memberName;
+    document.getElementById('ce-avatar').textContent = memberName.charAt(0).toUpperCase();
+    document.getElementById('ce-name').textContent = memberName;
+    document.getElementById('ce-current-val').textContent = coins.toLocaleString('id-ID');
+    document.getElementById('ce-new-val').value = coins;
+    document.getElementById('ce-reason').value = '';
+
+    // Load log perubahan koin admin
+    const logKey = 'coin_admin_log_' + memberName;
+    let logs = [];
+    try { logs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e) {}
+    const logSection = document.getElementById('ce-log-section');
+    const logList = document.getElementById('ce-log-list');
+    if (logs.length > 0 && logSection && logList) {
+        logSection.style.display = 'block';
+        logList.innerHTML = logs.slice(-6).reverse().map(l => {
+            const diff = l.newVal - l.oldVal;
+            const cls = l.type === 'set' ? 'coin-log-set' : diff >= 0 ? 'coin-log-plus' : 'coin-log-minus';
+            const sign = l.type === 'set' ? '=' : diff >= 0 ? '+' : '';
+            const diffVal = l.type === 'set' ? l.newVal : diff;
+            return `<div class="coin-log-item">
+                <span class="${cls}">${sign}${diffVal} 🪙</span>
+                <span class="coin-log-reason">${l.reason || '-'}</span>
+                <span class="coin-log-date">${l.date}</span>
+            </div>`;
+        }).join('');
+    } else if (logSection) {
+        logSection.style.display = 'none';
+    }
+
+    document.getElementById('coin-edit-overlay').classList.add('open');
+}
+window.openCoinEdit = openCoinEdit;
+
+// ── Tombol quick set / adjust ──
+function coinQuickSet(val) {
+    const inp = document.getElementById('ce-new-val');
+    if (inp) inp.value = val;
+}
+window.coinQuickSet = coinQuickSet;
+
+function coinQuickAdj(delta) {
+    const inp = document.getElementById('ce-new-val');
+    if (!inp) return;
+    const cur = parseInt(inp.value) || 0;
+    inp.value = Math.max(0, cur + delta);
+}
+window.coinQuickAdj = coinQuickAdj;
+
+// ── Tutup modal ──
+function closeCoinEdit() {
+    document.getElementById('coin-edit-overlay').classList.remove('open');
+}
+window.closeCoinEdit = closeCoinEdit;
+
+// ── Simpan perubahan koin ──
+async function submitCoinEdit() {
+    const memberName = document.getElementById('ce-member-name').value;
+    const newVal = parseInt(document.getElementById('ce-new-val').value);
+    const reason = document.getElementById('ce-reason').value.trim();
+
+    if (!memberName) return;
+    if (isNaN(newVal) || newVal < 0) {
+        showToast('⚠️ INVALID', 'Jumlah koin tidak valid!', 'error', 2500);
+        return;
+    }
+    if (!reason) {
+        showToast('⚠️ WAJIB ISI', 'Masukkan alasan perubahan koin!', 'error', 2500);
+        document.getElementById('ce-reason').focus();
+        return;
+    }
+
+    const mIdx = config.members.findIndex(m => m.name === memberName);
+    if (mIdx === -1) {
+        showToast('❌ ERROR', 'Member tidak ditemukan!', 'error', 2500);
+        return;
+    }
+
+    const oldVal = config.members[mIdx].coins || 0;
+    config.members[mIdx].coins = newVal;
+    saveLocal();
+
+    // Simpan log
+    const logKey = 'coin_admin_log_' + memberName;
+    let logs = [];
+    try { logs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e) {}
+    logs.push({
+        type: 'set',
+        oldVal,
+        newVal,
+        reason,
+        admin: currentUser ? currentUser.name : 'admin',
+        date: new Date().toLocaleString('id-ID')
+    });
+    localStorage.setItem(logKey, JSON.stringify(logs.slice(-20)));
+
+    // Sync ke Firebase
+    const key = memberName.replace(/[.#$\[\]]/g, '_');
+    try {
+        await fbPatch('members/' + key, { coins: newVal });
+        // Update leaderboard juga
+        if (typeof getLevelInfo === 'function') {
+            const lvl = getLevelInfo(newVal);
+            await fbSet('leaderboard/' + key, { name: memberName, coins: newVal, level: lvl.name, ts: Date.now() });
+        }
+        // Simpan log ke Firebase
+        await fbSet('adminLogs/coinEdit_' + key + '_' + Date.now(), {
+            member: memberName,
+            oldVal, newVal,
+            reason,
+            admin: currentUser ? currentUser.name : 'admin',
+            ts: Date.now()
+        });
+        showToast('✅ BERHASIL', memberName + ': koin diubah ' + oldVal + ' → ' + newVal + ' 🪙', 'success', 3500);
+    } catch(e) {
+        showToast('⚠️ OFFLINE', 'Tersimpan lokal, gagal sync Firebase', 'error', 2500);
+    }
+
+    // Update UI
+    if (currentUser && currentUser.name === memberName && typeof updateCoinUI === 'function') {
+        updateCoinUI();
+    }
+    closeCoinEdit();
+    renderMemberList();
+}
+window.submitCoinEdit = submitCoinEdit;
+
+// ╔══════════════════════════════════════════════════╗
+// ║           EMOJI PICKER SYSTEM                   ║
+// ╚══════════════════════════════════════════════════╝
+const EMOJI_CATEGORIES = {
+    '🎁 Hadiah': ['🎁','🎀','🎊','🎉','🎈','🏆','🥇','🥈','🥉','🎖️','🎗️','🎟️','🎫','🎠','🎡','🎢'],
+    '💰 Koin':   ['💰','💵','💴','💶','💷','💸','🤑','💳','🪙','💎','💍','👑','🏅','⭐','🌟','✨'],
+    '🎮 Game':   ['🎮','🕹️','🎲','🎯','🎳','🎰','🃏','🀄','🎴','🎭','🎪','🎬','🎤','🎧','🎵','🎶'],
+    '⚡ Power':  ['⚡','🔥','💥','🌊','🌪️','❄️','🌈','☄️','🚀','💫','⭐','🌙','☀️','🌠','🔮','🪄'],
+    '🛡️ Battle': ['🛡️','⚔️','🗡️','🏹','🪃','🔱','⚜️','🧨','💣','🔫','🪖','🦾','💪','🤺','🥊','🥋'],
+    '📅 Waktu':  ['📅','📆','⏰','⏱️','⏲️','🕰️','⌚','📆','🗓️','📋','📌','🗺️','🧭','🔔','📢','📣'],
+    '😎 Ekspresi':['😎','🤩','🥳','😍','🤑','😏','😈','👿','💀','🤖','👾','👻','🎭','🦊','🐉','🦁'],
+    '✅ Status':  ['✅','❌','⚠️','🚫','💯','🆕','🆒','🔝','🔜','🔛','🎯','📍','🔑','🗝️','🔓','🔒'],
+};
+
+let _emojiCurrentCat = Object.keys(EMOJI_CATEGORIES)[0];
+
+function initEmojiPicker() {
+    const tabsEl = document.getElementById('emoji-cat-tabs');
+    const gridEl = document.getElementById('emoji-grid-list');
+    if (!tabsEl || !gridEl) return;
+
+    // Render tabs
+    tabsEl.innerHTML = Object.keys(EMOJI_CATEGORIES).map(cat =>
+        `<button class="emoji-cat-btn${cat === _emojiCurrentCat ? ' active' : ''}" onclick="switchEmojiCat('${cat}')">${cat.split(' ')[0]}</button>`
+    ).join('');
+
+    renderEmojiGrid();
+}
+
+function renderEmojiGrid() {
+    const gridEl = document.getElementById('emoji-grid-list');
+    if (!gridEl) return;
+    const current = document.getElementById('re-icon')?.value || '';
+    const emojis = EMOJI_CATEGORIES[_emojiCurrentCat] || [];
+    gridEl.innerHTML = emojis.map(e =>
+        `<div class="emoji-opt${e === current ? ' selected' : ''}" onclick="selectEmoji('${e}')">${e}</div>`
+    ).join('');
+}
+
+function switchEmojiCat(cat) {
+    _emojiCurrentCat = cat;
+    // Update tab styles
+    document.querySelectorAll('.emoji-cat-btn').forEach(b => {
+        b.classList.toggle('active', b.textContent.trim() === cat.split(' ')[0]);
+    });
+    renderEmojiGrid();
+}
+
+function selectEmoji(emoji) {
+    const inp = document.getElementById('re-icon');
+    const preview = document.getElementById('re-icon-preview');
+    if (inp) inp.value = emoji;
+    if (preview) preview.textContent = emoji;
+    // Update selected highlight
+    document.querySelectorAll('.emoji-opt').forEach(el => {
+        el.classList.toggle('selected', el.textContent === emoji);
+    });
+}
+
+function toggleEmojiGrid() {
+    const wrap = document.getElementById('emoji-grid-wrap');
+    if (!wrap) return;
+    const isOpen = wrap.classList.toggle('open');
+    if (isOpen) {
+        initEmojiPicker();
+        // scroll current emoji into view
+        setTimeout(() => {
+            const sel = document.querySelector('.emoji-opt.selected');
+            if (sel) sel.scrollIntoView({ block: 'nearest' });
+        }, 50);
+    }
+}
+window.toggleEmojiGrid = toggleEmojiGrid;
+window.switchEmojiCat = switchEmojiCat;
+window.selectEmoji = selectEmoji;
+
+// Patch openRedeemEditModal & openRedeemAddModal agar set emoji picker juga
+const _origOpenEdit = window.openRedeemEditModal;
+window.openRedeemEditModal = function(type) {
+    if (_origOpenEdit) _origOpenEdit(type);
+    // tutup grid dulu, update preview
+    const wrap = document.getElementById('emoji-grid-wrap');
+    if (wrap) wrap.classList.remove('open');
+    const cfg = typeof _redeemConfig !== 'undefined' ? _redeemConfig[type] : null;
+    const icon = (cfg && cfg.icon) ? cfg.icon : '🎁';
+    const preview = document.getElementById('re-icon-preview');
+    if (preview) preview.textContent = icon;
+    const inp = document.getElementById('re-icon');
+    if (inp) inp.value = icon;
+};
+
+const _origOpenAdd = window.openRedeemAddModal;
+window.openRedeemAddModal = function() {
+    if (_origOpenAdd) _origOpenAdd();
+    const wrap = document.getElementById('emoji-grid-wrap');
+    if (wrap) wrap.classList.remove('open');
+    const preview = document.getElementById('re-icon-preview');
+    if (preview) preview.textContent = '🎁';
+    const inp = document.getElementById('re-icon');
+    if (inp) inp.value = '🎁';
+};
+
 </script>
 
 </body>
