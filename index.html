@@ -6868,6 +6868,7 @@ Terima kasih! 🙏
         window.renderStoreGrid = renderStoreGrid;
         window.renderStorePage = renderStorePage;
         window._syncStoreCatTab = _syncStoreCatTab;
+        window.buyItem = function(name, price) { openPay(name, price); };
 
                 function updateQuickStats() {
             const prods = config.prices ? Object.values(config.prices).flat().length : 0;
