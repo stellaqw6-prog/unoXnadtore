@@ -7,18 +7,907 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ====== CSS ANDA TETAP SAMA PERSIS ===== */
-        :root { 
-            --accent: #00eaff; 
-            --bg: #020406; 
-            --glass: rgba(255, 255, 255, 0.03); 
-            --glass-border: rgba(255, 255, 255, 0.1); 
-            --dev-color: #ff0055;
+        /* ====== UNO-STOREZZ v4 — PREMIUM UI ===== */
+        :root {
+            --accent: #00eaff;
+            --purple: #ae00ff;
             --gold: #ffcc00;
+            --red: #ff0055;
+            --bg: #020406;
+            --bg2: #060c10;
+            --glass: rgba(255,255,255,0.03);
+            --glass-border: rgba(255,255,255,0.08);
+            --text-muted: rgba(255,255,255,0.4);
+            --dev-color: #ff0055;
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Rajdhani', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #fff; overflow-x: hidden; padding-bottom: 100px; transition: 0.3s; }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Rajdhani',sans-serif; -webkit-tap-highlight-color:transparent; }
+        body { background:var(--bg); color:#fff; overflow-x:hidden; padding-bottom:100px; transition:0.3s; }
+
+        /* ── Custom scrollbar ── */
+        ::-webkit-scrollbar { width:4px; height:4px; }
+        ::-webkit-scrollbar-track { background:rgba(255,255,255,0.02); border-radius:10px; }
+        ::-webkit-scrollbar-thumb { background:rgba(0,234,255,0.25); border-radius:10px; }
+
+        /* ── BG Grid + Glow (from reference) ── */
+        .bg-grid {
+            position:fixed; inset:0; z-index:0; pointer-events:none;
+            background-image: linear-gradient(rgba(0,234,255,0.025) 1px,transparent 1px), linear-gradient(90deg,rgba(0,234,255,0.025) 1px,transparent 1px);
+            background-size:44px 44px; animation:gridScroll 12s linear infinite;
+        }
+        @keyframes gridScroll { from{background-position:0 0} to{background-position:44px 44px} }
+        .bg-glow {
+            position:fixed; inset:0; z-index:0; pointer-events:none;
+            background: radial-gradient(ellipse 60% 40% at 50% 0%,rgba(0,234,255,0.07) 0%,transparent 70%),
+                        radial-gradient(ellipse 50% 30% at 80% 80%,rgba(174,0,255,0.06) 0%,transparent 60%);
+        }
+
+        /* ── HEADER (reference design) ── */
+        header {
+            padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+            position:sticky; top:0; z-index:100;
+            background:rgba(2,4,6,0.88); backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--glass-border);
+        }
+        header::after {
+            content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+            background:linear-gradient(90deg,transparent,rgba(0,234,255,0.35),rgba(174,0,255,0.25),transparent);
+        }
+        .header-left { display:flex; align-items:center; gap:10px; }
+        .logo-icon {
+            width:32px; height:32px; border-radius:9px;
+            background:linear-gradient(135deg,var(--accent),var(--purple));
+            display:flex; align-items:center; justify-content:center;
+            font-size:14px; color:#000; font-weight:900;
+            box-shadow:0 0 12px rgba(0,234,255,0.4);
+            animation:logoPulse 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse { 0%,100%{box-shadow:0 0 12px rgba(0,234,255,0.4)} 50%{box-shadow:0 0 22px rgba(0,234,255,0.7)} }
+        .logo-text {
+            font-family:'Orbitron'; font-size:13px; font-weight:900; letter-spacing:2px;
+            background:linear-gradient(90deg,#fff,var(--accent));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        }
+        .logo-sub { font-size:8px; color:var(--text-muted); letter-spacing:3px; margin-top:1px; }
+        /* keep old .logo for JS compatibility */
+        .logo { font-family:'Orbitron'; font-size:1rem; font-weight:900; letter-spacing:2px; background:linear-gradient(90deg,#fff,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .header-right { display:flex; align-items:center; gap:10px; }
+        .notif-btn {
+            width:34px; height:34px; border-radius:10px;
+            background:var(--glass); border:1px solid var(--glass-border);
+            display:flex; align-items:center; justify-content:center;
+            font-size:13px; color:var(--text-muted); cursor:pointer; position:relative; transition:0.2s;
+        }
+        .notif-btn:hover { border-color:var(--accent); color:var(--accent); }
+        .notif-badge {
+            position:absolute; top:5px; right:6px; width:7px; height:7px; border-radius:50%;
+            background:var(--red); box-shadow:0 0 6px var(--red);
+            animation:badgePulse 1.5s ease-in-out infinite;
+        }
+        @keyframes badgePulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .avatar-btn {
+            width:34px; height:34px; border-radius:10px; border:1.5px solid var(--accent);
+            background:linear-gradient(135deg,rgba(0,234,255,0.15),rgba(174,0,255,0.1));
+            display:flex; align-items:center; justify-content:center;
+            font-size:14px; color:var(--accent); cursor:pointer;
+            box-shadow:0 0 10px rgba(0,234,255,0.2); overflow:hidden;
+        }
+        .avatar-btn img { width:100%; height:100%; object-fit:cover; border-radius:9px; }
+        /* profile-btn compat */
+        .profile-btn { width:34px; height:34px; border-radius:10px; border:1.5px solid var(--accent); object-fit:cover; box-shadow:0 0 10px rgba(0,234,255,0.3); cursor:pointer; }
+
+        .app-container { max-width:480px; margin:0 auto; padding:14px; position:relative; z-index:1; }
+
+        /* ── HERO BANNER (reference) ── */
+        .hero-card {
+            border-radius:20px; overflow:hidden; margin-bottom:0;
+            border:1px solid var(--glass-border); height:155px;
+            box-shadow:0 12px 40px rgba(0,0,0,0.6); position:relative;
+        }
+        .slider-wrapper { display:flex; height:100%; transition:transform 0.6s cubic-bezier(0.23,1,0.32,1); }
+        .slide { min-width:100%; height:100%; }
+        .slide img { width:100%; height:100%; object-fit:cover; }
+
+        /* Hero fallback banner (shown when no slider images) */
+        .hero-banner-fallback {
+            width:100%; height:100%; padding:18px;
+            display:flex; flex-direction:column; justify-content:flex-end;
+            position:relative; background:linear-gradient(135deg,#060c18 0%,#0a0520 100%);
+        }
+        .banner-bg-orb {
+            position:absolute; width:200px; height:200px; border-radius:50%;
+            right:-40px; top:-60px;
+            background:radial-gradient(circle,rgba(0,234,255,0.15) 0%,transparent 70%);
+            animation:orbFloat 4s ease-in-out infinite; pointer-events:none;
+        }
+        .banner-bg-orb2 {
+            position:absolute; width:150px; height:150px; border-radius:50%;
+            right:30px; bottom:-50px;
+            background:radial-gradient(circle,rgba(174,0,255,0.12) 0%,transparent 70%);
+            animation:orbFloat 5s ease-in-out infinite reverse; pointer-events:none;
+        }
+        @keyframes orbFloat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+        .banner-tag {
+            display:inline-flex; align-items:center; gap:5px;
+            background:rgba(255,204,0,0.15); border:1px solid rgba(255,204,0,0.3);
+            color:var(--gold); font-size:8px; font-family:'Orbitron'; letter-spacing:2px;
+            padding:3px 8px; border-radius:20px; margin-bottom:8px; width:fit-content;
+        }
+        .banner-title {
+            font-family:'Orbitron'; font-size:17px; font-weight:900; line-height:1.2;
+            background:linear-gradient(90deg,#fff 0%,var(--accent) 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        }
+        .banner-sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+        .banner-cta {
+            position:absolute; right:16px; bottom:18px;
+            background:linear-gradient(90deg,var(--accent),var(--purple));
+            border:none; color:#000; font-family:'Orbitron'; font-size:8px; font-weight:700;
+            padding:8px 14px; border-radius:20px; cursor:pointer; letter-spacing:1px;
+            box-shadow:0 0 16px rgba(0,234,255,0.4); transition:0.2s; white-space:nowrap; min-height:unset;
+        }
+        .banner-cta:hover { transform:scale(1.05); }
+
+        /* Slider dots */
+        .banner-dots { display:flex; justify-content:center; gap:5px; margin-top:8px; }
+        .dot { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.2); transition:0.3s; cursor:pointer; }
+        .dot.active { background:var(--accent); box-shadow:0 0 6px var(--accent); width:14px; border-radius:3px; }
+
+        /* ── TICKER (reference) ── */
+        /* ── TICKER ── */
+        .ticker-wrap {
+            background:rgba(0,234,255,0.04); border:1px solid rgba(0,234,255,0.12);
+            border-radius:12px; padding:7px 12px;
+            display:flex; align-items:center; gap:8px; overflow:hidden;
+        }
+        .ticker-sep { width:1px; height:12px; background:rgba(0,234,255,0.2); flex-shrink:0; }
+        .ticker-text { font-size:10px; color:rgba(255,255,255,0.5); white-space:nowrap; overflow:hidden; animation:tickerScroll 20s linear infinite; }
+        @keyframes tickerScroll { 0%{transform:translateX(100%)} 100%{transform:translateX(-100%)} }
+
+        /* ── LIVE BADGE (fixed — standalone, not clipped) ── */
+        .live-badge {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:3px 9px 3px 7px;
+            background:rgba(255,0,85,0.15); border:1px solid rgba(255,0,85,0.35);
+            border-radius:20px; font-family:'Orbitron'; font-size:7px;
+            color:var(--red); letter-spacing:1.5px; flex-shrink:0; white-space:nowrap;
+        }
+        .live-dot {
+            width:6px; height:6px; border-radius:50%; flex-shrink:0;
+            background:var(--red); box-shadow:0 0 7px var(--red);
+            animation:livePulse 1s ease-in-out infinite;
+        }
+        @keyframes livePulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:0.5} }
+
+        /* ── QUICK STATS (reference) ── */
+        .quick-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+        .stat-card {
+            background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:14px; padding:12px 10px; text-align:center;
+            transition:0.2s; cursor:pointer; position:relative; overflow:hidden;
+        }
+        .stat-card::before { content:''; position:absolute; inset:0; opacity:0; background:linear-gradient(135deg,rgba(0,234,255,0.08),transparent); transition:0.3s; }
+        .stat-card:hover::before { opacity:1; }
+        .stat-card:hover { border-color:rgba(0,234,255,0.3); transform:translateY(-2px); }
+        .stat-icon { font-size:18px; margin-bottom:4px; }
+        .stat-val { font-family:'Orbitron'; font-size:13px; font-weight:700; }
+        .stat-lbl { font-size:9px; color:var(--text-muted); letter-spacing:1px; margin-top:2px; }
+
+        /* ── SECTION HEADER (reference) ── */
+        .sec-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+        .sec-title { font-family:'Orbitron'; font-size:10px; letter-spacing:2px; color:var(--accent); display:flex; align-items:center; gap:6px; }
+        .sec-title i { font-size:9px; }
+        .sec-more { font-size:9px; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; gap:3px; transition:0.2s; }
+        .sec-more:hover { color:var(--accent); }
+
+        /* ── CATEGORY GRID (reference) ── */
+        .category-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+        .cat-btn {
+            background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:14px; padding:10px 4px 8px; text-align:center;
+            cursor:pointer; transition:all 0.25s; position:relative; overflow:hidden;
+        }
+        .cat-btn.active { background:rgba(0,234,255,0.1); border-color:var(--accent); box-shadow:0 0 14px rgba(0,234,255,0.2); }
+        .cat-btn i { font-size:1.1rem; margin-bottom:4px; color:var(--accent); display:block; }
+        .cat-btn span { font-size:8px; font-weight:700; text-transform:uppercase; font-family:'Orbitron'; color:rgba(255,255,255,0.5); }
+        .cat-btn.active span { color:var(--accent); }
+        .cat-btn .cat-icon { font-size:20px; margin-bottom:4px; display:block; }
+        .cat-btn .cat-name { font-size:8px; letter-spacing:0.5px; color:rgba(255,255,255,0.6); font-family:'Orbitron'; }
+        .cat-btn.active .cat-name { color:var(--accent); }
+        .cat-btn:hover { border-color:rgba(0,234,255,0.3); transform:translateY(-1px); }
+        .cat-active-line { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:0; height:2px; background:var(--accent); border-radius:2px; transition:0.3s; }
+        .cat-btn.active .cat-active-line { width:60%; }
+        .cat-btn.active i, .cat-btn.active .cat-icon { color:var(--accent); }
+
+        /* ── PRODUCT CARDS horizontal scroll (reference) ── */
+        .product-scroll { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+        .product-scroll::-webkit-scrollbar { display:none; }
+        .prod-card {
+            min-width:130px; background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:16px; overflow:hidden; flex-shrink:0; transition:0.25s; cursor:pointer; position:relative;
+        }
+        .prod-card:hover { border-color:rgba(0,234,255,0.3); transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+        .prod-img { height:90px; display:flex; align-items:center; justify-content:center; font-size:36px; position:relative; overflow:hidden; }
+        .prod-img-bg { position:absolute; inset:0; background:linear-gradient(135deg,var(--c1,rgba(0,234,255,0.08)),var(--c2,rgba(174,0,255,0.08))); }
+        .prod-badge { position:absolute; top:7px; left:7px; font-family:'Orbitron'; font-size:6px; letter-spacing:1px; padding:2px 6px; border-radius:20px; font-weight:700; }
+        .badge-hot { background:rgba(255,0,85,0.2); border:1px solid rgba(255,0,85,0.4); color:var(--red); }
+        .badge-new { background:rgba(0,234,255,0.15); border:1px solid rgba(0,234,255,0.3); color:var(--accent); }
+        .badge-sale { background:rgba(255,204,0,0.15); border:1px solid rgba(255,204,0,0.3); color:var(--gold); }
+        .prod-body { padding:8px 10px 10px; }
+        .prod-name { font-family:'Orbitron'; font-size:8px; font-weight:700; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .prod-desc { font-size:9px; color:var(--text-muted); margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .prod-foot { display:flex; align-items:center; justify-content:space-between; }
+        .prod-price { font-family:'Orbitron'; font-size:10px; font-weight:700; color:var(--accent); }
+        .prod-buy { width:24px; height:24px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--purple)); border:none; color:#000; font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; min-height:unset; }
+        .prod-buy:hover { transform:scale(1.1); box-shadow:0 0 10px rgba(0,234,255,0.4); }
+
+        /* ── GACHA CARD (reference) ── */
+        .gacha-box {
+            background:linear-gradient(135deg,rgba(174,0,255,0.06),rgba(0,234,255,0.04));
+            border:1px solid rgba(174,0,255,0.2);
+            padding:14px; border-radius:18px; margin-bottom:0; position:relative; overflow:hidden;
+        }
+        .gacha-box::before { content:''; position:absolute; width:220px; height:220px; border-radius:50%; right:-60px; top:-60px; background:radial-gradient(circle,rgba(174,0,255,0.12) 0%,transparent 60%); pointer-events:none; }
+        .gacha-card { background:linear-gradient(135deg,rgba(174,0,255,0.06),rgba(0,234,255,0.04)); border:1px solid rgba(174,0,255,0.2); border-radius:18px; padding:14px; position:relative; overflow:hidden; }
+        .gacha-orb { position:absolute; width:200px; height:200px; border-radius:50%; right:-60px; top:-60px; background:radial-gradient(circle,rgba(174,0,255,0.12) 0%,transparent 60%); pointer-events:none; }
+        .gacha-head { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+        .gacha-icon-wrap { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--purple),#ff0055); display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 0 12px rgba(174,0,255,0.4); }
+        .gacha-title { font-family:'Orbitron'; font-size:11px; font-weight:700; color:var(--accent); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+        .gacha-sub { font-size:9px; color:var(--text-muted); margin-top:1px; }
+
+        /* prize chips (reference) */
+        .gacha-prizes { display:flex; gap:6px; margin-bottom:12px; }
+        .prize-chip { flex:1; background:rgba(0,0,0,0.3); border-radius:10px; padding:7px 6px; text-align:center; border-left:2px solid var(--pc,#aaa); }
+        .prize-chip-icon { font-size:14px; margin-bottom:2px; }
+        .prize-chip-name { font-size:7px; font-family:'Orbitron'; color:rgba(255,255,255,0.7); }
+        .prize-chip-chance { font-size:7px; color:var(--pc,#aaa); margin-top:2px; }
+
+        /* gacha buttons */
+        .gacha-btn-row { display:flex; gap:8px; }
+        .gacha-btn { flex:1; padding:10px; border:none; border-radius:12px; cursor:pointer; font-family:'Orbitron'; font-size:9px; font-weight:700; letter-spacing:1px; transition:0.2s; display:flex; align-items:center; justify-content:center; gap:5px; min-height:unset; }
+        .gacha-btn-primary { background:linear-gradient(90deg,var(--purple),#ff0055); color:#fff; box-shadow:0 0 16px rgba(174,0,255,0.3); }
+        .gacha-btn-secondary { background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:rgba(255,255,255,0.6); }
+        .gacha-btn:hover { transform:translateY(-1px); }
+
+        /* prize list (original, kept for gacha-prize-list element) */
+        .prize-list { display:flex; flex-direction:column; gap:4px; margin:8px 0; padding:8px; background:rgba(0,0,0,0.3); border-radius:12px; max-height:180px; overflow-y:auto; }
+        .prize-item { display:flex; align-items:center; gap:6px; padding:6px 10px; background:rgba(255,255,255,0.02); border-radius:8px; font-size:8px; transition:0.2s; }
+        .prize-item i { width:14px; color:var(--gold); }
+        .prize-item .prize-name { flex:1; color:#fff; }
+        .prize-item .prize-chance { font-size:7px; padding:2px 6px; background:rgba(255,204,0,0.15); border-radius:10px; color:var(--gold); }
+        .prize-legendary { border-left:2px solid #ff00aa; }
+        .prize-epic { border-left:2px solid #aa00ff; }
+        .prize-rare { border-left:2px solid #00aaff; }
+        .prize-common { border-left:2px solid #aaa; }
+
+        /* ── PROMO CARDS (reference) ── */
+        .promo-row { display:flex; gap:8px; }
+        .promo-card { flex:1; border-radius:16px; padding:14px; position:relative; overflow:hidden; cursor:pointer; transition:0.2s; }
+        .promo-card:hover { transform:translateY(-2px); }
+        .promo-card-a { background:linear-gradient(135deg,rgba(255,204,0,0.08),rgba(255,0,85,0.05)); border:1px solid rgba(255,204,0,0.2); }
+        .promo-card-b { background:linear-gradient(135deg,rgba(0,234,255,0.06),rgba(0,100,255,0.04)); border:1px solid rgba(0,234,255,0.2); }
+        .promo-label { font-family:'Orbitron'; font-size:8px; letter-spacing:1px; margin-bottom:4px; }
+        .promo-val { font-family:'Orbitron'; font-size:20px; font-weight:900; }
+        .promo-sub { font-size:9px; color:var(--text-muted); margin-top:2px; }
+        .promo-icon { position:absolute; right:10px; bottom:10px; font-size:26px; opacity:0.3; }
+
+        /* ── GLASS CARD ── */
+        .glass-card { background:rgba(255,255,255,0.03); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:18px; padding:16px; margin-bottom:12px; transition:0.3s; }
+        .glass-card:hover { border-color:rgba(0,234,255,0.15); }
+        .card-title { font-family:'Orbitron'; font-size:13px; margin-bottom:4px; letter-spacing:1px; }
+        .price-tag { font-size:1.3rem; font-weight:800; color:var(--accent); margin-bottom:12px; font-family:'Rajdhani'; }
+
+        /* ── BUY / CLAIM BUTTONS ── */
+        .buy-btn {
+            width:100%; padding:12px; border-radius:12px; border:none;
+            background:linear-gradient(90deg,var(--accent),#00b4d8);
+            color:#000; font-weight:900; font-family:'Orbitron'; cursor:pointer;
+            font-size:10px; text-transform:uppercase; transition:0.25s;
+            box-shadow:0 4px 18px rgba(0,234,255,0.25); min-height:44px;
+            position:relative; overflow:hidden;
+        }
+        .buy-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.15) 50%,transparent 60%); transform:translateX(-100%); transition:0.4s; }
+        .buy-btn:active::before { transform:translateX(100%); }
+        .buy-btn:active { transform:scale(0.98); }
+        .claim-btn { background:linear-gradient(135deg,var(--gold),#ffaa00); color:#000; border:none; padding:10px; border-radius:10px; font-family:'Orbitron'; font-size:9px; font-weight:900; cursor:pointer; transition:0.3s; width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-top:8px; min-height:40px; box-shadow:0 4px 14px rgba(255,204,0,0.2); }
+        .claim-btn:active { transform:scale(0.98); }
+        .claim-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+        /* ── BOTTOM NAV 5-item (reference) ── */
+        .dock-nav {
+            position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+            width:100%; max-width:480px;
+            background:rgba(4,8,12,0.92); backdrop-filter:blur(24px);
+            border-top:1px solid var(--glass-border);
+            display:flex; align-items:center; justify-content:space-around;
+            padding:8px 8px 18px; z-index:1000;
+        }
+        .dock-nav::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,234,255,0.3),rgba(174,0,255,0.3),transparent); }
+        .dock-item {
+            display:flex; flex-direction:column; align-items:center; gap:3px;
+            padding:6px 10px; border-radius:14px; cursor:pointer; transition:0.2s;
+            position:relative; flex:1; font-size:7px; font-family:'Orbitron'; letter-spacing:1px;
+            color:var(--text-muted); text-decoration:none; font-weight:700; min-height:50px; justify-content:center;
+        }
+        .dock-item.active { background:rgba(0,234,255,0.08); color:var(--accent); }
+        .dock-item i { font-size:18px; transition:0.2s; display:block; }
+        .dock-item.active i { color:var(--accent); filter:drop-shadow(0 0 6px var(--accent)); }
+        .dock-item.active::after { content:''; position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:20px; height:2px; border-radius:2px; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+
+        /* Center nav (gacha) */
+        .nav-center-wrap { display:flex; flex-direction:column; align-items:center; gap:3px; margin-top:-20px; }
+        .nav-center-btn {
+            width:52px; height:52px; border-radius:16px;
+            background:linear-gradient(135deg,var(--accent),var(--purple));
+            display:flex; align-items:center; justify-content:center;
+            font-size:22px; cursor:pointer;
+            box-shadow:0 0 20px rgba(0,234,255,0.4),0 0 40px rgba(174,0,255,0.2);
+            border:2px solid rgba(255,255,255,0.1); transition:0.2s;
+            animation:centerBtnPulse 3s ease-in-out infinite;
+        }
+        @keyframes centerBtnPulse { 0%,100%{box-shadow:0 0 20px rgba(0,234,255,0.4),0 0 40px rgba(174,0,255,0.2)} 50%{box-shadow:0 0 32px rgba(0,234,255,0.65),0 0 60px rgba(174,0,255,0.35)} }
+        .nav-center-btn:hover { transform:scale(1.05) translateY(-2px); }
+        .nav-center-label { font-family:'Orbitron'; font-size:7px; color:var(--accent); text-align:center; letter-spacing:1px; }
+
+        /* ── MODAL (upgraded) ── */
+        .modal { position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:2000; display:none; align-items:center; justify-content:center; padding:15px; backdrop-filter:blur(12px); }
+        .modal-content { background:rgba(6,10,18,0.98); border:1px solid rgba(0,234,255,0.2); border-radius:22px; width:100%; max-width:380px; max-height:82vh; overflow-y:auto; padding:20px; position:relative; box-shadow:0 0 40px rgba(0,234,255,0.08),0 20px 60px rgba(0,0,0,0.6); }
+        .modal-content::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); border-radius:22px; }
+        input, select, textarea { width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); padding:12px; border-radius:12px; color:#fff; margin-bottom:8px; outline:none; font-size:16px !important; transition:0.2s; }
+        input:focus, select:focus, textarea:focus { border-color:rgba(0,234,255,0.4); background:rgba(0,234,255,0.04); box-shadow:0 0 12px rgba(0,234,255,0.1); }
+
+        /* ── STORE PAGE ── */
+        .store-cat-tab {
+            white-space:nowrap; padding:8px 14px; border-radius:10px; border:1px solid var(--glass-border);
+            background:var(--glass); color:rgba(255,255,255,0.5); font-family:'Orbitron'; font-size:8px;
+            font-weight:700; cursor:pointer; transition:0.2s; letter-spacing:0.5px; flex-shrink:0;
+            display:flex; align-items:center; gap:5px; min-height:36px;
+        }
+        .store-cat-tab.active {
+            background:rgba(0,234,255,0.12); border-color:var(--accent); color:var(--accent);
+            box-shadow:0 0 12px rgba(0,234,255,0.2);
+        }
+        .store-cat-tab:hover { border-color:rgba(0,234,255,0.3); color:var(--accent); }
+
+        /* ── STORE GRID — 2 kolom kartu ── */
+        .store-prod-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+
+        /* Kartu produk baru */
+        .store-prod-card {
+            background:rgba(255,255,255,0.025); border:1px solid var(--glass-border);
+            border-radius:18px; overflow:hidden; cursor:pointer;
+            transition:0.25s; position:relative; display:flex; flex-direction:column;
+        }
+        .store-prod-card:hover {
+            border-color:rgba(0,234,255,0.35); transform:translateY(-3px);
+            box-shadow:0 10px 30px rgba(0,0,0,0.45);
+        }
+        .store-prod-card:active { transform:scale(0.98); }
+
+        /* Gambar produk */
+        .spc-img-wrap {
+            width:100%; aspect-ratio:4/3; position:relative; overflow:hidden;
+            background:linear-gradient(135deg,var(--c1,rgba(0,234,255,0.08)),var(--c2,rgba(174,0,255,0.06)));
+            flex-shrink:0;
+        }
+        .spc-img-wrap img {
+            width:100%; height:100%; object-fit:cover; display:block;
+            transition:transform 0.4s ease;
+        }
+        .store-prod-card:hover .spc-img-wrap img { transform:scale(1.06); }
+        .spc-img-fallback {
+            position:absolute; inset:0; display:flex; align-items:center;
+            justify-content:center; font-size:40px;
+        }
+        .spc-img-overlay {
+            position:absolute; inset:0;
+            background:linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5) 100%);
+        }
+        /* badge di pojok gambar */
+        .spc-badge {
+            position:absolute; top:8px; left:8px; z-index:2;
+            font-family:'Orbitron'; font-size:6px; letter-spacing:1px; font-weight:700;
+            padding:2px 7px; border-radius:20px;
+        }
+        /* kategori pill di pojok kanan gambar */
+        .spc-cat-pill {
+            position:absolute; top:8px; right:8px; z-index:2;
+            font-size:7px; font-family:'Orbitron'; letter-spacing:0.5px;
+            padding:2px 7px; border-radius:20px;
+            background:rgba(0,0,0,0.5); color:rgba(255,255,255,0.7);
+            border:1px solid rgba(255,255,255,0.12);
+        }
+
+        /* Body kartu */
+        .spc-body { padding:10px 10px 12px; display:flex; flex-direction:column; flex:1; }
+        .spc-name {
+            font-family:'Orbitron'; font-size:9px; font-weight:700; color:#fff;
+            margin-bottom:6px; line-height:1.3;
+            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+        }
+
+        /* Benefit list */
+        .spc-benefits { display:flex; flex-direction:column; gap:3px; margin-bottom:8px; flex:1; }
+        .spc-benefit-item {
+            display:flex; align-items:flex-start; gap:5px;
+            font-size:9px; color:rgba(255,255,255,0.55); line-height:1.3;
+        }
+        .spc-benefit-item i {
+            font-size:8px; color:var(--accent); margin-top:1px; flex-shrink:0; width:10px;
+        }
+        .spc-no-benefit { font-size:8px; color:rgba(255,255,255,0.2); font-style:italic; }
+
+        /* Footer harga + tombol */
+        .spc-footer { display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:auto; }
+        .spc-price {
+            font-family:'Orbitron'; font-size:11px; font-weight:900;
+            color:var(--accent); line-height:1;
+        }
+        .spc-price-label { font-size:7px; color:rgba(255,255,255,0.3); margin-bottom:1px; }
+        .spc-buy-btn {
+            padding:7px 12px; border-radius:10px; border:none;
+            background:linear-gradient(90deg,var(--accent),#00b4d8);
+            color:#000; font-family:'Orbitron'; font-size:8px; font-weight:900;
+            cursor:pointer; transition:0.2s; white-space:nowrap;
+            display:flex; align-items:center; gap:4px; min-height:unset;
+            box-shadow:0 3px 10px rgba(0,234,255,0.25);
+        }
+        .spc-buy-btn:active { transform:scale(0.95); }
+        .spc-buy-btn:hover { box-shadow:0 4px 16px rgba(0,234,255,0.4); }
+
+        .store-empty { text-align:center; padding:40px 20px; color:rgba(255,255,255,0.3); font-family:'Orbitron'; font-size:9px; }
+        .store-empty i { font-size:40px; display:block; margin-bottom:12px; opacity:0.3; }
+        /* ── PAGE SLIDE TRANSITION ── */
+        .pages-viewport { position:relative; overflow:hidden; width:100%; }
+        .pages-track {
+            display:flex; width:300%;
+            transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+            align-items: flex-start;
+        }
+        .page-slide {
+            width:calc(100% / 3); flex-shrink:0; padding:14px 14px 0;
+            min-height:calc(100vh - 140px);
+            overflow-y:auto; overflow-x:hidden;
+            -webkit-overflow-scrolling:touch;
+        }
+
+        /* Neon flash overlay */
+        .slide-flash {
+            position:fixed; inset:0; z-index:9999; pointer-events:none; opacity:0;
+            background:linear-gradient(135deg,rgba(0,234,255,0.07) 0%,rgba(174,0,255,0.04) 60%,transparent 100%);
+        }
+        .slide-flash.active { animation:flashAnim 0.42s ease-out forwards; }
+        @keyframes flashAnim { 0%{opacity:1} 100%{opacity:0} }
+
+        /* Scan line overlay */
+        .slide-scanline {
+            position:fixed; inset:0; z-index:9998; pointer-events:none; opacity:0;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,234,255,0.022) 2px,rgba(0,234,255,0.022) 4px);
+        }
+        .slide-scanline.active { animation:scanAnim 0.42s ease-out forwards; }
+        @keyframes scanAnim { 0%{opacity:1} 100%{opacity:0} }
+
+        /* Border glow flash */
+        .slide-border {
+            position:fixed; inset:0; z-index:9997; pointer-events:none;
+            border:1px solid transparent; opacity:0;
+        }
+        .slide-border.active { animation:borderAnim 0.45s ease-out forwards; }
+        @keyframes borderAnim {
+            0%{opacity:1; border-color:rgba(0,234,255,0.45); box-shadow:inset 0 0 40px rgba(0,234,255,0.07);}
+            100%{opacity:0; border-color:transparent;}
+        }
+
+        /* Label tab aktif muncul saat transisi */
+        .page-label-toast {
+            position:fixed; top:72px; left:50%; transform:translateX(-50%);
+            background:rgba(0,234,255,0.12); border:1px solid rgba(0,234,255,0.3);
+            color:var(--accent); font-family:'Orbitron'; font-size:8px; letter-spacing:3px;
+            padding:5px 16px; border-radius:20px; z-index:9996;
+            pointer-events:none; opacity:0;
+        }
+        .page-label-toast.show { animation:toastAnim 1s ease-out forwards; }
+        @keyframes toastAnim { 0%{opacity:0;transform:translateX(-50%) translateY(-6px)} 20%{opacity:1;transform:translateX(-50%) translateY(0)} 70%{opacity:1} 100%{opacity:0;transform:translateX(-50%) translateY(-4px)} }
+
+        /* ── GLOW DIVIDER ── */
+        .glow-divider { height:1px; margin:12px 0; background:linear-gradient(90deg,transparent,rgba(0,234,255,0.2),rgba(174,0,255,0.15),transparent); }
+
+        /* ══════════════════════════════════════
+           v7 PREMIUM UI ENHANCEMENTS
+        ══════════════════════════════════════ */
+
+        /* ── 1. RIPPLE ── */
+        .ripple-host { position:relative; overflow:hidden; }
+        .ripple-wave { position:absolute; border-radius:50%; pointer-events:none; background:rgba(0,234,255,0.2); transform:scale(0); animation:rippleAnim 0.55s ease-out forwards; }
+        @keyframes rippleAnim { to { transform:scale(4); opacity:0; } }
+
+        /* ── 2. SKELETON shimmer ── */
+        .skeleton { background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(0,234,255,0.07) 50%,rgba(255,255,255,0.04) 75%); background-size:200% 100%; animation:shimmer 1.6s infinite; border-radius:8px; }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .skeleton-line { height:10px; margin-bottom:8px; border-radius:6px; }
+        .skeleton-card { height:110px; border-radius:16px; margin-bottom:10px; }
+
+        /* ── 3. FAB Gacha dihapus ── */
+
+        /* ── 4. TOAST NOTIFICATION ── */
+        #toast-container { position:fixed; top:78px; left:50%; transform:translateX(-50%); z-index:8000; display:flex; flex-direction:column; gap:6px; align-items:center; pointer-events:none; width:92%; max-width:360px; }
+        .toast-msg { background:rgba(6,10,20,0.97); border-radius:14px; padding:10px 14px; display:flex; align-items:center; gap:10px; width:100%; box-shadow:0 8px 30px rgba(0,0,0,0.6); animation:toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both; border:1px solid var(--tc,rgba(0,234,255,0.25)); position:relative; overflow:hidden; }
+        .toast-msg.hiding { animation:toastOut 0.28s ease-in forwards; }
+        @keyframes toastIn { from{opacity:0;transform:translateY(-16px) scale(0.94)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes toastOut { to{opacity:0;transform:translateY(-10px) scale(0.95)} }
+        .toast-icon { font-size:18px; flex-shrink:0; }
+        .toast-body { flex:1; }
+        .toast-title { font-family:'Orbitron'; font-size:9px; font-weight:700; color:#fff; letter-spacing:1px; }
+        .toast-text { font-size:10px; color:rgba(255,255,255,0.5); margin-top:1px; }
+        .toast-progress { position:absolute; bottom:0; left:0; height:2px; background:var(--tc,var(--accent)); border-radius:2px; animation:toastProgress linear forwards; }
+        @keyframes toastProgress { from{width:100%} to{width:0%} }
+
+        /* ── 5. CARD HOVER shimmer sweep ── */
+        .glass-card::after,.gacha-card::after,.stat-card::after,.store-prod-card::after { content:''; position:absolute; top:-50%; left:-60%; width:40%; height:200%; background:linear-gradient(105deg,transparent,rgba(255,255,255,0.04),transparent); transform:skewX(-20deg); transition:left 0.55s ease; pointer-events:none; }
+        .glass-card:hover::after,.gacha-card:hover::after,.stat-card:hover::after,.store-prod-card:hover::after { left:120%; }
+
+        /* ── 6. NEON CURSOR (desktop only) ── */
+        @media (pointer:fine) {
+            #neon-cursor { position:fixed; width:8px; height:8px; border-radius:50%; background:var(--accent); pointer-events:none; z-index:99999; mix-blend-mode:screen; transform:translate(-50%,-50%); box-shadow:0 0 8px var(--accent),0 0 16px rgba(0,234,255,0.35); transition:width 0.15s,height 0.15s; }
+            #neon-trail { position:fixed; width:26px; height:26px; border-radius:50%; border:1px solid rgba(0,234,255,0.3); pointer-events:none; z-index:99998; transform:translate(-50%,-50%); transition:all 0.16s ease; }
+        }
+
+        /* ── 7. PULL-TO-REFRESH indicator ── */
+        #ptr-indicator { position:fixed; top:66px; left:50%; transform:translateX(-50%) translateY(-100%); background:rgba(0,234,255,0.1); border:1px solid rgba(0,234,255,0.25); color:var(--accent); font-family:'Orbitron'; font-size:8px; letter-spacing:2px; padding:5px 16px; border-radius:20px; z-index:400; pointer-events:none; transition:transform 0.3s,opacity 0.3s; opacity:0; }
+        #ptr-indicator.ptr-visible { transform:translateX(-50%) translateY(0); opacity:1; }
+
+        /* ── 8. HEADER auto-hide on scroll ── */
+        #main-header { transition:transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s; }
+        #main-header.scrolled { box-shadow:0 4px 20px rgba(0,0,0,0.4); }
+        #main-header.header-hidden { transform:translateY(-100%); opacity:0; }
+
+        /* ── 9. STAGGER animation ── */
+        .stagger-item { opacity:0; animation:staggerIn 0.4s ease forwards; }
+        @keyframes staggerIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── 10. ONLINE DOT ── */
+        .online-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 6px #00ff88; animation:onlinePulse 2s ease-in-out infinite; }
+        @keyframes onlinePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+        /* ── 11. SECTION count badge ── */
+        .sec-count { background:rgba(0,234,255,0.12); border:1px solid rgba(0,234,255,0.2); color:var(--accent); font-family:'Orbitron'; font-size:7px; padding:1px 6px; border-radius:10px; margin-left:5px; }
+
+        /* ── 12. EMPTY STATE ── */
+        .empty-state { text-align:center; padding:36px 20px; color:rgba(255,255,255,0.25); font-family:'Orbitron'; font-size:9px; }
+        .empty-state-icon { font-size:44px; margin-bottom:12px; display:block; opacity:0.35; animation:emptyFloat 3s ease-in-out infinite; }
+        @keyframes emptyFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        .empty-state-title { color:rgba(255,255,255,0.4); font-size:11px; margin-bottom:5px; }
+
+        /* ══════════════════════════════════
+           v10 — NEW HOME SECTIONS
+        ══════════════════════════════════ */
+
+        /* ── WINNER MARQUEE ── */
+        .winner-bar {
+            display:flex; align-items:center; gap:8px; overflow:hidden;
+            background:linear-gradient(90deg,rgba(255,204,0,0.06),rgba(174,0,255,0.04));
+            border:1px solid rgba(255,204,0,0.15); border-radius:10px; padding:7px 10px;
+        }
+        .winner-bar-label {
+            font-family:'Orbitron'; font-size:7px; color:var(--gold);
+            letter-spacing:1.5px; white-space:nowrap; flex-shrink:0;
+            background:rgba(255,204,0,0.15); padding:2px 8px; border-radius:6px;
+        }
+        .winner-scroll {
+            display:flex; gap:20px; animation:winnerScroll 18s linear infinite;
+            white-space:nowrap;
+        }
+        .winner-item {
+            display:inline-flex; align-items:center; gap:5px;
+            font-size:10px; color:rgba(255,255,255,0.6); flex-shrink:0;
+        }
+        .winner-item .winner-name { color:#fff; font-weight:700; }
+        .winner-item .winner-prize { color:var(--gold); font-size:9px; }
+        @keyframes winnerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+        /* ── FEATURE CARDS row ── */
+        .feature-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+        .feature-card {
+            background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:14px; padding:12px 6px; text-align:center;
+            cursor:pointer; transition:0.25s; position:relative; overflow:hidden;
+        }
+        .feature-card:hover { border-color:rgba(0,234,255,0.3); transform:translateY(-2px); }
+        .feature-card::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:2px;
+            background:var(--fc,var(--accent)); opacity:0.7;
+        }
+        .feature-card-icon { font-size:22px; margin-bottom:5px; display:block; }
+        .feature-card-label {
+            font-family:'Orbitron'; font-size:7px; color:rgba(255,255,255,0.5);
+            letter-spacing:0.5px;
+        }
+        .feature-card.active-feat { border-color:var(--fc,var(--accent)); background:rgba(0,234,255,0.06); }
+        .feature-card.active-feat .feature-card-label { color:var(--fc,var(--accent)); }
+
+        /* ── SUBSCRIPTION COUNTDOWN CARD ── */
+        .sub-countdown-card {
+            background:linear-gradient(135deg,rgba(255,204,0,0.07),rgba(174,0,255,0.05));
+            border:1px solid rgba(255,204,0,0.2); border-radius:16px;
+            padding:14px; display:flex; align-items:center; gap:12px;
+            position:relative; overflow:hidden;
+        }
+        .sub-countdown-card::after {
+            content:''; position:absolute; right:-20px; top:-20px;
+            width:100px; height:100px; border-radius:50%;
+            background:radial-gradient(circle,rgba(255,204,0,0.1) 0%,transparent 70%);
+        }
+        .sub-countdown-icon {
+            width:44px; height:44px; border-radius:12px; flex-shrink:0;
+            background:linear-gradient(135deg,var(--gold),#ffaa00);
+            display:flex; align-items:center; justify-content:center;
+            font-size:20px; box-shadow:0 0 14px rgba(255,204,0,0.35);
+        }
+        .sub-countdown-info { flex:1; }
+        .sub-countdown-title { font-family:'Orbitron'; font-size:10px; font-weight:700; color:var(--gold); margin-bottom:2px; }
+        .sub-countdown-sub { font-size:9px; color:rgba(255,255,255,0.45); margin-bottom:6px; }
+        .sub-countdown-bar-wrap { background:rgba(255,255,255,0.08); border-radius:4px; height:4px; overflow:hidden; }
+        .sub-countdown-bar { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--gold),#ffaa00); transition:width 1s ease; }
+        .sub-countdown-days { font-family:'Orbitron'; font-size:18px; font-weight:900; color:var(--gold); line-height:1; }
+        .sub-countdown-days-lbl { font-size:7px; color:rgba(255,255,255,0.35); letter-spacing:1px; margin-top:1px; }
+
+        /* ── HOW TO ORDER steps ── */
+        .how-to-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+        .how-step {
+            background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:12px; padding:10px 6px; text-align:center;
+            position:relative;
+        }
+        .how-step::after {
+            content:'›'; position:absolute; right:-5px; top:50%; transform:translateY(-50%);
+            color:rgba(0,234,255,0.3); font-size:14px; font-weight:900;
+        }
+        .how-step:last-child::after { display:none; }
+        .how-step-num {
+            font-family:'Orbitron'; font-size:8px; font-weight:900;
+            color:var(--accent); background:rgba(0,234,255,0.1);
+            width:20px; height:20px; border-radius:6px;
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 6px;
+        }
+        .how-step-icon { font-size:18px; margin-bottom:4px; display:block; }
+        .how-step-label { font-family:'Orbitron'; font-size:7px; color:rgba(255,255,255,0.5); line-height:1.3; }
+
+        /* ── SOCIAL LINKS row ── */
+        .social-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+        .social-card {
+            background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:14px; padding:12px 8px; text-align:center;
+            cursor:pointer; transition:0.2s; text-decoration:none;
+            display:flex; flex-direction:column; align-items:center; gap:5px;
+        }
+        .social-card:hover { transform:translateY(-2px); border-color:var(--sc,rgba(255,255,255,0.2)); }
+        .social-card i { font-size:20px; color:var(--sc,#fff); }
+        .social-card-label { font-family:'Orbitron'; font-size:7px; color:rgba(255,255,255,0.4); letter-spacing:1px; }
+
+        /* ── ACHIEVEMENT BADGES ── */
+        .achievement-scroll { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
+        .achievement-scroll::-webkit-scrollbar { display:none; }
+        .achievement-badge {
+            flex-shrink:0; background:var(--glass); border:1px solid var(--glass-border);
+            border-radius:12px; padding:10px 12px;
+            display:flex; align-items:center; gap:8px; min-width:130px;
+            transition:0.2s;
+        }
+        .achievement-badge.unlocked { border-color:rgba(255,204,0,0.3); background:rgba(255,204,0,0.05); }
+        .achievement-badge.locked { opacity:0.45; filter:grayscale(0.5); }
+        .ach-icon { font-size:22px; flex-shrink:0; }
+        .ach-info { flex:1; }
+        .ach-title { font-family:'Orbitron'; font-size:8px; font-weight:700; color:#fff; margin-bottom:2px; }
+        .ach-desc { font-size:8px; color:rgba(255,255,255,0.4); }
+        .ach-lock { font-size:10px; color:rgba(255,255,255,0.2); }
+
+        /* ── MOOD / GREETING BANNER ── */
+        .greeting-card {
+            border-radius:16px; padding:14px 16px;
+            background:linear-gradient(135deg,rgba(0,234,255,0.07),rgba(174,0,255,0.05));
+            border:1px solid rgba(0,234,255,0.15);
+            display:flex; align-items:center; gap:12px;
+            position:relative; overflow:hidden;
+        }
+        .greeting-card::before {
+            content:''; position:absolute; right:-30px; top:-30px;
+            width:120px; height:120px; border-radius:50%;
+            background:radial-gradient(circle,rgba(0,234,255,0.1) 0%,transparent 70%);
+        }
+        .greeting-emoji { font-size:32px; flex-shrink:0; animation:greetingBounce 2s ease-in-out infinite; }
+        @keyframes greetingBounce { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+        .greeting-text { flex:1; }
+        .greeting-title { font-family:'Orbitron'; font-size:12px; font-weight:900; color:#fff; margin-bottom:2px; }
+        .greeting-sub { font-size:10px; color:rgba(255,255,255,0.45); }
+
+        /* ── 13. LIVE BADGE — see ticker section above ── */
+
+        /* ── 14. BOTTOM SHEET for product detail ── */
+        .bottom-sheet-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:3000; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(4px); }
+        .bottom-sheet-overlay.open { opacity:1; pointer-events:all; }
+        .bottom-sheet { position:fixed; bottom:0; left:50%; transform:translateX(-50%) translateY(100%); width:100%; max-width:480px; background:rgba(5,8,16,0.99); border-radius:24px 24px 0 0; border-top:1px solid rgba(0,234,255,0.2); padding:0 16px 100px; z-index:3001; transition:transform 0.38s cubic-bezier(0.34,1.2,0.64,1); max-height:88vh; overflow-y:auto; }
+        .bottom-sheet.open { transform:translateX(-50%) translateY(0); }
+        .sheet-handle { width:36px; height:4px; background:rgba(255,255,255,0.15); border-radius:2px; margin:12px auto 16px; }
+        .sheet-title { font-family:'Orbitron'; font-size:13px; font-weight:900; color:var(--accent); margin-bottom:4px; }
+        .sheet-subtitle { font-size:10px; color:rgba(255,255,255,0.4); margin-bottom:16px; }
+
+        /* ── PROFILE AVATAR RING ── */
+        .profile-avatar-ring { width:88px; height:88px; border-radius:24px; margin:0 auto 14px; position:relative; display:flex; align-items:center; justify-content:center; }
+        .profile-avatar-ring::before { content:''; position:absolute; inset:-3px; border-radius:26px; background:linear-gradient(135deg,var(--accent),var(--purple),var(--gold)); z-index:0; animation:ringRotate 4s linear infinite; }
+        @keyframes ringRotate { 0%{filter:hue-rotate(0deg)} 100%{filter:hue-rotate(360deg)} }
+        .profile-avatar-ring img { position:relative; z-index:1; border-radius:22px; width:82px; height:82px; object-fit:cover; }
+
+        /* ══════════════════════
+           PROFILE PAGE v11
+        ══════════════════════ */
+
+        /* Hero banner di profile */
+        .profile-hero {
+            position: relative; border-radius: 20px; overflow: hidden;
+            background: linear-gradient(135deg, #06081a 0%, #0d0520 60%, #060c18 100%);
+            border: 1px solid var(--glass-border);
+            padding: 0 0 16px; margin-bottom: 12px;
+        }
+        .profile-hero-bg {
+            position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+        }
+        .profile-hero-orb1 {
+            position: absolute; width: 180px; height: 180px; border-radius: 50%;
+            right: -40px; top: -40px;
+            background: radial-gradient(circle, rgba(0,234,255,0.12) 0%, transparent 65%);
+            animation: orbFloat 5s ease-in-out infinite;
+        }
+        .profile-hero-orb2 {
+            position: absolute; width: 150px; height: 150px; border-radius: 50%;
+            left: -30px; bottom: -30px;
+            background: radial-gradient(circle, rgba(174,0,255,0.1) 0%, transparent 65%);
+            animation: orbFloat 6s ease-in-out infinite reverse;
+        }
+        /* Top strip */
+        .profile-hero-strip {
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--purple), var(--gold), var(--accent));
+            background-size: 200% auto;
+            animation: gradFlow 3s linear infinite;
+        }
+        @keyframes gradFlow { to { background-position: 200% center; } }
+
+        .profile-hero-body {
+            display: flex; align-items: flex-end; gap: 14px;
+            padding: 20px 16px 0; position: relative; z-index: 1;
+        }
+        /* Avatar wrapper */
+        .profile-avatar-wrap {
+            position: relative; flex-shrink: 0;
+        }
+        .profile-avatar-outer {
+            width: 76px; height: 76px; border-radius: 20px;
+            padding: 2.5px;
+            background: linear-gradient(135deg, var(--accent), var(--purple), var(--gold));
+            animation: ringRotate 4s linear infinite;
+        }
+        .profile-avatar-inner {
+            width: 100%; height: 100%; border-radius: 17px; overflow: hidden;
+            background: #060c18;
+        }
+        .profile-avatar-inner img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+        .profile-edit-badge {
+            position: absolute; bottom: -4px; right: -4px;
+            width: 22px; height: 22px; border-radius: 7px;
+            background: var(--accent); color: #000;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; cursor: pointer; z-index: 5;
+            box-shadow: 0 0 8px rgba(0,234,255,0.5);
+        }
+        /* Name + badge area */
+        .profile-hero-info { flex: 1; padding-bottom: 2px; }
+        .profile-hero-name {
+            font-family: 'Orbitron'; font-size: 15px; font-weight: 900;
+            color: #fff; line-height: 1.1; margin-bottom: 4px;
+            text-shadow: 0 0 20px rgba(0,234,255,0.3);
+        }
+        .profile-hero-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px; }
+        .profile-hero-status {
+            font-size: 9px; color: rgba(255,255,255,0.35);
+            font-family: 'Orbitron'; letter-spacing: 1.5px;
+        }
+
+        /* Stats row di dalam hero */
+        .profile-stats-row {
+            display: grid; grid-template-columns: repeat(3,1fr);
+            gap: 1px; margin: 14px 16px 0;
+            background: rgba(255,255,255,0.06);
+            border-radius: 14px; overflow: hidden;
+            position: relative; z-index: 1;
+        }
+        .profile-stat-item {
+            background: rgba(6,8,18,0.8); padding: 10px 6px; text-align: center;
+        }
+        .profile-stat-val {
+            font-family: 'Orbitron'; font-size: 14px; font-weight: 900; color: #fff;
+        }
+        .profile-stat-lbl {
+            font-size: 7px; color: rgba(255,255,255,0.35); letter-spacing: 1px;
+            font-family: 'Orbitron'; margin-top: 2px;
+        }
+
+        /* Section card generik di profile */
+        .profile-section {
+            background: rgba(255,255,255,0.025);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px; padding: 14px; margin-bottom: 10px;
+            position: relative; overflow: visible;
+        }
+        .profile-section::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,234,255,0.2), transparent);
+        }
+        .profile-section-title {
+            font-family: 'Orbitron'; font-size: 9px; font-weight: 700;
+            color: var(--accent); letter-spacing: 2px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .profile-section-title i { font-size: 10px; }
+
+        /* Color dot grid */
+        .color-dot-grid {
+            display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;
+        }
+        .color-dot {
+            width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.1); transition: 0.2s;
+            position: relative;
+        }
+        .color-dot:active { transform: scale(0.88); }
+        .color-dot.selected::after {
+            content: '✓'; position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #000; font-weight: 900; font-size: 14px;
+        }
+        .color-dot.selected { border: 2.5px solid #fff; box-shadow: 0 0 12px rgba(255,255,255,0.35); transform: scale(1.1); }
+
+        /* Custom hex row */
+        .color-hex-row {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 10px 12px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Social buttons */
+        .profile-social-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+        .profile-social-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            padding: 12px 6px; border-radius: 14px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            text-decoration: none; transition: 0.2s; cursor: pointer;
+        }
+        .profile-social-btn:hover { transform: translateY(-2px); border-color: var(--sc,var(--glass-border)); }
+        .profile-social-btn i { font-size: 20px; color: var(--sc, #fff); }
+        .profile-social-label { font-family: 'Orbitron'; font-size: 7px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
+
+        /* Action buttons */
+        .profile-action-row { display: flex; flex-direction: column; gap: 8px; }
+        .profile-btn-dev {
+            width: 100%; padding: 12px; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, var(--dev-color), #ff4400);
+            color: #fff; font-family: 'Orbitron'; font-size: 10px; font-weight: 900;
+            cursor: pointer; display: none; align-items: center; justify-content: center;
+            gap: 8px; box-shadow: 0 4px 16px rgba(255,0,85,0.3);
+            transition: 0.2s; min-height: 44px;
+        }
+        .profile-btn-dev:active { transform: scale(0.98); }
+        .profile-btn-logout {
+            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5);
+            font-family: 'Orbitron'; font-size: 10px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 8px; transition: 0.2s; min-height: 44px;
+        }
+        .profile-btn-logout:hover { border-color: rgba(255,0,85,0.4); color: #ff5555; }
         
         .bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; filter: brightness(0.2) saturate(1.2); pointer-events: none; }
         .overlay-vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%); z-index: -1; pointer-events: none; }
@@ -123,56 +1012,90 @@
         }
         @keyframes floatUp { 0%{transform:translateY(100vh) scale(0);opacity:0} 10%{opacity:1} 90%{opacity:0.3} 100%{transform:translateY(-10vh) scale(1);opacity:0} }
 
-        header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; background: rgba(2,4,6,0.9); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); }
-        .logo { font-family: 'Orbitron'; font-size: 1rem; font-weight: 900; letter-spacing: 2px; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .profile-btn { width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--accent); object-fit: cover; box-shadow: 0 0 10px var(--accent); }
+        /* ── CSS duplikat dihapus — definisi sudah ada di atas ── */
 
-        .app-container { max-width: 480px; margin: 0 auto; padding: 12px; }
-
-        .hero-card { border-radius: 20px; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--glass-border); height: 160px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
-        .slider-wrapper { display: flex; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-        .slide { min-width: 100%; height: 100%; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
-
-        .gacha-box { background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,234,255,0.05)); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px; margin-bottom: 16px; position: relative; overflow: hidden; }
-        .gacha-title { font-family: 'Orbitron'; font-size: 11px; color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-weight: 700; }
-        
-        .prize-list { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 10px; max-height: 180px; overflow-y: auto; }
-        .prize-item { display: flex; align-items: center; gap: 6px; padding: 5px 8px; background: rgba(255,255,255,0.02); border-radius: 6px; font-size: 8px; }
-        .prize-item i { width: 14px; color: var(--gold); }
-        .prize-item .prize-name { flex: 1; color: #fff; }
-        .prize-item .prize-chance { font-size: 7px; padding: 2px 4px; background: rgba(255,204,0,0.2); border-radius: 8px; color: var(--gold); }
-        .prize-legendary { border-left: 2px solid #ff00aa; }
-        .prize-epic { border-left: 2px solid #aa00ff; }
-        .prize-rare { border-left: 2px solid #00aaff; }
-        .prize-common { border-left: 2px solid #aaa; }
-
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .cat-btn { background: var(--glass); border: 1px solid var(--glass-border); padding: 10px 3px; border-radius: 12px; text-align: center; transition: 0.3s; }
-        .cat-btn.active { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        .cat-btn.active i, .cat-btn.active span { color: #000; }
-        .cat-btn i { font-size: 1.1rem; margin-bottom: 4px; color: var(--accent); display: block; }
-        .cat-btn span { font-size: 8px; font-weight: 700; text-transform: uppercase; font-family: 'Orbitron'; }
-
-        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 14px; margin-bottom: 12px; transition: 0.3s; }
-        .card-title { font-family: 'Orbitron'; font-size: 13px; margin-bottom: 4px; letter-spacing: 1px; }
-        .price-tag { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-bottom: 12px; font-family: 'Rajdhani'; }
-
-        .buy-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: linear-gradient(90deg, var(--accent), #00b4d8); color: #000; font-weight: 900; font-family: 'Orbitron'; cursor: pointer; font-size: 10px; text-transform: uppercase; transition: 0.3s; box-shadow: 0 4px 15px rgba(0, 234, 255, 0.3); min-height: 44px; }
+        .buy-btn {
+            width: 100%; padding: 12px; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, var(--accent), #00b4d8);
+            color: #000; font-weight: 900; font-family: 'Orbitron'; cursor: pointer;
+            font-size: 10px; text-transform: uppercase; transition: 0.25s;
+            box-shadow: 0 4px 18px rgba(0, 234, 255, 0.25); min-height: 44px;
+            position: relative; overflow: hidden;
+        }
+        .buy-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+            transform: translateX(-100%); transition: 0.4s;
+        }
+        .buy-btn:active::before { transform: translateX(100%); }
         .buy-btn:active { transform: scale(0.98); }
         
-        .claim-btn { background: linear-gradient(135deg, var(--gold), #ffaa00); color: #000; border: none; padding: 10px; border-radius: 8px; font-family: 'Orbitron'; font-size: 9px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; min-height: 40px; }
+        .claim-btn {
+            background: linear-gradient(135deg, var(--gold), #ffaa00); color: #000;
+            border: none; padding: 10px; border-radius: 10px; font-family: 'Orbitron';
+            font-size: 9px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px;
+            min-height: 40px; box-shadow: 0 4px 14px rgba(255,204,0,0.2);
+        }
         .claim-btn:active { transform: scale(0.98); }
         .claim-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .dock-nav { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 420px; height: 60px; background: rgba(5, 7, 10, 0.9); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 18px; display: flex; align-items: center; z-index: 1000; }
-        .dock-item { color: #666; flex: 1; text-align: center; font-size: 9px; font-family: 'Orbitron'; text-decoration: none; font-weight: 700; transition: 0.3s; min-height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .dock-item.active { color: var(--accent); }
-        .dock-item i { font-size: 1.2rem; margin-bottom: 2px; display: block; }
+        /* ── Bottom Navigation (upgraded) ── */
+        .dock-nav {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; height: 68px;
+            background: rgba(3,6,9,0.92); backdrop-filter: blur(24px);
+            border-top: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 1000; padding: 0 8px 8px;
+        }
+        .dock-nav::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0,234,255,0.35), rgba(174,0,255,0.25), transparent);
+        }
+        .dock-item {
+            color: rgba(255,255,255,0.3); flex: 1; text-align: center;
+            font-size: 8px; font-family: 'Orbitron'; text-decoration: none; font-weight: 700;
+            transition: 0.25s; min-height: 50px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; border-radius: 14px; gap: 3px;
+            cursor: pointer; position: relative;
+        }
+        .dock-item.active {
+            color: var(--accent);
+            background: rgba(0,234,255,0.07);
+        }
+        .dock-item.active::after {
+            content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
+            width: 20px; height: 2px; border-radius: 2px;
+            background: var(--accent); box-shadow: 0 0 8px var(--accent);
+        }
+        .dock-item i { font-size: 1.2rem; display: block; transition: 0.25s; }
+        .dock-item.active i { filter: drop-shadow(0 0 6px var(--accent)); }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(10px); }
-        .modal-content { background: #080a0f; border: 1px solid var(--accent); border-radius: 20px; width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; padding: 20px; position: relative; }
-        input, select, textarea { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 12px; border-radius: 10px; color: #fff; margin-bottom: 8px; outline: none; font-size: 16px !important; }
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            padding: 15px; backdrop-filter: blur(12px);
+        }
+        .modal-content {
+            background: rgba(6,10,18,0.98); border: 1px solid rgba(0,234,255,0.2);
+            border-radius: 22px; width: 100%; max-width: 380px; max-height: 82vh;
+            overflow-y: auto; padding: 20px; position: relative;
+            box-shadow: 0 0 40px rgba(0,234,255,0.08), 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .modal-content::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 22px;
+        }
+        input, select, textarea {
+            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            padding: 12px; border-radius: 12px; color: #fff; margin-bottom: 8px;
+            outline: none; font-size: 16px !important; transition: 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: rgba(0,234,255,0.4); background: rgba(0,234,255,0.04);
+            box-shadow: 0 0 12px rgba(0,234,255,0.1);
+        }
 
         .color-picker-container { display: flex; gap: 6px; justify-content: center; margin: 12px 0; flex-wrap: wrap; }
         .color-dot { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2px solid rgba(255,255,255,0.15); transition: 0.2s; position: relative; }
@@ -611,7 +1534,7 @@
 
         /* ===== GLOBAL CHAT ===== */
         #chat-fab {
-            position: fixed; bottom: 82px; right: 16px; z-index: 2000;
+            position: fixed; bottom: 80px; right: 16px; z-index: 2000;
             width: 52px; height: 52px; border-radius: 16px;
             background: linear-gradient(135deg, var(--accent), #ae00ff);
             border: none; cursor: pointer; display: none;
@@ -627,7 +1550,7 @@
             font-family: 'Orbitron'; display: none; min-width: 16px; text-align: center;
         }
         #chat-panel {
-            position: fixed; bottom: 144px; right: 16px; z-index: 1999;
+            position: fixed; bottom: 148px; right: 16px; z-index: 1999;
             width: calc(100vw - 32px); max-width: 380px;
             height: 65vh; max-height: 520px;
             background: rgba(5,5,20,0.97);
@@ -743,6 +1666,30 @@
     </style>
 </head>
 <body class="android-optimized">
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Pull-to-refresh indicator -->
+<div id="ptr-indicator"><i class="fa-solid fa-rotate" style="margin-right:6px;"></i>MEMUAT...</div>
+
+<!-- Neon cursor (desktop) -->
+<div id="neon-cursor"></div>
+<div id="neon-trail"></div>
+
+<!-- FAB Gacha dihapus -->
+
+<!-- Bottom Sheet (product detail) -->
+<div class="bottom-sheet-overlay" id="sheet-overlay" onclick="closeBottomSheet()"></div>
+<div class="bottom-sheet" id="bottom-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-title">—</div>
+    <div class="sheet-subtitle" id="sheet-subtitle">—</div>
+    <div id="sheet-body"></div>
+</div>
 
 <audio id="anime-music" loop><source src="" id="music-src" type="audio/mp3"></audio>
 <video id="bg-vid" loop playsinline muted class="bg-video"><source src="" id="video-src" type="video/mp4"></video>
@@ -862,93 +1809,459 @@
 
 <!-- MAIN HEADER -->
 <header id="main-header" style="display:none;">
-    <div class="logo">UNO-STOREZZ</div>
-    <img src="" class="profile-btn" id="header-avatar" onclick="showPage('profile')">
+    <div class="header-left">
+        <div class="logo-icon">U</div>
+        <div>
+            <div class="logo-text" id="header-store-name">UNO-STOREZZ</div>
+            <div class="logo-sub">UNO XALYA STORE</div>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="notif-btn" id="header-notif-btn" onclick="toggleChat()">
+            <i class="fa-solid fa-comments"></i>
+            <div class="notif-badge" id="header-chat-badge" style="display:none;"></div>
+        </div>
+        <div class="avatar-btn" onclick="showPage('profile')">
+            <img src="" id="header-avatar" alt="avatar" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-user\'></i>'">
+        </div>
+    </div>
 </header>
 
 <!-- MAIN APP CONTAINER -->
-<div class="app-container" id="main-app" style="display:none;">
-    <!-- HOME PAGE -->
-    <div id="page-home">
+<div class="app-container" id="main-app" style="display:none; padding:0;">
+
+    <!-- Overlay efek transisi -->
+    <div class="slide-flash" id="slide-flash"></div>
+    <div class="slide-scanline" id="slide-scanline"></div>
+    <div class="slide-border" id="slide-border"></div>
+    <div class="page-label-toast" id="page-label-toast"></div>
+
+    <div class="pages-viewport">
+        <div class="pages-track" id="pages-track">
+
+            <!-- PAGE 0: HOME -->
+            <div id="page-home" class="page-slide">
+
+        <!-- HERO BANNER -->
         <div class="hero-card">
             <div class="slider-wrapper" id="slider"></div>
         </div>
+        <div class="banner-dots" id="banner-dots-wrap" style="margin-top:8px;"></div>
 
-        <div class="gacha-box">
-            <div class="gacha-title"><i class="fa-solid fa-gift"></i> DAILY LUCK SPIN</div>
-            <p style="font-size: 10px; margin-bottom: 10px; opacity: 0.6;">Dapatkan hadiah premium dengan kesempatan langka!</p>
-            
-            <div class="prize-list" id="gacha-prize-list"></div>
-            
-            <button id="btn-gacha-action" class="buy-btn" onclick="spinGacha()">SPIN NOW</button>
-            <div id="gacha-result-container" style="margin-top: 8px;"></div>
+        <!-- GREETING CARD (diisi JS) -->
+        <div class="greeting-card" id="greeting-card">
+            <div class="greeting-emoji" id="greeting-emoji">👾</div>
+            <div class="greeting-text">
+                <div class="greeting-title" id="greeting-title">SELAMAT DATANG!</div>
+                <div class="greeting-sub" id="greeting-sub">Semoga harimu menyenangkan ✨</div>
+            </div>
         </div>
 
-        <div class="category-grid" id="category-grid"></div>
-        <div id="catalog"></div>
-    </div>
+        <!-- TICKER -->
+        <div class="ticker-wrap" style="margin-top:4px;">
+            <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+            <div class="ticker-sep"></div>
+            <span class="ticker-text" id="ticker-text-main">🎉 Selamat datang di UNO-STOREZZ · ⚡ Flash Sale produk digital 50% OFF hari ini · 🏆 Gacha Season X masih berlangsung · ✅ Ratusan transaksi sukses bulan ini · 💎 Premium &amp; Sewa Bot tersedia sekarang</span>
+        </div>
 
-    <!-- PROFILE PAGE -->
-    <div id="page-profile" style="display:none;">
-        <div class="glass-card" style="text-align:center;">
-            <div style="position: relative; width: 80px; margin: 0 auto 12px;">
-                <img src="" id="profile-img-display" style="width:80px; height:80px; border-radius:20px; border:2.5px solid var(--accent); object-fit:cover;">
-                <label for="pfp-upload" style="position: absolute; bottom: -5px; right: -5px; background: var(--accent); width: 24px; height: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; cursor: pointer;"><i class="fa-solid fa-pencil" style="font-size: 9px;"></i></label>
-                <input type="file" id="pfp-upload" style="display: none;" accept="image/*" onchange="updateProfilePhoto(this)">
+        <!-- WINNER MARQUEE -->
+        <div class="winner-bar">
+            <span class="winner-bar-label">🏆 WINNER</span>
+            <div style="overflow:hidden; flex:1;">
+                <div class="winner-scroll" id="winner-scroll">
+                    <span class="winner-item">🎉 <span class="winner-name">XalYa_Pro</span>&nbsp;<span class="winner-prize">menang Premium 7 hari</span></span>
+                    <span class="winner-item">⭐ <span class="winner-name">Agus123</span>&nbsp;<span class="winner-prize">menang Sewa 3 hari</span></span>
+                    <span class="winner-item">💎 <span class="winner-name">Shadow_X</span>&nbsp;<span class="winner-prize">menang Premium 15 hari</span></span>
+                    <span class="winner-item">🔥 <span class="winner-name">NeonWolf</span>&nbsp;<span class="winner-prize">menang Script 30 hari</span></span>
+                    <!-- duplikat untuk loop mulus -->
+                    <span class="winner-item">🎉 <span class="winner-name">XalYa_Pro</span>&nbsp;<span class="winner-prize">menang Premium 7 hari</span></span>
+                    <span class="winner-item">⭐ <span class="winner-name">Agus123</span>&nbsp;<span class="winner-prize">menang Sewa 3 hari</span></span>
+                    <span class="winner-item">💎 <span class="winner-name">Shadow_X</span>&nbsp;<span class="winner-prize">menang Premium 15 hari</span></span>
+                    <span class="winner-item">🔥 <span class="winner-name">NeonWolf</span>&nbsp;<span class="winner-prize">menang Script 30 hari</span></span>
+                </div>
             </div>
-            
-            <div class="profile-name-section">
-                <h3 id="display-user-name" style="font-family:'Orbitron'; font-size:14px;">USER</h3>
-                <button class="edit-name-btn" onclick="openEditNameModal()">
-                    <i class="fa-solid fa-pen"></i> UBAH
+        </div>
+
+        <!-- QUICK STATS -->
+        <div class="quick-stats" style="margin-top:4px;">
+            <div class="stat-card">
+                <div class="stat-icon">🛒</div>
+                <div class="stat-val" id="qs-prod-count" style="color:var(--accent)">—</div>
+                <div class="stat-lbl">PRODUK</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👑</div>
+                <div class="stat-val" id="qs-member-status" style="color:var(--gold)">VIP</div>
+                <div class="stat-lbl">STATUS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-val" id="qs-gacha-count" style="color:var(--red)">—</div>
+                <div class="stat-lbl">GACHA</div>
+            </div>
+        </div>
+
+        <!-- SUBSCRIPTION COUNTDOWN (diisi JS) -->
+        <div id="sub-countdown-wrap" style="display:none;">
+            <div class="glow-divider"></div>
+            <div class="sec-head">
+                <div class="sec-title"><i class="fa-solid fa-clock"></i> LANGGANANMU</div>
+            </div>
+            <div class="sub-countdown-card" id="sub-countdown-card">
+                <div class="sub-countdown-icon">👑</div>
+                <div class="sub-countdown-info">
+                    <div class="sub-countdown-title" id="scc-title">PREMIUM</div>
+                    <div class="sub-countdown-sub" id="scc-sub">Aktif hingga —</div>
+                    <div class="sub-countdown-bar-wrap">
+                        <div class="sub-countdown-bar" id="scc-bar" style="width:70%;"></div>
+                    </div>
+                </div>
+                <div style="text-align:center; flex-shrink:0;">
+                    <div class="sub-countdown-days" id="scc-days">—</div>
+                    <div class="sub-countdown-days-lbl">HARI</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glow-divider"></div>
+
+        <!-- FEATURE SHORTCUTS -->
+        <div class="sec-head">
+            <div class="sec-title"><i class="fa-solid fa-star"></i> MENU CEPAT</div>
+        </div>
+        <div class="feature-row">
+            <div class="feature-card" style="--fc:var(--accent)" onclick="showPage('store')">
+                <span class="feature-card-icon">🛒</span>
+                <div class="feature-card-label">STORE</div>
+            </div>
+            <div class="feature-card" style="--fc:var(--purple)" onclick="document.getElementById('btn-gacha-action')?.scrollIntoView({behavior:'smooth',block:'center'})">
+                <span class="feature-card-icon">🎰</span>
+                <div class="feature-card-label">GACHA</div>
+            </div>
+            <div class="feature-card" style="--fc:var(--gold)" onclick="showPage('profile')">
+                <span class="feature-card-icon">👤</span>
+                <div class="feature-card-label">PROFIL</div>
+            </div>
+            <div class="feature-card" style="--fc:#25d366" onclick="toggleChat()">
+                <span class="feature-card-icon">💬</span>
+                <div class="feature-card-label">CHAT</div>
+            </div>
+        </div>
+
+        <div class="glow-divider"></div>
+
+        <!-- KATEGORI -->
+        <div class="sec-head">
+            <div class="sec-title"><i class="fa-solid fa-grip"></i> KATEGORI</div>
+        </div>
+        <div class="category-grid" id="category-grid"></div>
+
+        <!-- PRODUK POPULER -->
+        <div class="sec-head" style="margin-top:4px;">
+            <div class="sec-title"><i class="fa-solid fa-bolt"></i> POPULER</div>
+            <div class="sec-more" onclick="showPage('store')">Lihat semua <i class="fa-solid fa-chevron-right" style="font-size:8px;"></i></div>
+        </div>
+        <div class="product-scroll" id="popular-products-scroll"></div>
+
+        <div class="glow-divider"></div>
+
+        <!-- GACHA BOX -->
+        <div class="sec-head" style="margin-top:4px;">
+            <div class="sec-title"><i class="fa-solid fa-dice"></i> GACHA BOX</div>
+            <div class="sec-more" onclick="document.getElementById('gacha-prize-list').scrollIntoView({behavior:'smooth'})">Semua hadiah <i class="fa-solid fa-chevron-right" style="font-size:8px;"></i></div>
+        </div>
+        <div class="gacha-card">
+            <div class="gacha-orb"></div>
+            <div class="gacha-head">
+                <div class="gacha-icon-wrap">🎰</div>
+                <div>
+                    <div class="gacha-title">LUCKY SPIN</div>
+                    <div class="gacha-sub">Menangkan hadiah premium!</div>
+                </div>
+            </div>
+            <div class="gacha-prizes" id="gacha-chips-home"></div>
+            <div class="gacha-btn-row">
+                <button id="btn-gacha-action" class="gacha-btn gacha-btn-primary" onclick="spinGacha()">
+                    <i class="fa-solid fa-dice"></i> SPIN NOW
+                </button>
+                <button class="gacha-btn gacha-btn-secondary" onclick="document.getElementById('gacha-prize-list').scrollIntoView({behavior:'smooth'})">
+                    <i class="fa-solid fa-list"></i> HADIAH
                 </button>
             </div>
-            
-            <div id="profile-julukan-container" style="margin-bottom: 8px;"></div>
-            <div id="name-tag-container" class="name-tag-container"></div>
-            <div id="status-cap-display" style="color:var(--accent); font-weight:800; font-size:10px; text-transform:uppercase; letter-spacing:2px; margin-bottom: 16px;">Member</div>
-
-            <!-- MY SUBSCRIPTION SECTION -->
-            <div id="my-subscription-section" class="my-subs-section"></div>
-
-            <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; text-align: left; margin-bottom: 10px; letter-spacing:1px;">🎨 CUSTOM THEME</p>
-            <div class="color-picker-container">
-                <!-- Preset warna -->
-                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:12px;">
-                    <div class="color-dot" id="dot-00eaff" style="background:#00eaff" onclick="updateAccentAndSync('#00eaff')"></div>
-                    <div class="color-dot" id="dot-ff0055" style="background:#ff0055" onclick="updateAccentAndSync('#ff0055')"></div>
-                    <div class="color-dot" id="dot-00ff88" style="background:#00ff88" onclick="updateAccentAndSync('#00ff88')"></div>
-                    <div class="color-dot" id="dot-ffcc00" style="background:#ffcc00" onclick="updateAccentAndSync('#ffcc00')"></div>
-                    <div class="color-dot" id="dot-ae00ff" style="background:#ae00ff" onclick="updateAccentAndSync('#ae00ff')"></div>
-                    <div class="color-dot" id="dot-ff6600" style="background:#ff6600" onclick="updateAccentAndSync('#ff6600')"></div>
-                    <div class="color-dot" id="dot-00bfff" style="background:#00bfff" onclick="updateAccentAndSync('#00bfff')"></div>
-                    <div class="color-dot" id="dot-ff69b4" style="background:#ff69b4" onclick="updateAccentAndSync('#ff69b4')"></div>
-                </div>
-
-                <!-- Custom color input -->
-                <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:12px; padding:10px; display:flex; align-items:center; gap:10px;">
-                    <input type="color" id="customColorPicker" style="width:42px; height:42px; border-radius:8px; border:2px solid var(--accent); cursor:pointer; background:transparent; padding:2px;" oninput="updateAccentAndSync(this.value)">
-                    <div style="flex:1;">
-                        <div style="font-size:8px; color:#aaa; font-family:'Orbitron'; margin-bottom:4px;">HEX COLOR</div>
-                        <input type="text" id="hexColorInput" placeholder="#00eaff" maxlength="7"
-                            style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--accent); color:var(--accent); font-family:'Orbitron'; font-size:12px; font-weight:900; padding:2px 0; outline:none; margin-bottom:0;"
-                            oninput="onHexInput(this.value)">
-                    </div>
-                    <div id="color-preview-box" style="width:36px; height:36px; border-radius:8px; border:2px solid rgba(255,255,255,0.2); background:var(--accent); flex-shrink:0;"></div>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0;">
-                <a href="https://wa.me/6283856169422" target="_blank" style="background:var(--glass); padding:12px; border-radius:12px; border:1px solid var(--glass-border); color: #25d366;"><i class="fa-brands fa-whatsapp"></i></a>
-                <a href="https://t.me/Unodistrik13" target="_blank" style="background:var(--glass); padding:12px; border-radius:12px; border:1px solid var(--glass-border); color: #0088cc;"><i class="fa-brands fa-telegram"></i></a>
-                <a href="https://www.tiktok.com/@revaldi.bhakti?_r=1&_t=ZS-94YSUhEcDrw" target="_blank" style="background:var(--glass); padding:12px; border-radius:12px; border:1px solid var(--glass-border); color: #fff;"><i class="fa-brands fa-tiktok"></i></a>
-            </div>
-
-            <button id="dev-console-btn" onclick="openModal('devAuthModal')" style="display:none; background:var(--dev-color); color:white; border:none; padding:12px; border-radius:12px; width:100%; font-family:'Orbitron'; font-size:10px; font-weight:800; margin-bottom:8px;">CENTRAL COMMAND</button>
-            <button class="buy-btn" style="background:rgba(255,255,255,0.05); color:#fff;" onclick="logout()">TERMINATE</button>
+            <div id="gacha-result-container" style="margin-top:8px;"></div>
+            <div class="prize-list" id="gacha-prize-list" style="margin-top:10px; display:none;"></div>
         </div>
-    </div>
-</div>
+
+        <!-- ACHIEVEMENT BADGES -->
+        <div class="sec-head" style="margin-top:12px;">
+            <div class="sec-title"><i class="fa-solid fa-trophy"></i> ACHIEVEMENT</div>
+        </div>
+        <div class="achievement-scroll">
+            <div class="achievement-badge unlocked">
+                <div class="ach-icon">🏅</div>
+                <div class="ach-info">
+                    <div class="ach-title">MEMBER</div>
+                    <div class="ach-desc">Sudah daftar</div>
+                </div>
+            </div>
+            <div class="achievement-badge" id="ach-spinner">
+                <div class="ach-icon">🎰</div>
+                <div class="ach-info">
+                    <div class="ach-title">SPINNER</div>
+                    <div class="ach-desc">Spin pertama</div>
+                </div>
+                <div class="ach-lock">🔒</div>
+            </div>
+            <div class="achievement-badge locked">
+                <div class="ach-icon">💎</div>
+                <div class="ach-info">
+                    <div class="ach-title">HIGH ROLLER</div>
+                    <div class="ach-desc">Beli 5 produk</div>
+                </div>
+                <div class="ach-lock">🔒</div>
+            </div>
+            <div class="achievement-badge locked">
+                <div class="ach-icon">👑</div>
+                <div class="ach-info">
+                    <div class="ach-title">VIP LEGEND</div>
+                    <div class="ach-desc">Premium 30hr</div>
+                </div>
+                <div class="ach-lock">🔒</div>
+            </div>
+        </div>
+
+        <!-- PROMO -->
+        <div class="sec-head" style="margin-top:12px;">
+            <div class="sec-title"><i class="fa-solid fa-tag"></i> PROMO</div>
+        </div>
+        <div class="promo-row">
+            <div class="promo-card promo-card-a">
+                <div class="promo-label" style="color:var(--gold)">FLASH SALE</div>
+                <div class="promo-val" style="color:var(--gold)">50%</div>
+                <div class="promo-sub">Hari ini saja</div>
+                <div class="promo-icon">⚡</div>
+            </div>
+            <div class="promo-card promo-card-b">
+                <div class="promo-label" style="color:var(--accent)">NEW MEMBER</div>
+                <div class="promo-val" style="color:var(--accent)">FREE</div>
+                <div class="promo-sub">Gacha pertama gratis</div>
+                <div class="promo-icon">🎁</div>
+            </div>
+        </div>
+
+        <!-- HOW TO ORDER -->
+        <div class="sec-head" style="margin-top:12px;">
+            <div class="sec-title"><i class="fa-solid fa-circle-info"></i> CARA ORDER</div>
+        </div>
+        <div class="how-to-grid">
+            <div class="how-step">
+                <div class="how-step-num">1</div>
+                <span class="how-step-icon">🛒</span>
+                <div class="how-step-label">PILIH<br>PRODUK</div>
+            </div>
+            <div class="how-step">
+                <div class="how-step-num">2</div>
+                <span class="how-step-icon">💳</span>
+                <div class="how-step-label">KLIK<br>BELI</div>
+            </div>
+            <div class="how-step">
+                <div class="how-step-num">3</div>
+                <span class="how-step-icon">📸</span>
+                <div class="how-step-label">UPLOAD<br>BUKTI</div>
+            </div>
+            <div class="how-step">
+                <div class="how-step-num">4</div>
+                <span class="how-step-icon">✅</span>
+                <div class="how-step-label">DAPAT<br>PRODUK</div>
+            </div>
+        </div>
+
+        <!-- SOCIAL LINKS -->
+        <div class="sec-head" style="margin-top:12px;">
+            <div class="sec-title"><i class="fa-solid fa-share-nodes"></i> HUBUNGI KAMI</div>
+        </div>
+        <div class="social-row">
+            <a href="https://wa.me/6283856169422" target="_blank" class="social-card" style="--sc:#25d366">
+                <i class="fa-brands fa-whatsapp"></i>
+                <div class="social-card-label">WHATSAPP</div>
+            </a>
+            <a href="https://t.me/Unodistrik13" target="_blank" class="social-card" style="--sc:#0088cc">
+                <i class="fa-brands fa-telegram"></i>
+                <div class="social-card-label">TELEGRAM</div>
+            </a>
+            <a href="https://www.tiktok.com/@revaldi.bhakti" target="_blank" class="social-card" style="--sc:#fff">
+                <i class="fa-brands fa-tiktok"></i>
+                <div class="social-card-label">TIKTOK</div>
+            </a>
+        </div>
+
+        <!-- FULL CATALOG -->
+        <div class="sec-head" style="margin-top:12px;">
+            <div class="sec-title"><i class="fa-solid fa-store"></i> SEMUA PRODUK</div>
+        </div>
+        <div id="catalog"></div>
+
+        <div style="height:8px;"></div>
+    </div><!-- end page-home -->
+
+            <!-- PAGE 1: STORE -->
+            <div id="page-store" class="page-slide">
+                <!-- Category filter tabs -->
+                <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; scrollbar-width:none;">
+                    <button class="store-cat-tab active" data-cat="all" onclick="filterStoreTab(this,'all')">
+                        <i class="fa-solid fa-border-all"></i> SEMUA
+                    </button>
+                    <button class="store-cat-tab" data-cat="sewa" onclick="filterStoreTab(this,'sewa')">
+                        🤖 SEWA BOT
+                    </button>
+                    <button class="store-cat-tab" data-cat="premium" onclick="filterStoreTab(this,'premium')">
+                        👑 PREMIUM
+                    </button>
+                    <button class="store-cat-tab" data-cat="script" onclick="filterStoreTab(this,'script')">
+                        💜 SCRIPT
+                    </button>
+                    <button class="store-cat-tab" data-cat="lainnya" onclick="filterStoreTab(this,'lainnya')">
+                        📦 LAINNYA
+                    </button>
+                </div>
+                <div id="store-product-grid"></div>
+                <div style="height:8px;"></div>
+            </div><!-- end page-store -->
+
+            <!-- PAGE 2: PROFILE -->
+    <div id="page-profile" class="page-slide">
+
+        <!-- ── HERO CARD ── -->
+        <div class="profile-hero">
+            <div class="profile-hero-strip"></div>
+            <div class="profile-hero-bg">
+                <div class="profile-hero-orb1"></div>
+                <div class="profile-hero-orb2"></div>
+            </div>
+
+            <div class="profile-hero-body">
+                <!-- Avatar -->
+                <div class="profile-avatar-wrap">
+                    <div class="profile-avatar-outer">
+                        <div class="profile-avatar-inner">
+                            <img src="" id="profile-img-display" alt="avatar">
+                        </div>
+                    </div>
+                    <label for="pfp-upload" class="profile-edit-badge">
+                        <i class="fa-solid fa-pencil"></i>
+                    </label>
+                    <input type="file" id="pfp-upload" style="display:none;" accept="image/*" onchange="updateProfilePhoto(this)">
+                </div>
+
+                <!-- Info -->
+                <div class="profile-hero-info">
+                    <!-- nama -->
+                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                        <h3 id="display-user-name" class="profile-hero-name">USER</h3>
+                        <button class="edit-name-btn" onclick="openEditNameModal()" style="min-height:unset; padding:4px 8px; font-size:7px;">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    </div>
+                    <!-- julukan + tag -->
+                    <div class="profile-hero-tags">
+                        <div id="profile-julukan-container"></div>
+                        <div id="name-tag-container" class="name-tag-container"></div>
+                    </div>
+                    <div id="status-cap-display" class="profile-hero-status">Member</div>
+                </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="profile-stats-row">
+                <div class="profile-stat-item">
+                    <div class="profile-stat-val" id="pstat-subs" style="color:var(--gold)">—</div>
+                    <div class="profile-stat-lbl">SUB AKTIF</div>
+                </div>
+                <div class="profile-stat-item">
+                    <div class="profile-stat-val" id="pstat-role" style="color:var(--accent)">—</div>
+                    <div class="profile-stat-lbl">ROLE</div>
+                </div>
+                <div class="profile-stat-item">
+                    <div class="profile-stat-val" id="pstat-spins" style="color:var(--purple)">—</div>
+                    <div class="profile-stat-lbl">SPIN</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── LANGGANANKU ── -->
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <i class="fa-solid fa-crown"></i> LANGGANANKU
+            </div>
+            <div id="my-subscription-section" class="my-subs-section" style="margin:0; padding:0; background:none; border:none;"></div>
+        </div>
+
+        <!-- ── CUSTOM THEME ── -->
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <i class="fa-solid fa-palette"></i> CUSTOM THEME
+            </div>
+            <div class="color-dot-grid">
+                <div class="color-dot" id="dot-00eaff" style="background:#00eaff" onclick="updateAccentAndSync('#00eaff')"></div>
+                <div class="color-dot" id="dot-ff0055" style="background:#ff0055" onclick="updateAccentAndSync('#ff0055')"></div>
+                <div class="color-dot" id="dot-00ff88" style="background:#00ff88" onclick="updateAccentAndSync('#00ff88')"></div>
+                <div class="color-dot" id="dot-ffcc00" style="background:#ffcc00" onclick="updateAccentAndSync('#ffcc00')"></div>
+                <div class="color-dot" id="dot-ae00ff" style="background:#ae00ff" onclick="updateAccentAndSync('#ae00ff')"></div>
+                <div class="color-dot" id="dot-ff6600" style="background:#ff6600" onclick="updateAccentAndSync('#ff6600')"></div>
+                <div class="color-dot" id="dot-00bfff" style="background:#00bfff" onclick="updateAccentAndSync('#00bfff')"></div>
+                <div class="color-dot" id="dot-ff69b4" style="background:#ff69b4" onclick="updateAccentAndSync('#ff69b4')"></div>
+            </div>
+            <div class="color-hex-row">
+                <input type="color" id="customColorPicker"
+                    style="width:40px; height:40px; border-radius:8px; border:2px solid var(--accent); cursor:pointer; background:transparent; padding:2px; flex-shrink:0;"
+                    oninput="updateAccentAndSync(this.value)">
+                <div style="flex:1;">
+                    <div style="font-size:8px; color:rgba(255,255,255,0.4); font-family:'Orbitron'; margin-bottom:3px;">HEX COLOR</div>
+                    <input type="text" id="hexColorInput" placeholder="#00eaff" maxlength="7"
+                        style="width:100%; background:transparent; border:none; border-bottom:1px solid var(--accent); color:var(--accent); font-family:'Orbitron'; font-size:13px; font-weight:900; padding:2px 0; outline:none; margin-bottom:0;"
+                        oninput="onHexInput(this.value)">
+                </div>
+                <div id="color-preview-box" style="width:36px; height:36px; border-radius:10px; border:2px solid rgba(255,255,255,0.15); background:var(--accent); flex-shrink:0; box-shadow:0 0 12px var(--accent);"></div>
+            </div>
+        </div>
+
+        <!-- ── HUBUNGI KAMI ── -->
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <i class="fa-solid fa-share-nodes"></i> HUBUNGI KAMI
+            </div>
+            <div class="profile-social-row">
+                <a href="https://wa.me/6283856169422" target="_blank" class="profile-social-btn" style="--sc:#25d366">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span class="profile-social-label">WHATSAPP</span>
+                </a>
+                <a href="https://t.me/Unodistrik13" target="_blank" class="profile-social-btn" style="--sc:#0088cc">
+                    <i class="fa-brands fa-telegram"></i>
+                    <span class="profile-social-label">TELEGRAM</span>
+                </a>
+                <a href="https://www.tiktok.com/@revaldi.bhakti?_r=1&_t=ZS-94YSUhEcDrw" target="_blank" class="profile-social-btn" style="--sc:#fff">
+                    <i class="fa-brands fa-tiktok"></i>
+                    <span class="profile-social-label">TIKTOK</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- ── ACTION BUTTONS ── -->
+        <div class="profile-action-row">
+            <button id="dev-console-btn" class="profile-btn-dev" onclick="openModal('devAuthModal')">
+                <i class="fa-solid fa-terminal"></i> CENTRAL COMMAND
+            </button>
+            <button class="profile-btn-logout" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> TERMINATE SESSION
+            </button>
+        </div>
+
+        <div style="height:80px;"></div>
+    </div><!-- end page-profile -->
+
+        </div><!-- end pages-track -->
+    </div><!-- end pages-viewport -->
+</div><!-- end main-app -->
 
 <!-- PAYMENT MODAL -->
 <div id="paymentModal" class="modal">
@@ -1103,6 +2416,15 @@
                 <div class="input-group">
                     <i class="fa-solid fa-coins"></i>
                     <input type="text" id="new-item-price" placeholder="Harga (contoh: 50000)">
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-image"></i>
+                    <input type="text" id="new-item-img" placeholder="URL Gambar (opsional)" style="font-size:11px!important;">
+                </div>
+                <!-- Preview gambar -->
+                <div id="img-preview-wrap" style="display:none; margin-bottom:8px; border-radius:10px; overflow:hidden; height:80px; border:1px solid var(--glass-border);">
+                    <img id="img-preview" src="" alt="preview" style="width:100%; height:100%; object-fit:cover;">
                 </div>
 
                 <div class="benefit-form-box">
@@ -1475,10 +2797,25 @@
     </div>
 </div>
 
-<!-- DOCK NAVIGATION -->
+<!-- DOCK NAVIGATION — 5 item with center gacha -->
 <nav class="dock-nav" id="main-nav" style="display:none;">
-    <div class="dock-item active" id="btn-home" onclick="showPage('home')"><i class="fa-solid fa-ghost"></i>STORE</div>
-    <div class="dock-item" id="btn-profile" onclick="showPage('profile')"><i class="fa-solid fa-user-astronaut"></i>CORE</div>
+    <div class="dock-item active" id="btn-home" onclick="showPage('home')">
+        <i class="fa-solid fa-house"></i>HOME
+    </div>
+    <div class="dock-item" id="btn-store" onclick="showPage('store')">
+        <i class="fa-solid fa-store"></i>STORE
+    </div>
+    <!-- CENTER GACHA -->
+    <div class="nav-center-wrap">
+        <div class="nav-center-btn" onclick="showPage('home'); setTimeout(()=>document.getElementById('btn-gacha-action')?.scrollIntoView({behavior:'smooth', block:'center'}),300)">🎰</div>
+        <div class="nav-center-label">GACHA</div>
+    </div>
+    <div class="dock-item" id="btn-chat-nav" onclick="toggleChat()">
+        <i class="fa-solid fa-comments"></i>CHAT
+    </div>
+    <div class="dock-item" id="btn-profile" onclick="showPage('profile')">
+        <i class="fa-solid fa-user-astronaut"></i>PROFIL
+    </div>
 </nav>
 
 <!-- CHAT FAB -->
@@ -2360,7 +3697,7 @@
         
         const devBtn = document.getElementById('dev-console-btn');
         if (devBtn) {
-            devBtn.style.display = currentUser.role === 'developer' ? 'block' : 'none';
+            devBtn.style.display = currentUser.role === 'developer' ? 'flex' : 'none';
         }
         
         renderCategoryGrid();
@@ -2380,6 +3717,22 @@
         }
         
         renderMySubscription();
+
+        // ── Profile stats row update ──
+        const pRole  = document.getElementById('pstat-role');
+        const pSubs  = document.getElementById('pstat-subs');
+        const pSpins = document.getElementById('pstat-spins');
+        if (pRole)  pRole.textContent  = currentUser.role === 'developer' ? 'DEV' : 'CREW';
+        if (pSubs) {
+            const activeSubs = memberData && memberData.subs
+                ? memberData.subs.filter(s => new Date(s.expiry) > new Date()).length
+                : 0;
+            pSubs.textContent = activeSubs || '0';
+        }
+        if (pSpins) {
+            const spins = localStorage.getItem('gacha_spins_' + (currentUser.name||'')) || '0';
+            pSpins.textContent = spins;
+        }
     }
 
     function renderSlider() {
@@ -2446,6 +3799,12 @@
             alert("❌ Belum ada hadiah gacha!");
             return;
         }
+
+        // Track spin count
+        const spinKey = 'gacha_spins_' + (currentUser.name || '');
+        localStorage.setItem(spinKey, (parseInt(localStorage.getItem(spinKey) || '0') + 1).toString());
+        const pSpins = document.getElementById('pstat-spins');
+        if (pSpins) pSpins.textContent = localStorage.getItem(spinKey);
         
         // Cek CD dari Firebase (per akun, bukan per device)
         const memberData = config.members.find(m => m.name === currentUser.name);
@@ -3018,12 +4377,14 @@ Terima kasih! 🙏
         const select = document.getElementById('sel-cat-add');
         const nameInput = document.getElementById('new-item-name');
         const priceInput = document.getElementById('new-item-price');
+        const imgInput = document.getElementById('new-item-img');
         
         if (!select || !nameInput || !priceInput) return;
         
         const category = select.value;
         const name = nameInput.value.trim();
         const price = priceInput.value.trim();
+        const img = imgInput ? imgInput.value.trim() : '';
         
         if (name && price) {
             if (!config.prices[category]) config.prices[category] = [];
@@ -3034,13 +4395,16 @@ Terima kasih! 🙏
                 const text = row.querySelector('input')?.value.trim() || '';
                 if (text) benefits.push({ icon, text });
             });
-            config.prices[category].push({ n: name, p: price, b: benefits });
+            config.prices[category].push({ n: name, p: price, b: benefits, img: img });
             saveLocal();
             renderAdminProductList();
             publishProductsToCloud();
             
-            nameInput.value = "";
-            priceInput.value = "";
+            nameInput.value = '';
+            priceInput.value = '';
+            if (imgInput) imgInput.value = '';
+            const pw = document.getElementById('img-preview-wrap');
+            if (pw) pw.style.display = 'none';
             document.getElementById('benefit-rows-container').innerHTML = '';
             
             const activeCat = document.querySelector('.cat-btn.active span')?.innerText.toLowerCase() || 'sewa';
@@ -3077,6 +4441,9 @@ Terima kasih! 🙏
             const benefitTags = item.b && item.b.length > 0
                 ? item.b.map(b => `<span class="benefit-tag"><i class="${b.icon || 'fa-solid fa-check'}"></i> ${b.text}</span>`).join('')
                 : '<span style="font-size:7px;opacity:0.4;">Belum ada benefit</span>';
+            const thumbHtml = item.img
+                ? `<img src="${item.img}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--glass-border);" onerror="this.style.display='none'">`
+                : `<div style="width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📦</div>`;
             return `
             <div class="product-item" style="flex-direction:column; align-items:flex-start; gap:6px;"
                 draggable="true"
@@ -3086,9 +4453,10 @@ Terima kasih! 🙏
                 ondrop="onProdDrop(event,'${category}',${idx})"
                 ondragend="onProdDragEnd(event)"
                 ondragleave="onProdDragLeave(event)">
-                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                    <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
                         <i class="fa-solid fa-grip-vertical prod-drag-handle"></i>
+                        ${thumbHtml}
                         <div class="product-info" style="flex:1;min-width:0;">
                             <span class="product-name" style="font-size:10px;">${item.n || 'Produk'}</span>
                             <span class="product-price">
@@ -4665,6 +6033,12 @@ Terima kasih! 🙏
         localStorage.setItem('uno_cfg', JSON.stringify(config));
     }
 
+    // buyItem = alias openPay (dipanggil dari renderStoreGrid)
+    function buyItem(name, priceStr) {
+        const rawP = (priceStr||'0').toString().replace(/[^0-9]/g,'');
+        openPay(name, rawP || priceStr);
+    }
+
     function openModal(id) {
         const modal = document.getElementById(id);
         if (modal) modal.style.display = 'flex';
@@ -4675,21 +6049,80 @@ Terima kasih! 🙏
         if (modal) modal.style.display = 'none';
     }
 
+    // ── PAGE INDEX MAP ──
+    // track has 3 pages: 0=home, 1=store, 2=profile
+    // translateX: 0% = home, -33.333% = store, -66.666% = profile
+    const PAGE_INDEX = { home: 0, store: 1, profile: 2 };
+    const PAGE_LABELS = { home: '🏠 HOME', store: '🛒 STORE', profile: '👤 PROFIL' };
+    let _currentPage = 'home';
+
     function showPage(page) {
-        const home = document.getElementById('page-home');
-        const profile = document.getElementById('page-profile');
-        const btnHome = document.getElementById('btn-home');
+        if (!PAGE_INDEX.hasOwnProperty(page)) return;
+
+        const track = document.getElementById('pages-track');
+        const btnHome    = document.getElementById('btn-home');
         const btnProfile = document.getElementById('btn-profile');
-        
-        if (home) home.style.display = page === 'home' ? 'block' : 'none';
-        if (profile) profile.style.display = page === 'profile' ? 'block' : 'none';
-        if (btnHome) btnHome.classList.toggle('active', page === 'home');
+        const btnStore   = document.getElementById('btn-store');
+        const btnChat    = document.getElementById('btn-chat-nav');
+
+        // ── Slide track ──
+        const idx = PAGE_INDEX[page];
+        const pct = -(idx * (100 / 3));
+        if (track) track.style.transform = `translateX(${pct}%)`;
+
+        // ── Nav active states ──
+        if (btnHome)    btnHome.classList.toggle('active', page === 'home');
+        if (btnStore)   btnStore.classList.toggle('active', page === 'store');
         if (btnProfile) btnProfile.classList.toggle('active', page === 'profile');
-        
+        if (btnChat)    btnChat.classList.remove('active');
+
+        // ── Neon flash overlay ──
+        if (page !== _currentPage) {
+            _triggerSlideEffects(page);
+        }
+        _currentPage = page;
+
+        // ── Logic hooks ──
         if (page === 'profile') syncUI();
-        
-        // Refresh config saat pindah halaman
+        if (page === 'store')   renderStorePage();
+
         loadConfigFromCloud();
+    }
+
+    function _triggerSlideEffects(page) {
+        // Flash
+        const flash = document.getElementById('slide-flash');
+        if (flash) {
+            flash.classList.remove('active');
+            void flash.offsetWidth; // reflow
+            flash.classList.add('active');
+            setTimeout(() => flash.classList.remove('active'), 450);
+        }
+        // Scanline
+        const scan = document.getElementById('slide-scanline');
+        if (scan) {
+            scan.classList.remove('active');
+            void scan.offsetWidth;
+            scan.classList.add('active');
+            setTimeout(() => scan.classList.remove('active'), 450);
+        }
+        // Border glow
+        const border = document.getElementById('slide-border');
+        if (border) {
+            border.classList.remove('active');
+            void border.offsetWidth;
+            border.classList.add('active');
+            setTimeout(() => border.classList.remove('active'), 480);
+        }
+        // Label toast
+        const toast = document.getElementById('page-label-toast');
+        if (toast) {
+            toast.textContent = PAGE_LABELS[page] || page.toUpperCase();
+            toast.classList.remove('show');
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1050);
+        }
     }
 
     function logout() {
@@ -4873,8 +6306,12 @@ Terima kasih! 🙏
 
     async function publishConfigToCloud() {
         try {
+            const storeName = document.getElementById('header-store-name')?.innerText
+                || document.querySelector('.logo-text')?.innerText
+                || document.querySelector('.logo')?.innerText
+                || 'UNO-STOREZZ';
             const cfg = {
-                store_name: document.querySelector('.logo')?.innerText || 'UNO-STOREZZ',
+                store_name: storeName,
                 bg_video: config.bgVideo || '',
                 bg_music: config.bgMusic || 'https://files.catbox.moe/2n6pxr.mp3',
                 accent_color: '',  // Per-user preference, tidak di-publish ke Firebase
@@ -4964,8 +6401,14 @@ Terima kasih! 🙏
             const cfg = await fbGet('konten/config');
             if (cfg && typeof cfg === 'object') {
                 if (cfg.store_name) {
-                    const logo = document.querySelector('.logo');
-                    if (logo) logo.innerText = cfg.store_name;
+                    const logoText = document.getElementById('header-store-name');
+                    if (logoText) logoText.innerText = cfg.store_name;
+                    const logoOld = document.querySelector('.logo');
+                    if (logoOld) logoOld.innerText = cfg.store_name;
+                    const loadName = document.getElementById('load-store-name');
+                    if (loadName) loadName.textContent = cfg.store_name;
+                    const loginTitle = document.getElementById('login-store-title');
+                    if (loginTitle) loginTitle.textContent = cfg.store_name;
                 }
                 if (cfg.bg_video) {
                     // Hanya reload video kalau URL-nya benar-benar beda
@@ -5051,12 +6494,304 @@ Terima kasih! 🙏
             loadGachaFromCloud(),
             loadBannersFromCloud(),
         ]);
+        if(window.renderPopularProducts) renderPopularProducts();
+        if(window.renderGachaChips) renderGachaChips();
+        if(window.updateQuickStats) updateQuickStats();
     }, 10000);
 
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', function() {
         // Auto start loading screen
         setTimeout(enterSystem, 300);
+
+        // ── Init track position (start at home = index 0) ──
+        const track = document.getElementById('pages-track');
+        if (track) track.style.transform = 'translateX(0%)';
+
+        // ── Swipe gesture (horizontal) on pages viewport ──
+        const pageOrder = ['home', 'store', 'profile'];
+        let _swipeStartX = 0, _swipeStartY = 0, _swiping = false;
+
+        document.addEventListener('touchstart', function(e) {
+            const vp = document.getElementById('pages-track');
+            if (!vp) return;
+            _swipeStartX = e.touches[0].clientX;
+            _swipeStartY = e.touches[0].clientY;
+            _swiping = true;
+        }, { passive: true });
+
+        document.addEventListener('touchend', function(e) {
+            if (!_swiping) return;
+            _swiping = false;
+            const dx = e.changedTouches[0].clientX - _swipeStartX;
+            const dy = e.changedTouches[0].clientY - _swipeStartY;
+            // Only trigger if horizontal swipe > 60px and more horizontal than vertical
+            if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+            // Don't swipe if touching modal, input, or scrollable element
+            const target = e.target;
+            if (target.closest('.modal') || target.closest('input') || target.closest('textarea') || target.closest('.product-scroll') || target.closest('.prize-list') || target.closest('.members-list') || target.closest('#chat-panel')) return;
+            const curIdx = PAGE_INDEX[_currentPage] ?? 0;
+            if (dx < 0 && curIdx < pageOrder.length - 1) {
+                // swipe left → next page
+                showPage(pageOrder[curIdx + 1]);
+            } else if (dx > 0 && curIdx > 0) {
+                // swipe right → prev page
+                showPage(pageOrder[curIdx - 1]);
+            }
+        }, { passive: true });
+
+        // ── STORE PAGE ──
+        let _storeCat = 'all';
+        function filterStoreTab(el, cat) {
+            _storeCat = cat;
+            document.querySelectorAll('.store-cat-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderStoreGrid();
+        }
+        function renderStorePage() { renderStoreGrid(); }
+        function renderStoreGrid() {
+            const wrap = document.getElementById('store-product-grid');
+            if (!wrap || !config.prices) return;
+            const emojis = { sewa:'🤖', premium:'👑', script:'💜', lainnya:'🎁' };
+            const cc_map = {
+                sewa:    { c1:'rgba(0,234,255,0.12)',  c2:'rgba(0,100,255,0.08)',  accent:'#00eaff', label:'Sewa Bot' },
+                premium: { c1:'rgba(255,204,0,0.12)',  c2:'rgba(255,100,0,0.07)',  accent:'#ffcc00', label:'Premium'  },
+                script:  { c1:'rgba(174,0,255,0.12)',  c2:'rgba(255,0,85,0.07)',   accent:'#ae00ff', label:'Script'   },
+                lainnya: { c1:'rgba(0,255,100,0.10)',  c2:'rgba(0,234,255,0.06)',  accent:'#00ff88', label:'Lainnya'  },
+            };
+            let cards = ''; let hasItems = false;
+            const orderedCats = config.categoryOrder && config.categoryOrder.length ? config.categoryOrder : Object.keys(config.prices);
+            orderedCats.forEach(cat => {
+                const items = config.prices[cat];
+                if (!items || !items.length) return;
+                if (_storeCat !== 'all' && _storeCat !== cat) return;
+                const cc = cc_map[cat] || cc_map.lainnya;
+                items.forEach((item, idx) => {
+                    hasItems = true;
+                    const name = item.n || item.name || item.nama || 'Produk';
+                    const rawP = (item.p || item.price || item.harga || '0').toString().replace(/[^0-9]/g,'');
+                    const priceNum = parseInt(rawP) || 0;
+                    const priceStr = priceNum > 0 ? 'Rp ' + priceNum.toLocaleString('id-ID') : (item.p || '—');
+                    const imgUrl = item.img || '';
+                    const benefits = item.b || [];
+                    const sn = name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+                    const badgeHtml = idx===0 ? '<span class="spc-badge badge-hot">HOT</span>' : idx===1 ? '<span class="spc-badge badge-new">NEW</span>' : '';
+                    const imgHtml = imgUrl
+                        ? `<img src="${imgUrl}" alt="${sn}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+                        : '';
+                    const fallbackHtml = `<div class="spc-img-fallback" style="${imgUrl?'display:none':''}">${emojis[cat]||'🎁'}</div>`;
+                    const bHtml = benefits.length
+                        ? benefits.slice(0,3).map(b=>`<div class="spc-benefit-item"><i class="${b.icon||'fa-solid fa-check'}"></i><span>${b.text}</span></div>`).join('')
+                          + (benefits.length>3?`<div class="spc-benefit-item"><i class="fa-solid fa-ellipsis"></i><span>+${benefits.length-3} lainnya</span></div>`:'')
+                        : '<div class="spc-no-benefit">—</div>';
+                    const btnColor = cc.accent==='#ffcc00'?'#ffaa00':'#00b4d8';
+                    cards += `<div class="store-prod-card" onclick="buyItem('${sn}','${priceStr}')">
+                        <div class="spc-img-wrap" style="--c1:${cc.c1};--c2:${cc.c2}">
+                            ${imgHtml}${fallbackHtml}
+                            <div class="spc-img-overlay"></div>
+                            <span class="spc-cat-pill">${emojis[cat]||'📦'} ${cc.label}</span>
+                            ${badgeHtml}
+                        </div>
+                        <div class="spc-body">
+                            <div class="spc-name">${name}</div>
+                            <div class="spc-benefits">${bHtml}</div>
+                            <div class="spc-footer">
+                                <div><div class="spc-price-label">HARGA</div><div class="spc-price" style="color:${cc.accent}">${priceStr}</div></div>
+                                <button class="spc-buy-btn" style="background:linear-gradient(90deg,${cc.accent},${btnColor});color:#000;" onclick="event.stopPropagation();buyItem('${sn}','${priceStr}')"><i class="fa-solid fa-cart-shopping"></i> BELI</button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            });
+            wrap.innerHTML = hasItems ? `<div class="store-prod-grid">${cards}</div>` : '<div class="store-empty"><i class="fa-solid fa-box-open"></i>Belum ada produk.<br>Cek lagi nanti!</div>';
+        }
+
+                function updateQuickStats() {
+            const prods = config.prices ? Object.values(config.prices).flat().length : 0;
+            const prizes = config.gachaPrizes ? config.gachaPrizes.length : 0;
+            const qp = document.getElementById('qs-prod-count');
+            const qg = document.getElementById('qs-gacha-count');
+            if (qp) qp.textContent = prods || '—';
+            if (qg) qg.textContent = prizes || '—';
+            if (currentUser) {
+                const ms = document.getElementById('qs-member-status');
+                if (ms) ms.textContent = currentUser.role === 'developer' ? 'DEV' : 'VIP';
+            }
+        }
+        setTimeout(updateQuickStats, 2500);
+        setInterval(updateQuickStats, 15000);
+
+        // ── Live preview gambar di admin panel ──
+        document.addEventListener('input', function(e) {
+            if (e.target && e.target.id === 'new-item-img') {
+                const url = e.target.value.trim();
+                const wrap = document.getElementById('img-preview-wrap');
+                const img  = document.getElementById('img-preview');
+                if (!wrap || !img) return;
+                if (url) {
+                    img.src = url;
+                    img.onload  = () => { wrap.style.display = 'block'; };
+                    img.onerror = () => { wrap.style.display = 'none';  };
+                } else {
+                    wrap.style.display = 'none';
+                }
+            }
+        });
+
+        // ── Greeting Card ──
+        function updateGreetingCard() {
+            const hour = new Date().getHours();
+            const greetings = [
+                { range:[0,5],   emoji:'🌙', title:'SELAMAT MALAM',  sub:'Masih betah begadang? Cek produk terbaru 👾' },
+                { range:[5,11],  emoji:'☀️', title:'SELAMAT PAGI',   sub:'Mulai hari dengan semangat! ✨' },
+                { range:[11,15], emoji:'⚡', title:'SELAMAT SIANG',  sub:'Lagi santai? Spin gacha dulu! 🎰' },
+                { range:[15,19], emoji:'🌇', title:'SELAMAT SORE',   sub:'Waktunya cek promo hari ini! 🔥' },
+                { range:[19,24], emoji:'🌟', title:'SELAMAT MALAM',  sub:'Malam ini ada gacha spesial menanti 💎' },
+            ];
+            const g = greetings.find(x => hour >= x.range[0] && hour < x.range[1]) || greetings[4];
+            const name = currentUser ? ' ' + (currentUser.username || currentUser.name || '').toUpperCase() + '!' : '!';
+            const el_e = document.getElementById('greeting-emoji');
+            const el_t = document.getElementById('greeting-title');
+            const el_s = document.getElementById('greeting-sub');
+            if (el_e) el_e.textContent = g.emoji;
+            if (el_t) el_t.textContent = g.title + name;
+            if (el_s) el_s.textContent = g.sub;
+        }
+        setTimeout(updateGreetingCard, 600);
+
+        // ── Subscription Countdown ──
+        function updateSubCountdown() {
+            if (!currentUser) return;
+            const memberData = config.members.find(m => m.name === currentUser.name);
+            if (!memberData || !memberData.subs || !memberData.subs.length) return;
+            const now = Date.now();
+            const active = memberData.subs
+                .map(s => ({ ...s, daysLeft: Math.ceil((new Date(s.expiry) - now) / 86400000) }))
+                .filter(s => s.daysLeft > 0)
+                .sort((a,b) => a.daysLeft - b.daysLeft);
+            if (!active.length) return;
+            const s = active[0];
+            const icons = { premium:'👑', sewa:'🤖', script:'💜', lainnya:'📦', misc:'🔧' };
+            const wrap  = document.getElementById('sub-countdown-wrap');
+            const icon  = document.querySelector('.sub-countdown-icon');
+            const title = document.getElementById('scc-title');
+            const sub   = document.getElementById('scc-sub');
+            const bar   = document.getElementById('scc-bar');
+            const days  = document.getElementById('scc-days');
+            if (!wrap) return;
+            wrap.style.display = 'block';
+            if (icon)  icon.textContent  = icons[s.type] || '⭐';
+            if (title) title.textContent = (s.type || 'SUB').toUpperCase();
+            if (sub)   sub.textContent   = `Aktif · ${s.daysLeft} hari tersisa`;
+            if (days)  days.textContent  = s.daysLeft;
+            if (bar) {
+                const startMs = s.start ? new Date(s.start) : new Date(new Date(s.expiry) - (s.days||30)*86400000);
+                const total = Math.ceil((new Date(s.expiry) - startMs) / 86400000) || 30;
+                bar.style.width = Math.max(5, (s.daysLeft / total) * 100) + '%';
+                bar.style.background = s.daysLeft <= 3
+                    ? 'linear-gradient(90deg,#ff5555,#ff0055)'
+                    : 'linear-gradient(90deg,var(--gold),#ffaa00)';
+            }
+        }
+        setTimeout(updateSubCountdown, 3000);
+
+        // ── Popular products horizontal scroll ──
+        function renderPopularProducts() {
+            const wrap = document.getElementById('popular-products-scroll');
+            if (!wrap || !config.prices) return;
+            const allProds = Object.entries(config.prices).flatMap(([cat, items]) =>
+                (items||[]).map(item => ({...item, cat}))
+            ).slice(0, 8);
+            if (!allProds.length) { wrap.style.display = 'none'; return; }
+            wrap.style.display = '';
+            const emojis = { sewa:'🤖', premium:'👑', script:'💜', lainnya:'🎁' };
+            const gradients = {
+                sewa:  ['rgba(0,234,255,0.1)','rgba(0,100,255,0.07)'],
+                premium:['rgba(255,204,0,0.1)','rgba(255,100,0,0.06)'],
+                script: ['rgba(174,0,255,0.1)','rgba(255,0,85,0.06)'],
+                lainnya:['rgba(0,255,100,0.08)','rgba(0,234,255,0.05)'],
+            };
+            wrap.innerHTML = allProds.map((p, i) => {
+                const [c1,c2] = gradients[p.cat] || gradients.lainnya;
+                const badge = i===0?'<div class="prod-badge badge-hot">HOT</div>':i===1?'<div class="prod-badge badge-new">NEW</div>':'';
+                const rawP = (p.p || p.price || p.harga || '0').toString().replace(/[^0-9]/g,'');
+                const priceNum = parseInt(rawP)||0;
+                const price = priceNum > 0 ? 'Rp '+priceNum.toLocaleString('id-ID') : (p.p||'—');
+                const name = p.n || p.name || p.nama || 'Produk';
+                const sn = name.replace(/'/g,"\\'");
+                return `<div class="prod-card" onclick="openPay('${sn}','${rawP}')">
+                    <div class="prod-img" style="--c1:${c1};--c2:${c2}">
+                        <div class="prod-img-bg"></div>
+                        ${badge}
+                        <span style="position:relative;z-index:1;">${emojis[p.cat]||'🎁'}</span>
+                    </div>
+                    <div class="prod-body">
+                        <div class="prod-name">${name}</div>
+                        <div class="prod-desc">${p.cat.toUpperCase()}</div>
+                        <div class="prod-foot">
+                            <div class="prod-price">${price}</div>
+                            <button class="prod-buy" onclick="event.stopPropagation();openPay('${sn}','${rawP}')"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        setTimeout(renderPopularProducts, 3000);
+
+        // ── Gacha chips (prize rarity chips in home) ──
+        function renderGachaChips() {
+            const wrap = document.getElementById('gacha-chips-home');
+            if (!wrap || !config.gachaPrizes || !config.gachaPrizes.length) return;
+            const classes = { legendary:'#ff00aa', epic:'#aa00ff', rare:'#00aaff', common:'#aaa' };
+            const icons = { legendary:'🏆', epic:'💎', rare:'⭐', common:'🎁' };
+            // group by class
+            const grouped = {};
+            config.gachaPrizes.forEach(p => {
+                const cls = p.class || 'common';
+                if (!grouped[cls]) grouped[cls] = { total:0, count:0 };
+                grouped[cls].total += Number(p.weight)||0;
+                grouped[cls].count++;
+            });
+            const order = ['legendary','epic','rare','common'];
+            wrap.innerHTML = order.filter(k=>grouped[k]).map(k => {
+                const totalW = config.gachaPrizes.reduce((a,p)=>a+Number(p.weight||0),0)||100;
+                const pct = ((grouped[k].total/totalW)*100).toFixed(1);
+                return `<div class="prize-chip" style="--pc:${classes[k]}">
+                    <div class="prize-chip-icon">${icons[k]}</div>
+                    <div class="prize-chip-name">${k.toUpperCase()}</div>
+                    <div class="prize-chip-chance">${pct}%</div>
+                </div>`;
+            }).join('');
+        }
+        setTimeout(renderGachaChips, 2500);
+
+        // ── Banner dots ──
+        function initBannerDots() {
+            const wrap = document.getElementById('banner-dots-wrap');
+            const slides = document.querySelectorAll('#slider .slide');
+            if (!wrap) return;
+            wrap.innerHTML = '';
+            const count = slides.length || 3;
+            for (let i=0; i<count; i++) {
+                const d = document.createElement('div');
+                d.className = 'dot' + (i===0?' active':'');
+                d.onclick = () => { slideIdx=i; if(window.updateSlider) updateSlider(); };
+                wrap.appendChild(d);
+            }
+        }
+        // Patch updateSlider to also update dots
+        const _origUS = window.updateSlider;
+        window.updateSlider = function() {
+            if (_origUS) _origUS();
+            document.querySelectorAll('#banner-dots-wrap .dot').forEach((d,i)=>d.classList.toggle('active',i===slideIdx));
+        };
+        setTimeout(initBannerDots, 3200);
+
+        // ── Chat badge sync to header ──
+        window.updateChatBadge = function(count) {
+            const hb = document.getElementById('header-chat-badge');
+            if (hb) hb.style.display = count > 0 ? 'block' : 'none';
+        };
 
         // Sync color picker dengan warna aktif saat load
         const savedColor = localStorage.getItem('user_accent') || '#00eaff';
@@ -5132,6 +6867,172 @@ Terima kasih! 🙏
         }
         originalOpenModal(id);
     };
+    // ══════════════════════════════════════
+    //  v7 PREMIUM UI — JavaScript
+    // ══════════════════════════════════════
+
+    // ── 1. TOAST NOTIFICATION SYSTEM ──
+    function showToast(title, text, type = 'info', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const colors = { info:'rgba(0,234,255,0.3)', success:'rgba(0,255,136,0.3)', warning:'rgba(255,204,0,0.3)', error:'rgba(255,0,85,0.3)' };
+        const icons  = { info:'ℹ️', success:'✅', warning:'⚠️', error:'❌' };
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.style.setProperty('--tc', colors[type] || colors.info);
+        toast.innerHTML = `
+            <div class="toast-icon">${icons[type]||'ℹ️'}</div>
+            <div class="toast-body">
+                <div class="toast-title">${title}</div>
+                ${text ? `<div class="toast-text">${text}</div>` : ''}
+            </div>
+            <div class="toast-progress" style="animation-duration:${duration}ms;"></div>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+    window.showToast = showToast;
+
+    // ── 2. RIPPLE EFFECT on buttons ──
+    function addRipple(e) {
+        const el = e.currentTarget;
+        el.classList.add('ripple-host');
+        const rect = el.getBoundingClientRect();
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        const size = Math.max(rect.width, rect.height) * 1.8;
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple-wave';
+        ripple.style.cssText = `width:${size}px;height:${size}px;left:${x-size/2}px;top:${y-size/2}px;`;
+        el.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    }
+    function initRipples() {
+        document.querySelectorAll('.buy-btn,.claim-btn,.gacha-btn,.store-prod-btn,.cat-btn,.dock-item,.nav-center-btn,.store-cat-tab,.banner-cta').forEach(el => {
+            el.addEventListener('mousedown', addRipple);
+            el.addEventListener('touchstart', addRipple, { passive: true });
+        });
+    }
+    setTimeout(initRipples, 2000);
+    setInterval(initRipples, 8000); // re-init after dynamic renders
+
+    // ── 3. NEON CURSOR (desktop) ──
+    (function() {
+        const cursor = document.getElementById('neon-cursor');
+        const trail  = document.getElementById('neon-trail');
+        if (!cursor || !trail) return;
+        let tx=0, ty=0, cx=0, cy=0;
+        document.addEventListener('mousemove', e => {
+            tx = e.clientX; ty = e.clientY;
+            cursor.style.left = tx+'px'; cursor.style.top = ty+'px';
+        });
+        function animTrail() {
+            cx += (tx - cx) * 0.18;
+            cy += (ty - cy) * 0.18;
+            trail.style.left = cx+'px'; trail.style.top = cy+'px';
+            requestAnimationFrame(animTrail);
+        }
+        animTrail();
+        document.addEventListener('mousedown', () => { cursor.style.width='14px'; cursor.style.height='14px'; });
+        document.addEventListener('mouseup',   () => { cursor.style.width='8px';  cursor.style.height='8px';  });
+    })();
+
+    // ── 4. HEADER AUTO-HIDE on scroll ──
+    (function() {
+        let lastY = 0, ticking = false;
+        const vp = document.querySelector('.pages-viewport') || window;
+        const hdr = document.getElementById('main-header');
+        function onScroll() {
+            if (!hdr) return;
+            const scrollEl = document.querySelector('.page-slide:nth-child('+(PAGE_INDEX[_currentPage]+1)+')') || document.scrollingElement;
+            const y = scrollEl ? scrollEl.scrollTop : window.scrollY;
+            if (y > lastY + 8 && y > 60)      hdr.classList.add('header-hidden');
+            else if (y < lastY - 8 || y < 30) hdr.classList.remove('header-hidden');
+            if (y > 10) hdr.classList.add('scrolled'); else hdr.classList.remove('scrolled');
+            lastY = y; ticking = false;
+        }
+        document.addEventListener('scroll', () => { if (!ticking) { ticking=true; requestAnimationFrame(onScroll); } }, { passive:true });
+        // per page-slide scroll
+        document.querySelectorAll('.page-slide').forEach(sl => {
+            sl.addEventListener('scroll', () => { if (!ticking) { ticking=true; requestAnimationFrame(onScroll); } }, { passive:true });
+        });
+    })();
+
+    // ── 5. FAB GACHA dihapus ──
+
+    // ── 6. BOTTOM SHEET ──
+    function openBottomSheet(title, subtitle, bodyHTML) {
+        document.getElementById('sheet-title').textContent   = title || '';
+        document.getElementById('sheet-subtitle').textContent = subtitle || '';
+        document.getElementById('sheet-body').innerHTML       = bodyHTML || '';
+        document.getElementById('sheet-overlay').classList.add('open');
+        document.getElementById('bottom-sheet').classList.add('open');
+    }
+    function closeBottomSheet() {
+        document.getElementById('sheet-overlay').classList.remove('open');
+        document.getElementById('bottom-sheet').classList.remove('open');
+    }
+    window.openBottomSheet  = openBottomSheet;
+    window.closeBottomSheet = closeBottomSheet;
+
+    // ── 7. STAGGER animation helper ──
+    function staggerElements(selector, delayStep = 60) {
+        document.querySelectorAll(selector).forEach((el, i) => {
+            el.classList.add('stagger-item');
+            el.style.animationDelay = (i * delayStep) + 'ms';
+        });
+    }
+    window.staggerElements = staggerElements;
+
+    // ── 8. COUNTER ANIMATION on stat cards ──
+    function animateCounter(el, target, duration = 800) {
+        if (!el || isNaN(target)) return;
+        const start = 0, startTime = performance.now();
+        function update(now) {
+            const progress = Math.min((now - startTime) / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.round(start + (target - start) * ease);
+            if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+    }
+    window.animateCounter = animateCounter;
+
+    // ── 9. PULL-TO-REFRESH ──
+    (function() {
+        let startY = 0, pulling = false;
+        const ptr = document.getElementById('ptr-indicator');
+        document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive:true });
+        document.addEventListener('touchmove', e => {
+            const dy = e.touches[0].clientY - startY;
+            const scrollEl = document.querySelector('#page-home');
+            if (!scrollEl || scrollEl.scrollTop > 0) return;
+            if (dy > 55 && !pulling) { pulling=true; if(ptr) ptr.classList.add('ptr-visible'); }
+        }, { passive:true });
+        document.addEventListener('touchend', () => {
+            if (pulling) {
+                pulling = false;
+                if(ptr) ptr.classList.remove('ptr-visible');
+                // trigger reload
+                Promise.all([loadProductsFromCloud?.(), loadGachaFromCloud?.(), loadBannersFromCloud?.()]).then(() => {
+                    renderPopularProducts?.();
+                    renderGachaChips?.();
+                    updateQuickStats?.();
+                    showToast('REFRESH', 'Konten diperbarui', 'success', 2000);
+                });
+            }
+        }, { passive:true });
+    })();
+
+    // ── 10. HOOK after login ──
+    const _origRestoreSession = window.restoreSession;
+    window.restoreSession = function() {
+        if (_origRestoreSession) _origRestoreSession();
+    };
+    setTimeout(() => { /* fab removed */ }, 4000);
+
 </script>
 
 <!-- EDIT BENEFIT MODAL -->
