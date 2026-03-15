@@ -396,7 +396,7 @@
         .store-cat-tab:hover { border-color:rgba(0,234,255,0.3); color:var(--accent); }
 
         /* ── STORE GRID — 2 kolom kartu ── */
-        .store-prod-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+        .store-prod-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:2px 0; }
 
         /* Kartu produk baru */
         .store-prod-card {
@@ -1800,6 +1800,152 @@
         /* Date divider */
         .chat-date-divider { text-align:center; font-size:7px; color:#444; margin:4px 0; display:flex; align-items:center; gap:8px; }
         .chat-date-divider::before, .chat-date-divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+
+        /* ═══════════════════════════════════════════
+           GAMIFICATION v5 — COINS·LEVEL·CHECKIN
+           LEADERBOARD·VOUCHER·REFERRAL·SUB-WARN
+        ═══════════════════════════════════════════ */
+        .header-coins{display:flex;align-items:center;gap:5px;background:rgba(255,204,0,0.12);border:1px solid rgba(255,204,0,0.3);border-radius:20px;padding:4px 10px;cursor:pointer;transition:0.2s;}
+        .header-coins:hover{background:rgba(255,204,0,0.22);}
+        .header-coins-val{font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--gold);}
+        .checkin-card{background:linear-gradient(135deg,rgba(0,234,255,0.07),rgba(0,255,136,0.04));border:1px solid rgba(0,234,255,0.2);border-radius:16px;padding:14px;}
+        .checkin-title{font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+        .checkin-days{display:flex;gap:4px;margin-bottom:12px;}
+        .checkin-day{flex:1;border-radius:10px;padding:6px 2px;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);transition:0.2s;}
+        .checkin-day.done{background:rgba(0,234,255,0.1);border-color:rgba(0,234,255,0.4);}
+        .checkin-day.today-claimed{background:rgba(0,255,136,0.12);border-color:#00ff88;box-shadow:0 0 8px rgba(0,255,136,0.2);}
+        .checkin-day.today-pending{background:rgba(255,204,0,0.12);border-color:rgba(255,204,0,0.5);animation:dayPulse 1.5s ease-in-out infinite;}
+        @keyframes dayPulse{0%,100%{box-shadow:0 0 6px rgba(255,204,0,0.3)}50%{box-shadow:0 0 14px rgba(255,204,0,0.6)}}
+        .checkin-day.missed{opacity:0.3;}
+        .checkin-day-num{font-family:'Orbitron';font-size:6px;color:var(--text-muted);}
+        .checkin-day.done .checkin-day-num,.checkin-day.today-claimed .checkin-day-num{color:#00ff88;}
+        .checkin-day.today-pending .checkin-day-num{color:var(--gold);}
+        .checkin-day-icon{font-size:13px;margin:2px 0;display:block;}
+        .checkin-day-reward{font-size:6px;color:var(--gold);font-family:'Orbitron';}
+        .checkin-btn{width:100%;padding:11px;border:none;border-radius:12px;cursor:pointer;font-family:'Orbitron';font-size:10px;font-weight:700;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),#00ff88);color:#000;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 0 16px rgba(0,234,255,0.3);min-height:unset;}
+        .checkin-btn:disabled{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed;}
+        .checkin-streak-txt{font-size:9px;color:var(--text-muted);text-align:center;margin-top:7px;font-family:'Orbitron';}
+        .checkin-streak-txt span{color:#ff6600;font-weight:700;}
+        .leaderboard-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;}
+        .leaderboard-hdr{background:linear-gradient(90deg,rgba(255,204,0,0.1),rgba(174,0,255,0.07));padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05);}
+        .leaderboard-hdr-title{font-family:'Orbitron';font-size:9px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:6px;}
+        .lb-list{padding:4px 0;max-height:230px;overflow-y:auto;scrollbar-width:none;}
+        .lb-list::-webkit-scrollbar{display:none;}
+        .lb-item{display:flex;align-items:center;gap:10px;padding:8px 14px;transition:0.15s;}
+        .lb-item:hover{background:rgba(255,255,255,0.03);}
+        .lb-rank{font-family:'Orbitron';font-size:12px;font-weight:900;min-width:22px;text-align:center;}
+        .lb-rank.r1{color:#ffd700;text-shadow:0 0 8px rgba(255,215,0,0.6);}
+        .lb-rank.r2{color:#c0c0c0;}
+        .lb-rank.r3{color:#cd7f32;}
+        .lb-avatar{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex-shrink:0;color:#000;}
+        .lb-info{flex:1;min-width:0;}
+        .lb-name{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .lb-sublabel{font-size:8px;color:var(--text-muted);font-family:'Orbitron';}
+        .lb-coins{font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--gold);}
+        .lb-me{background:rgba(255,204,0,0.06);border-left:2px solid var(--gold);}
+        .lb-empty{text-align:center;padding:22px;font-size:9px;color:var(--text-muted);font-family:'Orbitron';}
+        .level-card{background:linear-gradient(135deg,rgba(255,204,0,0.07),rgba(174,0,255,0.05));border:1px solid rgba(255,204,0,0.22);border-radius:16px;padding:14px;}
+        .level-card-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+        .level-badge-wrap{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.2);}
+        .level-info{flex:1;}
+        .level-name{font-family:'Orbitron';font-size:13px;font-weight:900;margin-bottom:3px;}
+        .level-coins-lbl{font-size:9px;color:var(--text-muted);display:flex;align-items:center;gap:4px;}
+        .level-coins-lbl span{color:var(--gold);font-family:'Orbitron';font-weight:700;font-size:11px;}
+        .level-bar-wrap{background:rgba(255,255,255,0.06);border-radius:6px;height:5px;margin-top:5px;overflow:hidden;}
+        .level-bar{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),#ff8800);transition:width 0.7s ease;}
+        .level-next-lbl{font-size:7px;color:var(--text-muted);text-align:right;margin-top:3px;font-family:'Orbitron';}
+        .level-detail-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+        .level-detail-item{background:rgba(0,0,0,0.2);border-radius:10px;padding:8px 6px;text-align:center;}
+        .level-detail-val{font-family:'Orbitron';font-size:13px;font-weight:900;color:var(--gold);}
+        .level-detail-lbl{font-size:6px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;margin-top:2px;}
+        .referral-card{background:linear-gradient(135deg,rgba(174,0,255,0.07),rgba(0,234,255,0.04));border:1px solid rgba(174,0,255,0.22);border-radius:16px;padding:14px;}
+        .referral-title{font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--purple);display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+        .referral-code-box{background:rgba(0,0,0,0.3);border:1px solid rgba(174,0,255,0.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+        .referral-code-val{font-family:'Orbitron';font-size:16px;font-weight:900;color:var(--accent);letter-spacing:3px;flex:1;}
+        .referral-copy-btn{background:linear-gradient(90deg,var(--purple),var(--accent));color:#000;border:none;border-radius:8px;padding:7px 12px;font-family:'Orbitron';font-size:8px;font-weight:700;cursor:pointer;white-space:nowrap;min-height:unset;}
+        .referral-share-btn{width:100%;padding:10px;background:rgba(174,0,255,0.12);border:1px solid rgba(174,0,255,0.25);border-radius:10px;color:#fff;font-family:'Orbitron';font-size:9px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:unset;transition:0.2s;}
+        .referral-share-btn:hover{background:rgba(174,0,255,0.22);}
+        .referral-stats{display:flex;gap:8px;margin-top:10px;}
+        .referral-stat{flex:1;background:rgba(0,0,0,0.2);border-radius:10px;padding:8px;text-align:center;}
+        .referral-stat-val{font-family:'Orbitron';font-size:14px;font-weight:900;color:var(--purple);}
+        .referral-stat-lbl{font-size:7px;color:var(--text-muted);font-family:'Orbitron';margin-top:2px;}
+        .voucher-section{background:rgba(0,255,136,0.04);border:1px dashed rgba(0,255,136,0.3);border-radius:12px;padding:10px 12px;margin-bottom:10px;}
+        .voucher-label{font-family:'Orbitron';font-size:8px;color:#00ff88;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+        .voucher-row{display:flex;gap:6px;}
+        .voucher-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;color:#fff;font-family:'Orbitron';font-size:10px;letter-spacing:1px;text-transform:uppercase;outline:none;}
+        .voucher-input:focus{border-color:#00ff88;}
+        .voucher-apply-btn{background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;border:none;border-radius:8px;padding:8px 12px;font-family:'Orbitron';font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap;min-height:unset;}
+        .voucher-result{font-size:9px;margin-top:5px;font-family:'Orbitron';}
+        .voucher-result.ok{color:#00ff88;}
+        .voucher-result.err{color:var(--red);}
+        .subs-warn-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:6000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(5px);}
+        .subs-warn-overlay.open{opacity:1;pointer-events:all;}
+        .subs-warn-box{background:linear-gradient(135deg,#06080f,#100520);border:1px solid rgba(255,160,0,0.4);border-radius:20px;padding:20px;max-width:320px;width:100%;text-align:center;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(255,160,0,0.15);animation:warnPop 0.4s cubic-bezier(0.34,1.2,0.64,1);}
+        @keyframes warnPop{from{transform:scale(0.75);opacity:0}to{transform:scale(1);opacity:1}}
+        .subs-warn-icon{font-size:40px;margin-bottom:8px;display:block;animation:bellShake 0.6s ease 0.4s 3;}
+        @keyframes bellShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+        .subs-warn-title{font-family:'Orbitron';font-size:13px;font-weight:900;color:#ffaa00;margin-bottom:6px;}
+        .subs-warn-body{font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5;margin-bottom:12px;}
+        .subs-warn-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+        .subs-warn-item{background:rgba(255,160,0,0.07);border:1px solid rgba(255,160,0,0.2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;text-align:left;}
+        .subs-warn-item-icon{font-size:18px;flex-shrink:0;}
+        .subs-warn-item-name{font-family:'Orbitron';font-size:9px;font-weight:700;}
+        .subs-warn-item-days{font-size:8px;margin-top:2px;}
+        .subs-warn-item-days.urgent{color:var(--red);font-weight:700;}
+        .subs-warn-item-days.soon{color:#ffaa00;}
+        .subs-warn-btns{display:flex;gap:8px;}
+        .subs-warn-renew{flex:2;padding:11px;background:linear-gradient(90deg,#ffaa00,#ff6600);border:none;border-radius:12px;color:#000;font-family:'Orbitron';font-size:9px;font-weight:700;cursor:pointer;min-height:unset;}
+        .subs-warn-later{flex:1;padding:11px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:rgba(255,255,255,0.4);font-family:'Orbitron';font-size:8px;cursor:pointer;min-height:unset;}
+        .coin-float{position:fixed;font-family:'Orbitron';font-size:14px;font-weight:900;color:var(--gold);text-shadow:0 0 8px rgba(255,204,0,0.7);pointer-events:none;z-index:9999;animation:coinUp 1.6s ease-out forwards;}
+        @keyframes coinUp{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-90px) scale(1.4);opacity:0}}
+        .konfetti-piece{position:fixed;top:-10px;pointer-events:none;z-index:9998;animation:konfettiFall linear forwards;border-radius:2px;}
+        @keyframes konfettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:0}}
+
+        /* ── REDEEM KOIN SYSTEM ── */
+        .redeem-card{background:linear-gradient(135deg,rgba(255,204,0,0.08),rgba(255,100,0,0.05));border:1px solid rgba(255,204,0,0.25);border-radius:16px;padding:14px;}
+        .redeem-title{font-family:'Orbitron';font-size:10px;font-weight:700;color:var(--gold);display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+        .redeem-coins-avail{font-size:9px;color:var(--text-muted);margin-bottom:12px;font-family:'Orbitron';}
+        .redeem-coins-avail span{color:var(--gold);font-weight:700;font-size:11px;}
+        .redeem-grid{display:flex;flex-direction:column;gap:8px;}
+        .redeem-item{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;transition:0.2s;cursor:pointer;}
+        .redeem-item:hover{border-color:rgba(255,204,0,0.3);background:rgba(255,204,0,0.05);}
+        .redeem-item.locked{opacity:0.45;cursor:not-allowed;}
+        .redeem-item-icon{font-size:24px;flex-shrink:0;width:38px;text-align:center;}
+        .redeem-item-info{flex:1;min-width:0;}
+        .redeem-item-name{font-family:'Orbitron';font-size:9px;font-weight:700;color:#fff;margin-bottom:2px;}
+        .redeem-item-desc{font-size:8px;color:var(--text-muted);margin-bottom:4px;}
+        .redeem-item-cost{display:inline-flex;align-items:center;gap:4px;background:rgba(255,204,0,0.12);border:1px solid rgba(255,204,0,0.3);border-radius:20px;padding:2px 8px;font-family:'Orbitron';font-size:8px;font-weight:700;color:var(--gold);}
+        .redeem-item-btn{background:linear-gradient(90deg,var(--gold),#ff8800);color:#000;border:none;border-radius:9px;padding:7px 12px;font-family:'Orbitron';font-size:8px;font-weight:700;cursor:pointer;white-space:nowrap;min-height:unset;flex-shrink:0;transition:0.2s;}
+        .redeem-item-btn:hover{transform:scale(1.05);}
+        .redeem-item-btn:disabled{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);cursor:not-allowed;transform:none;}
+        .redeem-history{margin-top:10px;background:rgba(0,0,0,0.2);border-radius:10px;padding:8px 10px;}
+        .redeem-history-title{font-family:'Orbitron';font-size:7px;color:var(--text-muted);margin-bottom:6px;letter-spacing:1px;}
+        .redeem-history-item{font-size:8px;color:rgba(255,255,255,0.5);padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;}
+        .redeem-history-item:last-child{border-bottom:none;}
+        .redeem-history-empty{font-size:8px;color:rgba(255,255,255,0.25);text-align:center;padding:6px;font-family:'Orbitron';}
+
+        /* Admin redeem settings */
+        .redeem-admin-card{background:rgba(255,204,0,0.04);border:1px solid rgba(255,204,0,0.2);border-radius:12px;padding:12px;margin-bottom:10px;}
+        .redeem-admin-title{font-family:'Orbitron';font-size:9px;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+        .redeem-admin-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px 10px;}
+        .redeem-admin-label{flex:1;font-size:9px;color:#fff;font-family:'Orbitron';}
+        .redeem-admin-input{width:70px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,204,0,0.3);border-radius:6px;padding:4px 8px;color:var(--gold);font-family:'Orbitron';font-size:10px;font-weight:700;text-align:center;outline:none;}
+        .redeem-admin-unit{font-size:8px;color:var(--text-muted);white-space:nowrap;}
+        .redeem-admin-toggle{width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;transition:0.2s;flex-shrink:0;position:relative;}
+        .redeem-admin-toggle.on{background:linear-gradient(90deg,#00ff88,#00cc66);}
+        .redeem-admin-toggle.off{background:rgba(255,255,255,0.1);}
+
+        /* Redeem confirm modal */
+        .redeem-confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:7000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(6px);}
+        .redeem-confirm-overlay.open{opacity:1;pointer-events:all;}
+        .redeem-confirm-box{background:linear-gradient(135deg,#06080f,#0d0520);border:1px solid rgba(255,204,0,0.4);border-radius:20px;padding:20px;max-width:300px;width:100%;text-align:center;animation:warnPop 0.35s cubic-bezier(0.34,1.2,0.64,1);}
+        .redeem-confirm-icon{font-size:44px;margin-bottom:8px;display:block;}
+        .redeem-confirm-title{font-family:'Orbitron';font-size:13px;font-weight:900;color:var(--gold);margin-bottom:6px;}
+        .redeem-confirm-desc{font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5;margin-bottom:6px;}
+        .redeem-confirm-cost{font-family:'Orbitron';font-size:12px;font-weight:900;color:var(--gold);margin-bottom:14px;}
+        .redeem-confirm-btns{display:flex;gap:8px;}
+        .redeem-confirm-ok{flex:2;padding:12px;background:linear-gradient(90deg,var(--gold),#ff8800);border:none;border-radius:12px;color:#000;font-family:'Orbitron';font-size:10px;font-weight:700;cursor:pointer;min-height:unset;}
+        .redeem-confirm-cancel{flex:1;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:rgba(255,255,255,0.4);font-family:'Orbitron';font-size:8px;cursor:pointer;min-height:unset;}
     </style>
 </head>
 <body class="android-optimized">
@@ -1914,6 +2060,10 @@
                 <i class="fa-solid fa-user-plus"></i>
                 <input type="text" id="reg-username" placeholder="Username baru (min 3 huruf)" autocomplete="off">
             </div>
+            <div class="login-input-wrap" style="border-color:rgba(174,0,255,0.3);">
+                <i class="fa-solid fa-share-nodes" style="color:var(--purple);"></i>
+                <input type="text" id="reg-referral-code" placeholder="Kode referral (opsional)" oninput="this.value=this.value.toUpperCase()" autocomplete="off">
+            </div>
             <button class="login-btn-reg" onclick="performRegister()">
                 <i class="fa-solid fa-wand-sparkles"></i> BUAT AKUN
             </button>
@@ -1954,6 +2104,10 @@
         </div>
     </div>
     <div class="header-right">
+        <div class="header-coins" onclick="showPage('profile')" id="header-coins-display" style="display:none;">
+            <span style="font-size:13px;">🪙</span>
+            <span class="header-coins-val" id="header-coins-val">0</span>
+        </div>
         <div class="notif-btn" id="header-notif-btn" onclick="toggleChat()">
             <i class="fa-solid fa-comments"></i>
             <div class="notif-badge" id="header-chat-badge" style="display:none;"></div>
@@ -2036,6 +2190,33 @@
                 <div class="stat-val" id="qs-gacha-count" style="color:var(--red)">—</div>
                 <div class="stat-lbl">GACHA</div>
             </div>
+        </div>
+
+        <!-- DAILY CHECK-IN -->
+        <div class="glow-divider"></div>
+        <div class="sec-head">
+            <div class="sec-title"><i class="fa-solid fa-calendar-check"></i> DAILY CHECK-IN</div>
+        </div>
+        <div class="checkin-card">
+            <div class="checkin-title"><i class="fa-solid fa-fire" style="color:#ff6600;"></i> LOGIN STREAK REWARD</div>
+            <div class="checkin-days" id="checkin-days-row"><!-- diisi JS --></div>
+            <button class="checkin-btn" id="checkin-btn" onclick="doCheckIn()">
+                <i class="fa-solid fa-hand-point-up"></i> CLAIM HARI INI
+            </button>
+            <div class="checkin-streak-txt">🔥 Streak: <span id="streak-num">0</span> hari berturut-turut</div>
+        </div>
+
+        <!-- LEADERBOARD -->
+        <div class="glow-divider"></div>
+        <div class="sec-head">
+            <div class="sec-title"><i class="fa-solid fa-trophy"></i> LEADERBOARD</div>
+            <div class="sec-more" onclick="renderLeaderboard()"><i class="fa-solid fa-rotate" style="font-size:9px;"></i> Refresh</div>
+        </div>
+        <div class="leaderboard-card">
+            <div class="leaderboard-hdr">
+                <div class="leaderboard-hdr-title"><i class="fa-solid fa-crown"></i> TOP MEMBER — KOIN TERBANYAK</div>
+            </div>
+            <div class="lb-list" id="leaderboard-list"><div class="lb-empty">Memuat data...</div></div>
         </div>
 
         <!-- SUBSCRIPTION COUNTDOWN (diisi JS) -->
@@ -2245,16 +2426,16 @@
             <div id="page-store" class="page-slide">
                 <!-- Category filter tabs -->
                 <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; scrollbar-width:none;">
-                    <button class="store-cat-tab active" data-cat="sewa" onclick="filterStoreTab(this,'sewa')">
+                    <button class="store-cat-tab" data-cat="sewa" onclick="window.filterStoreTab(this,'sewa')">
                         🤖 SEWA BOT
                     </button>
-                    <button class="store-cat-tab" data-cat="premium" onclick="filterStoreTab(this,'premium')">
+                    <button class="store-cat-tab" data-cat="premium" onclick="window.filterStoreTab(this,'premium')">
                         👑 PREMIUM
                     </button>
-                    <button class="store-cat-tab" data-cat="script" onclick="filterStoreTab(this,'script')">
+                    <button class="store-cat-tab" data-cat="script" onclick="window.filterStoreTab(this,'script')">
                         💜 SCRIPT
                     </button>
-                    <button class="store-cat-tab" data-cat="lainnya" onclick="filterStoreTab(this,'lainnya')">
+                    <button class="store-cat-tab" data-cat="lainnya" onclick="window.filterStoreTab(this,'lainnya')">
                         📦 LAINNYA
                     </button>
                 </div>
@@ -2328,6 +2509,86 @@
                 <i class="fa-solid fa-crown"></i> LANGGANANKU
             </div>
             <div id="my-subscription-section" class="my-subs-section" style="margin:0; padding:0; background:none; border:none;"></div>
+        </div>
+
+        <!-- ── KOIN & LEVEL ── -->
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <i class="fa-solid fa-coins"></i> KOIN & LEVEL
+            </div>
+            <div class="level-card">
+                <div class="level-card-top">
+                    <div class="level-badge-wrap" id="level-badge-icon">🥉</div>
+                    <div class="level-info">
+                        <div class="level-name" id="level-name-text">ROOKIE</div>
+                        <div class="level-coins-lbl">Total Koin: <span id="level-coins-total">0</span> 🪙</div>
+                        <div class="level-bar-wrap"><div class="level-bar" id="level-bar" style="width:0%"></div></div>
+                        <div class="level-next-lbl" id="level-next-lbl">— koin menuju level berikutnya</div>
+                    </div>
+                </div>
+                <div class="level-detail-row">
+                    <div class="level-detail-item">
+                        <div class="level-detail-val" id="coins-checkin">0</div>
+                        <div class="level-detail-lbl">CHECK-IN</div>
+                    </div>
+                    <div class="level-detail-item">
+                        <div class="level-detail-val" id="coins-referral">0</div>
+                        <div class="level-detail-lbl">REFERRAL</div>
+                    </div>
+                    <div class="level-detail-item">
+                        <div class="level-detail-val" id="coins-gacha">0</div>
+                        <div class="level-detail-lbl">GACHA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── REFERRAL ── -->
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <i class="fa-solid fa-user-plus"></i> REFERRAL
+            </div>
+            <div class="referral-card">
+                <div class="referral-title"><i class="fa-solid fa-share-nodes"></i> KODE REFERRAL KAMU</div>
+                <div class="referral-code-box">
+                    <div class="referral-code-val" id="referral-code-val">—</div>
+                    <button class="referral-copy-btn" onclick="copyReferralCode()"><i class="fa-solid fa-copy"></i> COPY</button>
+                </div>
+                <button class="referral-share-btn" onclick="shareReferral()">
+                    <i class="fa-brands fa-whatsapp"></i> SHARE VIA WA — +50 koin tiap referral!
+                </button>
+                <div class="referral-stats">
+                    <div class="referral-stat">
+                        <div class="referral-stat-val" id="referral-invited">0</div>
+                        <div class="referral-stat-lbl">DIAJAK</div>
+                    </div>
+                    <div class="referral-stat">
+                        <div class="referral-stat-val" id="referral-coins-got">0</div>
+                        <div class="referral-stat-lbl">KOIN REFERRAL</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── TUKAR KOIN ── -->
+        <div class="profile-section">
+            <div class="profile-section-title">
+                <i class="fa-solid fa-arrows-rotate"></i> TUKAR KOIN
+            </div>
+            <div class="redeem-card">
+                <div class="redeem-title">
+                    <span><i class="fa-solid fa-coins"></i> REDEEM REWARDS</span>
+                    <span id="redeem-coins-badge" style="font-family:'Orbitron';font-size:10px;color:var(--gold);">0 🪙</span>
+                </div>
+                <div class="redeem-coins-avail">Koin kamu: <span id="redeem-coins-val">0</span> 🪙 — pilih reward di bawah</div>
+                <div class="redeem-grid" id="redeem-grid">
+                    <!-- diisi JS -->
+                </div>
+                <div class="redeem-history" id="redeem-history-wrap">
+                    <div class="redeem-history-title">📋 RIWAYAT TUKAR</div>
+                    <div id="redeem-history-list"><div class="redeem-history-empty">Belum ada riwayat</div></div>
+                </div>
+            </div>
         </div>
 
         <!-- ── CUSTOM THEME ── -->
@@ -2449,6 +2710,15 @@
             </button>
         </div>
         
+        <!-- VOUCHER -->
+        <div class="voucher-section">
+            <div class="voucher-label"><i class="fa-solid fa-ticket"></i> PUNYA KODE VOUCHER / DISKON?</div>
+            <div class="voucher-row">
+                <input class="voucher-input" id="voucher-code-input" placeholder="MASUKKAN KODE..." oninput="this.value=this.value.toUpperCase()">
+                <button class="voucher-apply-btn" onclick="applyVoucher()"><i class="fa-solid fa-check"></i> PAKAI</button>
+            </div>
+            <div class="voucher-result" id="voucher-result"></div>
+        </div>
         <button class="confirm-btn" onclick="sendPaymentConfirmation()">
             <i class="fa-brands fa-whatsapp"></i> KIRIM KONFIRMASI
         </button>
@@ -2483,6 +2753,7 @@
             <div id="tab-btn-payment" class="tab-item" onclick="switchAdminTab('payment')">PAYMENT</div>
             <div id="tab-btn-subs" class="tab-item" onclick="switchAdminTab('subs')">SUBS</div>
             <div id="tab-btn-config" class="tab-item" onclick="switchAdminTab('config')">MEDIA</div>
+            <div id="tab-btn-voucher" class="tab-item" onclick="openAdminVoucherPanel()">🎟️ VOUCHER</div>
         </div>
         
         <div id="adm-members" style="display:block;">
@@ -2802,6 +3073,45 @@
         </div>
 
         <div id="adm-config" style="display:none;">
+            <!-- REDEEM SETTINGS -->
+            <div class="redeem-admin-card">
+                <div class="redeem-admin-title"><i class="fa-solid fa-coins"></i> PENGATURAN TUKAR KOIN</div>
+
+                <div class="redeem-admin-row">
+                    <div class="redeem-admin-label">🎰 Spin Gacha</div>
+                    <input class="redeem-admin-input" id="rc-spin" type="number" value="50" min="1">
+                    <span class="redeem-admin-unit">koin / spin</span>
+                    <button class="redeem-admin-toggle on" id="rt-spin" onclick="toggleRedeemType('spin',this)"></button>
+                </div>
+                <div class="redeem-admin-row">
+                    <div class="redeem-admin-label">💸 Diskon 10%</div>
+                    <input class="redeem-admin-input" id="rc-diskon" type="number" value="100" min="1">
+                    <span class="redeem-admin-unit">koin / 10%</span>
+                    <button class="redeem-admin-toggle on" id="rt-diskon" onclick="toggleRedeemType('diskon',this)"></button>
+                </div>
+                <div class="redeem-admin-row">
+                    <div class="redeem-admin-label">📅 Subs +1 Hari</div>
+                    <input class="redeem-admin-input" id="rc-subs1" type="number" value="200" min="1">
+                    <span class="redeem-admin-unit">koin / hari</span>
+                    <button class="redeem-admin-toggle on" id="rt-subs1" onclick="toggleRedeemType('subs1',this)"></button>
+                </div>
+                <div class="redeem-admin-row">
+                    <div class="redeem-admin-label">📅 Subs +3 Hari</div>
+                    <input class="redeem-admin-input" id="rc-subs3" type="number" value="500" min="1">
+                    <span class="redeem-admin-unit">koin / 3 hari</span>
+                    <button class="redeem-admin-toggle on" id="rt-subs3" onclick="toggleRedeemType('subs3',this)"></button>
+                </div>
+                <div class="redeem-admin-row">
+                    <div class="redeem-admin-label">📅 Subs +7 Hari</div>
+                    <input class="redeem-admin-input" id="rc-subs7" type="number" value="1000" min="1">
+                    <span class="redeem-admin-unit">koin / 7 hari</span>
+                    <button class="redeem-admin-toggle on" id="rt-subs7" onclick="toggleRedeemType('subs7',this)"></button>
+                </div>
+
+                <button class="save-product-btn" onclick="saveRedeemConfig()" style="margin-top:10px;background:linear-gradient(90deg,var(--gold),#ff8800);color:#000;">
+                    <i class="fa-solid fa-floppy-disk"></i> SIMPAN PENGATURAN KOIN
+                </button>
+            </div>
             <!-- RENAME STORE -->
             <div style="background:linear-gradient(135deg,rgba(0,234,255,0.06),rgba(174,0,255,0.04)); border:1px solid rgba(0,234,255,0.25); border-radius:12px; padding:12px; margin-bottom:14px; position:relative; overflow:hidden;">
                 <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple));"></div>
@@ -4013,6 +4323,9 @@
             }
             
             lastGachaResult = selectedPrize;
+            if(typeof addCoins==='function') addCoins(5,'gacha');
+            // Award coins per spin
+            if (typeof addCoins === 'function') addCoins(5, 'gacha');
             
             if (resultContainer) {
                 const prizeClass = selectedPrize.class || getPrizeClass(selectedPrize.weight);
@@ -5213,6 +5526,11 @@ Terima kasih! 🙏
             // Ikat device ke username ini
             localStorage.setItem('device_owner', username);
 
+            // Proses referral jika ada
+            const _refInp = document.getElementById('reg-referral-code');
+            if (_refInp && _refInp.value.trim() && typeof processReferral === 'function') {
+                setTimeout(() => processReferral(username, _refInp.value.trim()), 2000);
+            }
             alert("✅ Akun berhasil dibuat!\n\nUsername: " + username + "\nDevice kamu sudah terdaftar otomatis.");
             switchAuthTab('login');
             if (unInput) unInput.value = '';
@@ -6309,8 +6627,7 @@ Terima kasih! 🙏
         if (page === 'profile') syncUI();
         if (page === 'store') {
             setTimeout(() => {
-                const grid = document.getElementById('store-product-grid');
-                if (grid) grid.innerHTML = '';
+                // Jangan reset _storeCat — render sesuai tab yang aktif sekarang
                 if (typeof window._syncStoreCatTab === 'function') window._syncStoreCatTab();
                 if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
             }, 50);
@@ -6604,9 +6921,9 @@ Terima kasih! 🙏
         } catch (e) {
             console.log('⚠️ Firebase produk offline, pakai lokal');
         }
-        // Hanya render store grid jika user sedang di halaman store
+        // Render store grid dan sync tab aktif
+        if (typeof window._syncStoreCatTab === 'function') window._syncStoreCatTab();
         if (typeof _currentPage !== 'undefined' && _currentPage === 'store') {
-            if (typeof window._syncStoreCatTab === 'function') window._syncStoreCatTab();
             if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
         }
         if (typeof window.renderPopularProducts === 'function') window.renderPopularProducts();
@@ -6796,11 +7113,14 @@ Terima kasih! 🙏
         // ── STORE PAGE ──
         let _storeCat = 'sewa';
         function filterStoreTab(el, cat) {
+            _storeCat = cat;
+            // Update active class pada semua tab
+            document.querySelectorAll('.store-cat-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.cat === cat);
+            });
+            // Kosongkan grid lalu render ulang
             const grid = document.getElementById('store-product-grid');
             if (grid) grid.innerHTML = '';
-            _storeCat = cat;
-            document.querySelectorAll('.store-cat-tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
             renderStoreGrid();
         }
         function _syncStoreCatTab() {
@@ -6867,10 +7187,12 @@ Terima kasih! 🙏
             wrap.innerHTML = cards ? `<div class="store-prod-grid">${cards}</div>` : '<div class="store-empty"><i class="fa-solid fa-box-open"></i>Belum ada produk.<br>Cek lagi nanti!</div>';
         }
         // Expose ke global scope agar bisa dipanggil dari script lain
-        window.renderStoreGrid = renderStoreGrid;
-        window.renderStorePage = renderStorePage;
+        window.renderStoreGrid  = renderStoreGrid;
+        window.renderStorePage  = renderStorePage;
         window._syncStoreCatTab = _syncStoreCatTab;
-        window.buyItem = function(name, price) { openPay(name, price); };
+        window.buyItem          = function(name, price) { openPay(name, price); };
+        // PENTING: expose filterStoreTab agar onclick di HTML selalu pakai closure yg sama
+        window.filterStoreTab   = filterStoreTab;
 
                 function updateQuickStats() {
             const prods = config.prices ? Object.values(config.prices).flat().length : 0;
@@ -7312,6 +7634,22 @@ Terima kasih! 🙏
 
 </script>
 
+<!-- REDEEM CONFIRM MODAL -->
+<div class="redeem-confirm-overlay" id="redeem-confirm-overlay">
+    <div class="redeem-confirm-box">
+        <span class="redeem-confirm-icon" id="rc-icon">🎁</span>
+        <div class="redeem-confirm-title" id="rc-title">Tukar Koin</div>
+        <div class="redeem-confirm-desc" id="rc-desc">Kamu akan menukar koin untuk reward ini.</div>
+        <div class="redeem-confirm-cost" id="rc-cost">— 🪙</div>
+        <div class="redeem-confirm-btns">
+            <button class="redeem-confirm-ok" id="rc-ok-btn" onclick="confirmRedeem()">
+                <i class="fa-solid fa-check"></i> TUKAR SEKARANG
+            </button>
+            <button class="redeem-confirm-cancel" onclick="closeRedeemConfirm()">Batal</button>
+        </div>
+    </div>
+</div>
+
 <!-- EDIT BENEFIT MODAL -->
 <div id="editBenefitModal" class="modal" style="display:none;">
     <div class="modal-content" style="max-width:380px;">
@@ -7336,6 +7674,617 @@ Terima kasih! 🙏
         </div>
     </div>
 </div>
+
+
+<!-- ═══════════════════════════════════════
+     SUBS WARNING OVERLAY
+═══════════════════════════════════════ -->
+<div class="subs-warn-overlay" id="subs-warn-overlay">
+    <div class="subs-warn-box">
+        <span class="subs-warn-icon">🔔</span>
+        <div class="subs-warn-title">LANGGANAN HAMPIR HABIS!</div>
+        <div class="subs-warn-body">Segera perpanjang agar tidak terputus dari layanan premium kamu.</div>
+        <div class="subs-warn-list" id="subs-warn-list"></div>
+        <div class="subs-warn-btns">
+            <button class="subs-warn-renew" onclick="closeSW();showPage('store')">
+                <i class="fa-solid fa-cart-shopping"></i> PERPANJANG SEKARANG
+            </button>
+            <button class="subs-warn-later" onclick="closeSW()">Nanti</button>
+        </div>
+    </div>
+</div>
+
+<!-- KONFETTI -->
+<div id="konfetti-wrap" style="position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;"></div>
+
+<!-- ═══════════════════════════════════════
+     GAMIFICATION SYSTEM JS v5
+═══════════════════════════════════════ -->
+<script>
+const LEVELS = [
+    {name:'ROOKIE',  emoji:'🥉',min:0,   max:99,  color:'#aaa'},
+    {name:'MEMBER',  emoji:'🎖️',min:100, max:299, color:'#00eaff'},
+    {name:'VIP',     emoji:'💎',min:300, max:699, color:'#ae00ff'},
+    {name:'ELITE',   emoji:'🏆',min:700, max:1499,color:'#ffcc00'},
+    {name:'LEGEND',  emoji:'👑',min:1500,max:9999,color:'#ff0055'},
+];
+const CHECKIN_REWARDS = [5,8,10,15,10,20,50];
+const CHECKIN_ICONS   = ['🪙','🪙','⚡','🎁','🪙','💎','🎰'];
+let _activeVoucher = null;
+
+// ─── COINS ───
+function getLevelInfo(coins){
+    for(let i=LEVELS.length-1;i>=0;i--) if(coins>=LEVELS[i].min) return{...LEVELS[i],idx:i};
+    return{...LEVELS[0],idx:0};
+}
+
+async function addCoins(amount,source,memberName){
+    const name = memberName||(currentUser&&currentUser.name);
+    if(!name) return;
+    const mIdx = config.members.findIndex(m=>m.name===name);
+    if(mIdx===-1) return;
+    if(!config.members[mIdx].coins) config.members[mIdx].coins=0;
+    if(!config.members[mIdx].coinsBreakdown) config.members[mIdx].coinsBreakdown={checkin:0,referral:0,gacha:0,bonus:0};
+    const oldCoins = config.members[mIdx].coins;
+    config.members[mIdx].coins += amount;
+    const src = config.members[mIdx].coinsBreakdown;
+    if(src[source]!==undefined) src[source]+=amount; else src.bonus=(src.bonus||0)+amount;
+    saveLocal();
+    const key=name.replace(/[.#$\[\]]/g,'_');
+    try{ await fbPatch('members/'+key,{coins:config.members[mIdx].coins,coinsBreakdown:src}); }catch(e){}
+    try{ await fbSet('leaderboard/'+key,{name,coins:config.members[mIdx].coins,level:getLevelInfo(config.members[mIdx].coins).name,ts:Date.now()}); }catch(e){}
+    updateCoinUI();
+    floatCoin(amount);
+    checkLevelUp(config.members[mIdx].coins, oldCoins);
+}
+
+function floatCoin(amount){
+    const el=document.createElement('div');
+    el.className='coin-float';
+    el.textContent='+'+amount+' 🪙';
+    el.style.cssText='left:'+(window.innerWidth/2-30)+'px;top:'+(window.innerHeight*0.5)+'px;';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1700);
+}
+
+function checkLevelUp(newC,oldC){
+    const o=getLevelInfo(oldC),n=getLevelInfo(newC);
+    if(n.idx>o.idx){showToast('LEVEL UP! 🎉','Selamat naik ke level '+n.name+' '+n.emoji,'success',4000);spawnKonfetti();}
+}
+
+function spawnKonfetti(){
+    const wrap=document.getElementById('konfetti-wrap');
+    if(!wrap) return;
+    const cols=['#ffcc00','#00eaff','#ae00ff','#ff0055','#00ff88','#ff6600'];
+    for(let i=0;i<60;i++){
+        const p=document.createElement('div');
+        p.className='konfetti-piece';
+        const sz=Math.random()*8+5;
+        p.style.cssText='left:'+Math.random()*100+'%;width:'+sz+'px;height:'+sz+'px;background:'+cols[Math.floor(Math.random()*cols.length)]+';animation-duration:'+(Math.random()*1.5+1.5)+'s;animation-delay:'+(Math.random()*0.5)+'s;';
+        wrap.appendChild(p);
+        setTimeout(()=>p.remove(),3500);
+    }
+}
+
+function updateCoinUI(){
+    if(!currentUser) return;
+    const m=config.members.find(x=>x.name===currentUser.name);
+    const coins=m?(m.coins||0):0;
+    const bd=m?(m.coinsBreakdown||{}):{}; 
+    const lvl=getLevelInfo(coins);
+    const nextLvl=LEVELS[lvl.idx+1];
+    // Header
+    const hd=document.getElementById('header-coins-display');
+    const hv=document.getElementById('header-coins-val');
+    if(hd) hd.style.display='flex';
+    if(hv) hv.textContent=coins;
+    // Quick stat
+    const qs=document.getElementById('qs-member-status');
+    if(qs) qs.textContent=lvl.emoji+' '+lvl.name;
+    // Profile
+    const bi=document.getElementById('level-badge-icon'); if(bi) bi.textContent=lvl.emoji;
+    const ln=document.getElementById('level-name-text'); if(ln){ln.textContent=lvl.name;ln.style.color=lvl.color;}
+    const lc=document.getElementById('level-coins-total'); if(lc) lc.textContent=coins;
+    const lb=document.getElementById('level-bar');
+    if(lb){const pct=nextLvl?Math.min(100,((coins-lvl.min)/(nextLvl.min-lvl.min))*100):100;lb.style.width=pct+'%';}
+    const nl=document.getElementById('level-next-lbl');
+    if(nl) nl.textContent=nextLvl?(nextLvl.min-coins)+' koin lagi ke '+nextLvl.name:'LEVEL TERTINGGI! 👑';
+    const ci=document.getElementById('coins-checkin'); if(ci) ci.textContent=bd.checkin||0;
+    const cr=document.getElementById('coins-referral'); if(cr) cr.textContent=bd.referral||0;
+    const cg=document.getElementById('coins-gacha'); if(cg) cg.textContent=bd.gacha||0;
+}
+
+// ─── DAILY CHECK-IN ───
+function getCheckinKey(){return 'checkin_'+(currentUser?currentUser.name:'');}
+function getTodayStr(){return new Date().toISOString().split('T')[0];}
+function getCheckinData(){try{const r=localStorage.getItem(getCheckinKey());return r?JSON.parse(r):{lastDate:'',streak:0};}catch(e){return{lastDate:'',streak:0};}}
+function saveCheckinData(d){localStorage.setItem(getCheckinKey(),JSON.stringify(d));}
+
+function renderCheckin(){
+    const row=document.getElementById('checkin-days-row');
+    const btn=document.getElementById('checkin-btn');
+    const sEl=document.getElementById('streak-num');
+    if(!row||!btn) return;
+    const data=getCheckinData();
+    const today=getTodayStr();
+    const claimed=data.lastDate===today;
+    const streak=data.streak||0;
+    if(sEl) sEl.textContent=streak;
+    let html='';
+    for(let i=0;i<7;i++){
+        const dayInCycle=streak%7;
+        const isDone = streak>0 && (claimed ? i<dayInCycle : i<dayInCycle);
+        const isToday = claimed ? i===dayInCycle-1 : i===dayInCycle;
+        let cls='checkin-day';
+        if(isToday && claimed) cls+=' today-claimed';
+        else if(isToday && !claimed) cls+=' today-pending';
+        else if(isDone) cls+=' done';
+        else if(i>dayInCycle && !claimed) cls+=' missed';
+        html+=`<div class="${cls}"><div class="checkin-day-num">H${i+1}</div><div class="checkin-day-icon">${CHECKIN_ICONS[i]}</div><div class="checkin-day-reward">+${CHECKIN_REWARDS[i]}</div></div>`;
+    }
+    row.innerHTML=html;
+    if(claimed){btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-check"></i> SUDAH CLAIM';}
+    else{btn.disabled=false;const r=CHECKIN_REWARDS[streak%7];btn.innerHTML='<i class="fa-solid fa-hand-point-up"></i> CLAIM +'+r+' KOIN';}
+}
+
+async function doCheckIn(){
+    if(!currentUser){alert('Login dulu!');return;}
+    const data=getCheckinData();
+    const today=getTodayStr();
+    if(data.lastDate===today){showToast('CHECK-IN','Sudah claim hari ini!','info',2000);return;}
+    const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+    const yStr=yesterday.toISOString().split('T')[0];
+    const newStreak=(data.lastDate===yStr)?(data.streak||0)+1:1;
+    const reward=CHECKIN_REWARDS[(newStreak-1)%7];
+    data.lastDate=today;data.streak=newStreak;
+    saveCheckinData(data);
+    await addCoins(reward,'checkin');
+    const key=currentUser.name.replace(/[.#$\[\]]/g,'_');
+    try{await fbPatch('members/'+key,{checkinStreak:newStreak,checkinLastDate:today});}catch(e){}
+    if(newStreak%7===0){
+        const mIdx=config.members.findIndex(m=>m.name===currentUser.name);
+        if(mIdx!==-1){config.members[mIdx].gachaFreeSpins=(config.members[mIdx].gachaFreeSpins||0)+1;saveLocal();}
+        showToast('BONUS SPIN! 🎰','Streak 7 hari! Kamu dapat 1 gacha spin gratis!','success',4000);
+    }
+    spawnKonfetti();
+    showToast('CHECK-IN ✅','+'+reward+' koin! Streak '+newStreak+' hari 🔥','success',3000);
+    renderCheckin();
+    setTimeout(renderLeaderboard,500);
+}
+window.doCheckIn=doCheckIn;
+
+// ─── LEADERBOARD ───
+async function renderLeaderboard(){
+    const list=document.getElementById('leaderboard-list');
+    if(!list) return;
+    list.innerHTML='<div class="lb-empty">⏳ Memuat...</div>';
+    try{
+        const data=await fbGet('leaderboard');
+        if(!data||typeof data!=='object'){list.innerHTML='<div class="lb-empty">Belum ada data leaderboard</div>';return;}
+        const entries=Object.values(data).filter(x=>x&&x.name&&typeof x.coins==='number').sort((a,b)=>b.coins-a.coins).slice(0,20);
+        if(!entries.length){list.innerHTML='<div class="lb-empty">Belum ada member dengan koin 🪙</div>';return;}
+        const rm=['🥇','🥈','🥉'],ac=['#ffcc00','#00eaff','#ae00ff','#ff0055','#00ff88'];
+        list.innerHTML=entries.map((e,i)=>{
+            const rank=i+1,isMe=currentUser&&e.name===currentUser.name,lvl=getLevelInfo(e.coins||0);
+            return`<div class="lb-item${isMe?' lb-me':''}"><div class="lb-rank ${rank<=3?'r'+rank:''}">${rank<=3?rm[rank-1]:'#'+rank}</div><div class="lb-avatar" style="background:${ac[i%ac.length]}">${(e.name||'?').charAt(0).toUpperCase()}</div><div class="lb-info"><div class="lb-name">${e.name}${isMe?' <span style="color:var(--accent);font-size:8px;">(Kamu)</span>':''}</div><div class="lb-sublabel">${lvl.emoji} ${lvl.name}</div></div><div class="lb-coins">${e.coins||0} 🪙</div></div>`;
+        }).join('');
+    }catch(e){
+        const local=[...config.members].filter(m=>m.coins>0).sort((a,b)=>(b.coins||0)-(a.coins||0)).slice(0,10);
+        if(!local.length){list.innerHTML='<div class="lb-empty">Belum ada data koin</div>';return;}
+        const rm=['🥇','🥈','🥉'];
+        list.innerHTML=local.map((e,i)=>{const rank=i+1,isMe=currentUser&&e.name===currentUser.name,lvl=getLevelInfo(e.coins||0);return`<div class="lb-item${isMe?' lb-me':''}"><div class="lb-rank ${rank<=3?'r'+rank:''}">${rank<=3?rm[rank-1]:'#'+rank}</div><div class="lb-avatar" style="background:var(--gold)">${(e.name||'?').charAt(0).toUpperCase()}</div><div class="lb-info"><div class="lb-name">${e.name}</div><div class="lb-sublabel">${lvl.emoji} ${lvl.name}</div></div><div class="lb-coins">${e.coins||0} 🪙</div></div>`;}).join('');
+    }
+}
+window.renderLeaderboard=renderLeaderboard;
+
+// ─── VOUCHER ───
+async function loadVouchersFromCloud(){try{const d=await fbGet('konten/vouchers');if(d&&typeof d==='object')window._voucherStore=d;}catch(e){}}
+function applyVoucher(){
+    const inp=document.getElementById('voucher-code-input');
+    const res=document.getElementById('voucher-result');
+    if(!inp||!res) return;
+    const code=inp.value.trim().toUpperCase();
+    if(!code){res.className='voucher-result err';res.textContent='❌ Masukkan kode voucher!';return;}
+    const v=(window._voucherStore||{})[code];
+    if(!v){res.className='voucher-result err';res.textContent='❌ Kode tidak valid atau sudah expired';_activeVoucher=null;return;}
+    if(v.expiry&&new Date(v.expiry)<new Date()){res.className='voucher-result err';res.textContent='❌ Voucher sudah expired';_activeVoucher=null;return;}
+    if(v.maxUse&&v.usedCount>=v.maxUse){res.className='voucher-result err';res.textContent='❌ Voucher sudah habis digunakan';_activeVoucher=null;return;}
+    _activeVoucher={code,...v};
+    const dt=v.type==='pct'?v.value+'%':'Rp '+Number(v.value).toLocaleString('id-ID');
+    res.className='voucher-result ok';res.textContent='✅ Diskon '+dt+' aktif!';
+    showToast('VOUCHER ✅','Diskon '+dt+' berhasil diterapkan!','success',2500);
+}
+window.applyVoucher=applyVoucher;
+
+async function adminAddVoucher(code,type,value,maxUse,expiry){
+    if(!code){alert('Masukkan kode voucher!');return;}
+    try{await fbSet('konten/vouchers/'+code.toUpperCase(),{type,value:Number(value),maxUse:Number(maxUse)||999,expiry:expiry||'',usedCount:0,createdAt:Date.now()});alert('✅ Voucher '+code.toUpperCase()+' berhasil dibuat!');loadVouchersFromCloud();}catch(e){alert('❌ Gagal: '+e.message);}
+}
+window.adminAddVoucher=adminAddVoucher;
+
+window.openAdminVoucherPanel=function(){
+    const html=`<div style="background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.25);border-radius:12px;padding:14px;">
+        <p style="font-family:'Orbitron';font-size:9px;color:#00ff88;margin-bottom:10px;"><i class="fa-solid fa-ticket"></i> BUAT VOUCHER BARU</p>
+        <div class="input-group"><i class="fa-solid fa-tag"></i><input type="text" id="vc-code" placeholder="KODE VOUCHER" style="text-transform:uppercase;"></div>
+        <select id="vc-type" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;color:#fff;margin-bottom:8px;font-family:'Orbitron';font-size:10px;">
+            <option value="pct">% Persentase (10 = diskon 10%)</option>
+            <option value="flat">Flat nominal (5000 = diskon Rp5.000)</option>
+        </select>
+        <div class="input-group"><i class="fa-solid fa-percent"></i><input type="number" id="vc-val" placeholder="Nilai diskon"></div>
+        <div class="input-group"><i class="fa-solid fa-users"></i><input type="number" id="vc-max" placeholder="Maks pemakaian (0=unlimited)" value="0"></div>
+        <div class="input-group"><i class="fa-solid fa-calendar"></i><input type="date" id="vc-exp"></div>
+        <button class="save-product-btn" onclick="adminAddVoucher(document.getElementById('vc-code').value,document.getElementById('vc-type').value,document.getElementById('vc-val').value,document.getElementById('vc-max').value,document.getElementById('vc-exp').value)" style="background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;"><i class="fa-solid fa-floppy-disk"></i> SIMPAN VOUCHER</button>
+    </div>`;
+    openBottomSheet('VOUCHER MANAGER','Buat & kelola kode diskon',html);
+};
+
+// ─── REFERRAL ───
+function generateReferralCode(name){
+    const base=(name||'').replace(/[^a-zA-Z0-9]/g,'').toUpperCase().substring(0,4);
+    const hash=Math.abs((name||'').split('').reduce((a,c)=>(a<<5)-a+c.charCodeAt(0),0))%9000+1000;
+    return base+hash;
+}
+function updateReferralUI(){
+    if(!currentUser) return;
+    const code=generateReferralCode(currentUser.name);
+    const el=document.getElementById('referral-code-val'); if(el) el.textContent=code;
+    const m=config.members.find(x=>x.name===currentUser.name);
+    const inv=m?(m.referralCount||0):0;
+    const ri=document.getElementById('referral-invited'); if(ri) ri.textContent=inv;
+    const rg=document.getElementById('referral-coins-got'); if(rg) rg.textContent=inv*50;
+}
+function copyReferralCode(){
+    if(!currentUser) return;
+    const code=generateReferralCode(currentUser.name);
+    navigator.clipboard.writeText(code).then(()=>showToast('COPIED! 📋','Kode '+code+' disalin!','success',2000)).catch(()=>prompt('Kode referral kamu:',code));
+}
+window.copyReferralCode=copyReferralCode;
+function shareReferral(){
+    if(!currentUser) return;
+    const code=generateReferralCode(currentUser.name);
+    const sn=document.querySelector('.logo')?.textContent||'UNO-STOREZZ';
+    const msg='🎮 Halo! Aku pakai '+sn+' buat beli sewa bot & premium!\n\nDaftar pakai kode referral aku, kita sama-sama dapat bonus koin! 🪙\n\n🔑 *Kode Referral:* '+code+'\n\nMasukkan kode ini saat daftar ya!';
+    window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+window.shareReferral=shareReferral;
+async function processReferral(newName,refCode){
+    if(!refCode) return;
+    const owner=config.members.find(m=>generateReferralCode(m.name)===refCode.toUpperCase());
+    if(!owner||owner.name===newName) return;
+    const oIdx=config.members.findIndex(m=>m.name===owner.name);
+    if(oIdx!==-1){config.members[oIdx].referralCount=(config.members[oIdx].referralCount||0)+1;saveLocal();await addCoins(50,'referral',owner.name);showToast('REFERRAL BONUS! 🎉',owner.name+' dapat +50 koin!','success',3000);}
+}
+window.processReferral=processReferral;
+
+// ─── SUBS EXPIRY WARNING ───
+function checkSubsExpiry(){
+    if(!currentUser) return;
+    const wk='subwarn_'+currentUser.name+'_'+getTodayStr();
+    if(localStorage.getItem(wk)) return;
+    const m=config.members.find(x=>x.name===currentUser.name);
+    if(!m||!m.subs||!m.subs.length) return;
+    const now=new Date();
+    const soon=m.subs.filter(s=>{if(!s.expiry) return false;const d=Math.ceil((new Date(s.expiry)-now)/86400000);return d<=3&&d>=0;});
+    if(!soon.length) return;
+    const li=document.getElementById('subs-warn-list');
+    if(li) li.innerHTML=soon.map(s=>{const d=Math.ceil((new Date(s.expiry)-now)/86400000);const u=d<=1;return`<div class="subs-warn-item"><div class="subs-warn-item-icon">${s.type==='premium'?'👑':'🤖'}</div><div><div class="subs-warn-item-name">${s.type.toUpperCase()}</div><div class="subs-warn-item-days ${u?'urgent':'soon'}">${d===0?'⚠️ Berakhir HARI INI!':'Sisa '+d+' hari ('+s.expiry+')'}</div></div></div>`;}).join('');
+    const ov=document.getElementById('subs-warn-overlay'); if(ov) ov.classList.add('open');
+    localStorage.setItem(wk,'1');
+}
+function closeSW(){const ov=document.getElementById('subs-warn-overlay');if(ov)ov.classList.remove('open');}
+window.closeSW=closeSW;
+
+// ─── INIT ───
+function initGamification(){
+    if(!currentUser) return;
+    updateCoinUI();
+    renderCheckin();
+    renderLeaderboard();
+    updateReferralUI();
+    loadVouchersFromCloud();
+    setTimeout(checkSubsExpiry,3000);
+    const m=config.members.find(x=>x.name===currentUser.name);
+    if(m&&(m.coins||0)>0){
+        const key=currentUser.name.replace(/[.#$\[\]]/g,'_');
+        const lvl=getLevelInfo(m.coins||0);
+        fbSet('leaderboard/'+key,{name:currentUser.name,coins:m.coins||0,level:lvl.name,ts:Date.now()}).catch(()=>{});
+    }
+}
+window.initGamification=initGamification;
+
+// Hook syncUI
+const _origSyncUI2=window.syncUI;
+window.syncUI=function(){if(_origSyncUI2)_origSyncUI2.apply(this,arguments);setTimeout(initGamification,400);};
+
+// Auto init
+setTimeout(()=>{if(typeof currentUser!=='undefined'&&currentUser)initGamification();},2000);
+</script>
+
+<script>
+// ╔══════════════════════════════════════════════╗
+// ║        REDEEM / TUKAR KOIN SYSTEM           ║
+// ╚══════════════════════════════════════════════╝
+
+// Default config redeem (bisa diubah admin)
+const REDEEM_DEFAULTS = {
+    spin:   { cost:50,   enabled:true,  icon:'🎰', name:'Gacha Spin Gratis',  desc:'Dapat 1x spin gacha tanpa cooldown' },
+    diskon: { cost:100,  enabled:true,  icon:'💸', name:'Diskon 10% Pembelian',desc:'Diskon 10% untuk pembelian berikutnya' },
+    subs1:  { cost:200,  enabled:true,  icon:'📅', name:'Perpanjang Subs +1 Hari', desc:'Tambah 1 hari ke subs aktif terakhir' },
+    subs3:  { cost:500,  enabled:true,  icon:'📅', name:'Perpanjang Subs +3 Hari', desc:'Tambah 3 hari ke subs aktif terakhir' },
+    subs7:  { cost:1000, enabled:true,  icon:'👑', name:'Perpanjang Subs +7 Hari', desc:'Tambah 7 hari ke subs aktif terakhir' },
+};
+
+let _redeemConfig = JSON.parse(localStorage.getItem('redeem_config') || 'null') || JSON.parse(JSON.stringify(REDEEM_DEFAULTS));
+let _pendingRedeem = null; // { type, cost, icon, name, desc }
+
+// ── Load redeem config dari Firebase ──
+async function loadRedeemConfig() {
+    try {
+        const data = await fbGet('konten/redeemConfig');
+        if (data && typeof data === 'object') {
+            // Merge dengan default supaya tipe baru tidak hilang
+            Object.keys(REDEEM_DEFAULTS).forEach(k => {
+                if (data[k]) _redeemConfig[k] = { ...REDEEM_DEFAULTS[k], ...data[k] };
+            });
+            localStorage.setItem('redeem_config', JSON.stringify(_redeemConfig));
+        }
+    } catch(e) { console.log('Redeem config offline, pakai lokal'); }
+}
+
+// ── Render grid tukar koin di profil ──
+function renderRedeemGrid() {
+    const grid = document.getElementById('redeem-grid');
+    if (!grid || !currentUser) return;
+
+    const myCoins = getMemberCoins(currentUser.name);
+
+    // Update coin display
+    const rcv = document.getElementById('redeem-coins-val');
+    const rcb = document.getElementById('redeem-coins-badge');
+    if (rcv) rcv.textContent = myCoins;
+    if (rcb) rcb.textContent = myCoins + ' 🪙';
+
+    const items = Object.entries(_redeemConfig);
+    if (!items.length) { grid.innerHTML = '<p style="font-size:9px;color:var(--text-muted);text-align:center;padding:10px;">Belum ada reward tersedia</p>'; return; }
+
+    grid.innerHTML = items.map(([type, cfg]) => {
+        if (!cfg.enabled) return '';
+        const canAfford = myCoins >= cfg.cost;
+        return `<div class="redeem-item ${canAfford ? '' : 'locked'}">
+            <div class="redeem-item-icon">${cfg.icon}</div>
+            <div class="redeem-item-info">
+                <div class="redeem-item-name">${cfg.name}</div>
+                <div class="redeem-item-desc">${cfg.desc}</div>
+                <div class="redeem-item-cost">🪙 ${cfg.cost} koin</div>
+            </div>
+            <button class="redeem-item-btn" ${canAfford ? '' : 'disabled'}
+                onclick="openRedeemConfirm('${type}')">
+                ${canAfford ? 'TUKAR' : 'KURANG'}
+            </button>
+        </div>`;
+    }).join('');
+
+    renderRedeemHistory();
+}
+window.renderRedeemGrid = renderRedeemGrid;
+
+// ── Riwayat tukar koin ──
+function renderRedeemHistory() {
+    const el = document.getElementById('redeem-history-list');
+    if (!el || !currentUser) return;
+    const key = 'redeem_history_' + currentUser.name;
+    let history = [];
+    try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+    if (!history.length) {
+        el.innerHTML = '<div class="redeem-history-empty">Belum ada riwayat penukaran</div>';
+        return;
+    }
+    el.innerHTML = history.slice(-5).reverse().map(h =>
+        `<div class="redeem-history-item">
+            <span>${h.icon} ${h.name}</span>
+            <span style="color:var(--red);font-family:'Orbitron';">-${h.cost} 🪙</span>
+        </div>`
+    ).join('');
+}
+
+// ── Buka confirm dialog ──
+function openRedeemConfirm(type) {
+    const cfg = _redeemConfig[type];
+    if (!cfg || !cfg.enabled) return;
+    const myCoins = getMemberCoins(currentUser.name);
+    if (myCoins < cfg.cost) {
+        showToast('KOIN KURANG', 'Kamu butuh ' + cfg.cost + ' 🪙 tapi punya ' + myCoins + ' 🪙', 'error', 3000);
+        return;
+    }
+    _pendingRedeem = { type, ...cfg };
+    document.getElementById('rc-icon').textContent  = cfg.icon;
+    document.getElementById('rc-title').textContent  = cfg.name;
+    document.getElementById('rc-desc').textContent   = cfg.desc;
+    document.getElementById('rc-cost').textContent   = '— ' + cfg.cost + ' 🪙';
+    document.getElementById('redeem-confirm-overlay').classList.add('open');
+}
+window.openRedeemConfirm = openRedeemConfirm;
+
+function closeRedeemConfirm() {
+    document.getElementById('redeem-confirm-overlay').classList.remove('open');
+    _pendingRedeem = null;
+}
+window.closeRedeemConfirm = closeRedeemConfirm;
+
+// ── Proses tukar koin ──
+async function confirmRedeem() {
+    if (!_pendingRedeem || !currentUser) return;
+    const { type, cost, icon, name } = _pendingRedeem;
+    closeRedeemConfirm();
+
+    const myCoins = getMemberCoins(currentUser.name);
+    if (myCoins < cost) { showToast('GAGAL', 'Koin tidak cukup!', 'error', 2500); return; }
+
+    // Potong koin
+    const mIdx = config.members.findIndex(m => m.name === currentUser.name);
+    if (mIdx === -1) return;
+    config.members[mIdx].coins = (config.members[mIdx].coins || 0) - cost;
+    saveLocal();
+
+    // Sync ke Firebase
+    const key = currentUser.name.replace(/[.#$\[\]]/g, '_');
+    try { await fbPatch('members/' + key, { coins: config.members[mIdx].coins }); } catch(e) {}
+    try { await fbSet('leaderboard/' + key, { name: currentUser.name, coins: config.members[mIdx].coins, level: getLevelInfo(config.members[mIdx].coins).name, ts: Date.now() }); } catch(e) {}
+
+    // Simpan riwayat
+    const histKey = 'redeem_history_' + currentUser.name;
+    let hist = [];
+    try { hist = JSON.parse(localStorage.getItem(histKey) || '[]'); } catch(e) {}
+    hist.push({ type, icon, name, cost, date: new Date().toLocaleDateString('id-ID') });
+    localStorage.setItem(histKey, JSON.stringify(hist.slice(-20)));
+
+    // Eksekusi reward
+    await executeReward(type, cost);
+
+    updateCoinUI();
+    renderRedeemGrid();
+    spawnKonfetti();
+    showToast(icon + ' BERHASIL!', name + ' aktif! -' + cost + ' koin', 'success', 4000);
+}
+window.confirmRedeem = confirmRedeem;
+
+// ── Eksekusi reward sesuai tipe ──
+async function executeReward(type, cost) {
+    const mIdx = config.members.findIndex(m => m.name === currentUser.name);
+    if (mIdx === -1) return;
+
+    if (type === 'spin') {
+        // Tambah 1 free spin
+        config.members[mIdx].gachaFreeSpins = (config.members[mIdx].gachaFreeSpins || 0) + 1;
+        saveLocal();
+        const key = currentUser.name.replace(/[.#$\[\]]/g, '_');
+        try { await fbPatch('members/' + key, { gachaFreeSpins: config.members[mIdx].gachaFreeSpins }); } catch(e) {}
+        // Reset cooldown
+        localStorage.removeItem('gacha_' + currentUser.name);
+        config.members[mIdx].gachaLastSpin = null;
+        showToast('🎰 SPIN SIAP!', 'Gacha cooldown direset. Spin sekarang!', 'success', 3000);
+        return;
+    }
+
+    if (type === 'diskon') {
+        // Simpan diskon sebagai voucher sementara
+        const discCode = 'KOIN' + Date.now().toString().slice(-4);
+        window._voucherStore = window._voucherStore || {};
+        window._voucherStore[discCode] = { type:'pct', value:10, maxUse:1, usedCount:0, expiry:'', fromRedeem:true };
+        // Simpan ke Firebase
+        try { await fbSet('konten/vouchers/' + discCode, { type:'pct', value:10, maxUse:1, usedCount:0, expiry:'', createdAt:Date.now(), fromRedeem:true, owner:currentUser.name }); } catch(e) {}
+        // Tampilkan kode ke user
+        setTimeout(() => {
+            alert('💸 KODE DISKON 10% KAMU: ' + discCode + ' — Masukkan di kolom voucher saat checkout! (Berlaku 1x pakai)');
+        }, 500);
+        return;
+    }
+
+    if (type === 'subs1' || type === 'subs3' || type === 'subs7') {
+        const days = type === 'subs1' ? 1 : type === 'subs3' ? 3 : 7;
+        // Cari subs aktif terakhir
+        const subs = config.members[mIdx].subs || [];
+        if (!subs.length) {
+            showToast('⚠️ TIDAK ADA SUBS', 'Kamu belum punya subs aktif untuk diperpanjang', 'error', 3000);
+            // Kembalikan koin
+            config.members[mIdx].coins = (config.members[mIdx].coins || 0) + cost;
+            saveLocal();
+            updateCoinUI();
+            return;
+        }
+        // Ambil subs yang masih aktif atau paling akhir expired
+        const now = new Date();
+        let target = subs.find(s => new Date(s.expiry) > now);
+        if (!target) target = subs[subs.length - 1]; // ambil yang paling akhir
+
+        // Perpanjang expiry
+        const currentExpiry = new Date(target.expiry);
+        const base = currentExpiry > now ? currentExpiry : now;
+        const newExpiry = new Date(base);
+        newExpiry.setDate(newExpiry.getDate() + days);
+        target.expiry = newExpiry.toLocaleDateString('id-ID');
+        target.days = (target.days || 0) + days;
+
+        saveLocal();
+        const key = currentUser.name.replace(/[.#$\[\]]/g, '_');
+        try { await fbPatch('members/' + key, { subs: config.members[mIdx].subs }); } catch(e) {}
+        syncUI();
+        return;
+    }
+}
+
+// ── Admin: toggle on/off reward ──
+function toggleRedeemType(type, btn) {
+    if (!_redeemConfig[type]) return;
+    _redeemConfig[type].enabled = !_redeemConfig[type].enabled;
+    btn.className = 'redeem-admin-toggle ' + (_redeemConfig[type].enabled ? 'on' : 'off');
+}
+window.toggleRedeemType = toggleRedeemType;
+
+// ── Admin: simpan config ──
+async function saveRedeemConfig() {
+    const types = ['spin','diskon','subs1','subs3','subs7'];
+    types.forEach(t => {
+        const inp = document.getElementById('rc-' + t);
+        if (inp) _redeemConfig[t].cost = parseInt(inp.value) || REDEEM_DEFAULTS[t].cost;
+    });
+    localStorage.setItem('redeem_config', JSON.stringify(_redeemConfig));
+    try {
+        await fbSet('konten/redeemConfig', _redeemConfig);
+        showToast('✅ DISIMPAN', 'Pengaturan tukar koin berhasil disimpan!', 'success', 2500);
+    } catch(e) {
+        showToast('⚠️ OFFLINE', 'Disimpan lokal, gagal sync Firebase', 'error', 2500);
+    }
+    renderRedeemGrid();
+}
+window.saveRedeemConfig = saveRedeemConfig;
+
+// ── Load admin UI values ──
+function loadRedeemAdminUI() {
+    const types = ['spin','diskon','subs1','subs3','subs7'];
+    types.forEach(t => {
+        const inp = document.getElementById('rc-' + t);
+        const btn = document.getElementById('rt-' + t);
+        if (inp && _redeemConfig[t]) inp.value = _redeemConfig[t].cost;
+        if (btn && _redeemConfig[t]) btn.className = 'redeem-admin-toggle ' + (_redeemConfig[t].enabled ? 'on' : 'off');
+    });
+}
+window.loadRedeemAdminUI = loadRedeemAdminUI;
+
+// ── Hook ke spinGacha — cek free spin ──
+const _origSpinGacha2 = window.spinGacha;
+window.spinGacha = function() {
+    if (!currentUser) { _origSpinGacha2 && _origSpinGacha2(); return; }
+    const mIdx = config.members.findIndex(m => m.name === currentUser.name);
+    if (mIdx !== -1 && config.members[mIdx].gachaFreeSpins > 0) {
+        // Gunakan free spin — skip cooldown check
+        config.members[mIdx].gachaFreeSpins--;
+        // Reset cooldown agar bisa spin
+        localStorage.removeItem('gacha_' + currentUser.name);
+        config.members[mIdx].gachaLastSpin = null;
+        saveLocal();
+        showToast('🎰 FREE SPIN!', 'Menggunakan free spin! Sisa: ' + config.members[mIdx].gachaFreeSpins, 'success', 2000);
+    }
+    if (_origSpinGacha2) _origSpinGacha2.apply(this, arguments);
+};
+
+// ── Hook initGamification — tambah load redeem ──
+const _origInitGami = window.initGamification;
+window.initGamification = function() {
+    if (_origInitGami) _origInitGami.apply(this, arguments);
+    loadRedeemConfig().then(() => {
+        renderRedeemGrid();
+        loadRedeemAdminUI();
+    });
+};
+
+// Auto init
+setTimeout(() => {
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        loadRedeemConfig().then(() => { renderRedeemGrid(); loadRedeemAdminUI(); });
+    }
+}, 2500);
+</script>
 
 </body>
 </html>
