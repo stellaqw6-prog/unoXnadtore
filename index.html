@@ -356,6 +356,32 @@
         input, select, textarea { width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); padding:12px; border-radius:12px; color:#fff; margin-bottom:8px; outline:none; font-size:16px !important; transition:0.2s; }
         input:focus, select:focus, textarea:focus { border-color:rgba(0,234,255,0.4); background:rgba(0,234,255,0.04); box-shadow:0 0 12px rgba(0,234,255,0.1); }
 
+
+        /* ── REKOMENDASI badge & toggle ── */
+        .rec-badge {
+            position:absolute; top:8px; left:8px; z-index:5;
+            background:linear-gradient(90deg,#ff6a00,#ffcc00);
+            color:#000; font-family:'Orbitron'; font-size:7px; font-weight:900;
+            padding:3px 8px; border-radius:20px; letter-spacing:1px;
+            box-shadow:0 0 10px rgba(255,150,0,0.5);
+            display:flex; align-items:center; gap:3px;
+        }
+        .admin-rec-btn {
+            width:26px; height:26px; border-radius:6px; border:none; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; font-size:11px;
+            background:rgba(255,204,0,0.08); color:rgba(255,204,0,0.35);
+            transition:0.2s; flex-shrink:0;
+        }
+        .admin-rec-btn.active {
+            background:rgba(255,204,0,0.2); color:#ffcc00;
+            box-shadow:0 0 8px rgba(255,204,0,0.3);
+        }
+        .prod-item-rec-label {
+            font-size:7px; font-family:'Orbitron'; color:#ffcc00; letter-spacing:1px;
+            background:rgba(255,204,0,0.12); border:1px solid rgba(255,204,0,0.25);
+            padding:1px 6px; border-radius:10px; display:inline-flex; align-items:center; gap:3px;
+        }
+
         /* ── STORE PAGE ── */
         .store-cat-tab {
             white-space:nowrap; padding:8px 14px; border-radius:10px; border:1px solid var(--glass-border);
@@ -2067,7 +2093,7 @@
         </div>
         <div class="category-grid" id="category-grid"></div>
 
-        <!-- PRODUK POPULER -->
+        <!-- PRODUK REKOMENDASI -->
         <div class="sec-head" style="margin-top:4px;">
             <div class="sec-title"><i class="fa-solid fa-bolt"></i> POPULER</div>
             <div class="sec-more" onclick="showPage('store')">Lihat semua <i class="fa-solid fa-chevron-right" style="font-size:8px;"></i></div>
@@ -2219,10 +2245,7 @@
             <div id="page-store" class="page-slide">
                 <!-- Category filter tabs -->
                 <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; scrollbar-width:none;">
-                    <button class="store-cat-tab active" data-cat="all" onclick="filterStoreTab(this,'all')">
-                        <i class="fa-solid fa-border-all"></i> SEMUA
-                    </button>
-                    <button class="store-cat-tab" data-cat="sewa" onclick="filterStoreTab(this,'sewa')">
+                    <button class="store-cat-tab active" data-cat="sewa" onclick="filterStoreTab(this,'sewa')">
                         🤖 SEWA BOT
                     </button>
                     <button class="store-cat-tab" data-cat="premium" onclick="filterStoreTab(this,'premium')">
@@ -3015,6 +3038,16 @@
         }
     };
 
+    // Restore members dari cache terpisah (lebih persistent, tidak ikut reset config)
+    const _membersCached = localStorage.getItem('uno_members_cache');
+    if (_membersCached) {
+        try {
+            const _parsedMembers = JSON.parse(_membersCached);
+            if (Array.isArray(_parsedMembers) && _parsedMembers.length > 0) {
+                config.members = _parsedMembers;
+            }
+        } catch(e) {}
+    }
     if (!config.members) config.members = [];
     if (!config.prices) config.prices = { sewa: [], premium: [], script: [], lainnya: [] };
     if (!config.gachaPrizes) config.gachaPrizes = [];
@@ -4306,6 +4339,7 @@ Terima kasih! 🙏
         
         if (t === 'members') {
             // Selalu ambil data terbaru dari cloud sebelum render
+            // Selalu ambil data terbaru dari Firebase saat buka tab members
             fetchAllMembersFromCloud().then(() => {
                 renderMemberList();
                 updateSubscriptionStats();
@@ -4644,6 +4678,7 @@ Terima kasih! 🙏
                     <div style="display:flex;gap:4px;flex-shrink:0;">
                         <div onclick="moveProdUp('${category}',${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;">▲</div>
                         <div onclick="moveProdDown('${category}',${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;">▼</div>
+                        <button class="admin-rec-btn ${item.rec ? 'active' : ''}" title="${item.rec ? 'Hapus dari Rekomendasi' : 'Tandai sebagai Rekomendasi'}" onclick="toggleRekomendasi('${category}',${idx})">⭐</button>
                         <div class="delete-product-btn" onclick="openEditBenefit('${category}',${idx})" style="background:rgba(0,234,255,0.1);border-color:var(--accent);color:var(--accent);">
                             <i class="fa-solid fa-star"></i>
                         </div>
@@ -4652,7 +4687,7 @@ Terima kasih! 🙏
                         </div>
                     </div>
                 </div>
-                <div style="display:flex;flex-wrap:wrap;gap:2px;">${benefitTags}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:2px;align-items:center;">${benefitTags}${item.rec ? '<span class="prod-item-rec-label">⭐ REKOMENDASI</span>' : ''}</div>
             </div>`;
         }).join('');
     }
@@ -4672,6 +4707,20 @@ Terima kasih! 🙏
                 showToast('HAPUS', 'Produk berhasil dihapus!', 'success', 2000);
             }
         }
+    }
+
+
+    function toggleRekomendasi(category, idx) {
+        if (!config.prices[category] || !config.prices[category][idx]) return;
+        const item = config.prices[category][idx];
+        item.rec = !item.rec;
+        saveLocal();
+        publishProductsToCloud();
+        renderAdminProductList();
+        if (typeof renderStoreGrid === 'function') renderStoreGrid();
+        if (typeof renderPopularProducts === 'function') renderPopularProducts();
+        const status = item.rec ? '⭐ Ditandai sebagai Rekomendasi!' : 'Dihapus dari Rekomendasi';
+        showToast('REKOMENDASI', status, item.rec ? 'success' : 'info', 2500);
     }
 
     function addNewBanner() {
@@ -6206,7 +6255,14 @@ Terima kasih! 🙏
     }
 
     function saveLocal() {
-        localStorage.setItem('uno_cfg', JSON.stringify(config));
+        // Simpan config tanpa members (biar ringan dan tidak timpa members cache)
+        const cfgToSave = { ...config };
+        delete cfgToSave.members;
+        localStorage.setItem('uno_cfg', JSON.stringify(cfgToSave));
+        // Simpan members TERPISAH supaya tidak ikut hilang saat config direset
+        if (config.members && config.members.length > 0) {
+            localStorage.setItem('uno_members_cache', JSON.stringify(config.members));
+        }
     }
 
     function openModal(id) {
@@ -6255,10 +6311,11 @@ Terima kasih! 🙏
         // ── Logic hooks ──
         if (page === 'profile') syncUI();
         if (page === 'store') {
-            // Gunakan window.renderStoreGrid agar bisa akses dari scope manapun
             setTimeout(() => {
+                const grid = document.getElementById('store-product-grid');
+                if (grid) grid.innerHTML = '';
+                if (typeof window._syncStoreCatTab === 'function') window._syncStoreCatTab();
                 if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
-                else if (typeof renderStorePage === 'function') renderStorePage();
             }, 50);
         }
 
@@ -6391,6 +6448,8 @@ Terima kasih! 🙏
                 };
             });
             await fbSet('members', membersObj);
+            // Update cache lokal juga setelah berhasil sync
+            localStorage.setItem('uno_members_cache', JSON.stringify(config.members));
             console.log('✅ Semua member tersync ke Firebase');
         } catch (e) {
             console.log('❌ Gagal sync members:', e);
@@ -6429,21 +6488,35 @@ Terima kasih! 🙏
             if (data && typeof data === 'object') {
                 const cloudMembers = Object.values(data).filter(m => m && m.name);
                 if (cloudMembers.length > 0) {
-                    // Cloud adalah sumber kebenaran - JANGAN merge lokal
-                    // Member yang dihapus dari cloud tidak boleh balik
+                    // Cloud adalah sumber kebenaran
                     config.members = cloudMembers;
+                    // Simpan ke dua tempat: config cache + members cache terpisah
                     saveLocal();
+                    localStorage.setItem('uno_members_cache', JSON.stringify(cloudMembers));
                     console.log('✅', cloudMembers.length, 'member diambil dari Firebase');
                     return true;
                 } else {
-                    // Cloud kosong (semua member dihapus) - kosongkan local juga
+                    // Cloud kosong - kosongkan local juga
                     config.members = [];
                     saveLocal();
+                    localStorage.removeItem('uno_members_cache');
                     return true;
                 }
             }
         } catch (e) {
-            console.log('❌ Gagal ambil members dari Firebase:', e);
+            console.log('❌ Gagal ambil members dari Firebase, pakai cache lokal:', e);
+            // Fallback: pakai cache lokal jika Firebase gagal
+            const cached = localStorage.getItem('uno_members_cache');
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        config.members = parsed;
+                        console.log('📦 Pakai', parsed.length, 'member dari cache lokal');
+                        return true;
+                    }
+                } catch(e2) {}
+            }
         }
         return false;
     }
@@ -6521,13 +6594,6 @@ Terima kasih! 🙏
 
     // ===== LOAD KONTEN DARI FIREBASE (dijalankan saat load & real-time refresh) =====
     async function loadProductsFromCloud() {
-        // ✅ Render dari lokal dulu (instant, tanpa tunggu Firebase)
-        const hasLocal = config.prices && Object.values(config.prices).some(arr => Array.isArray(arr) && arr.length > 0);
-        if (hasLocal) {
-            loadCategory('sewa');
-            if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
-            if (typeof window.renderPopularProducts === 'function') window.renderPopularProducts();
-        }
         try {
             const prices = await fbGet('konten/prices');
             if (prices && typeof prices === 'object') {
@@ -6541,9 +6607,11 @@ Terima kasih! 🙏
         } catch (e) {
             console.log('⚠️ Firebase produk offline, pakai lokal');
         }
-        // ✅ Render ulang setelah Firebase data masuk
-        loadCategory('sewa');
-        if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
+        // Hanya render store grid jika user sedang di halaman store
+        if (typeof _currentPage !== 'undefined' && _currentPage === 'store') {
+            if (typeof window._syncStoreCatTab === 'function') window._syncStoreCatTab();
+            if (typeof window.renderStoreGrid === 'function') window.renderStoreGrid();
+        }
         if (typeof window.renderPopularProducts === 'function') window.renderPopularProducts();
     }
 
@@ -6669,8 +6737,8 @@ Terima kasih! 🙏
         if (config.members && config.members.length > 0) syncMembersToCloud();
     }, 300000);
 
-    // Real-time refresh konten dari Firebase setiap 10 detik
-    // Config (video/musik) TIDAK di-refresh otomatis supaya video tidak patah-patah
+    // Real-time refresh konten dari Firebase setiap 30 detik
+    // renderStoreGrid hanya dipanggil jika user sedang di halaman store
     setInterval(async () => {
         await Promise.all([
             loadProductsFromCloud(),
@@ -6680,7 +6748,7 @@ Terima kasih! 🙏
         if(window.renderPopularProducts) renderPopularProducts();
         if(window.renderGachaChips) renderGachaChips();
         if(window.updateQuickStats) updateQuickStats();
-    }, 10000);
+    }, 30000);
 
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', function() {
@@ -6724,17 +6792,30 @@ Terima kasih! 🙏
         }, { passive: true });
 
         // ── STORE PAGE ──
-        let _storeCat = 'all';
+        let _storeCat = 'sewa';
         function filterStoreTab(el, cat) {
+            const grid = document.getElementById('store-product-grid');
+            if (grid) grid.innerHTML = '';
             _storeCat = cat;
             document.querySelectorAll('.store-cat-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
             renderStoreGrid();
         }
-        function renderStorePage() { renderStoreGrid(); }
+        function _syncStoreCatTab() {
+            document.querySelectorAll('.store-cat-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.cat === _storeCat);
+            });
+        }
+        function renderStorePage() {
+            // Saat halaman store dibuka, pastikan tab sewa aktif jika belum ada pilihan
+            if (!_storeCat || _storeCat === 'all') _storeCat = 'sewa';
+            _syncStoreCatTab();
+            renderStoreGrid();
+        }
         function renderStoreGrid() {
             const wrap = document.getElementById('store-product-grid');
             if (!wrap || !config.prices) return;
+            wrap.innerHTML = '';
             const emojis = { sewa:'🤖', premium:'👑', script:'💜', lainnya:'🎁' };
             const cc_map = {
                 sewa:    { c1:'rgba(0,234,255,0.12)',  c2:'rgba(0,100,255,0.08)',  accent:'#00eaff', label:'Sewa Bot' },
@@ -6742,55 +6823,51 @@ Terima kasih! 🙏
                 script:  { c1:'rgba(174,0,255,0.12)',  c2:'rgba(255,0,85,0.07)',   accent:'#ae00ff', label:'Script'   },
                 lainnya: { c1:'rgba(0,255,100,0.10)',  c2:'rgba(0,234,255,0.06)',  accent:'#00ff88', label:'Lainnya'  },
             };
-            let cards = ''; let hasItems = false;
-            const orderedCats = config.categoryOrder && config.categoryOrder.length ? config.categoryOrder : Object.keys(config.prices);
-            orderedCats.forEach(cat => {
-                const items = config.prices[cat];
-                if (!items || !items.length) return;
-                if (_storeCat !== 'all' && _storeCat !== cat) return;
-                const cc = cc_map[cat] || cc_map.lainnya;
-                items.forEach((item, idx) => {
-                    hasItems = true;
-                    const name = item.n || item.name || item.nama || 'Produk';
-                    const rawP = (item.p || item.price || item.harga || '0').toString().replace(/[^0-9]/g,'');
-                    const priceNum = parseInt(rawP) || 0;
-                    const priceStr = priceNum > 0 ? 'Rp ' + priceNum.toLocaleString('id-ID') : (item.p || '—');
-                    const imgUrl = item.img || '';
-                    const benefits = item.b || [];
-                    const sn = name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-                    const badgeHtml = idx===0 ? '<span class="spc-badge badge-hot">HOT</span>' : idx===1 ? '<span class="spc-badge badge-new">NEW</span>' : '';
-                    const imgHtml = imgUrl
-                        ? `<img src="${imgUrl}" alt="${sn}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
-                        : '';
-                    const fallbackHtml = `<div class="spc-img-fallback" style="${imgUrl?'display:none':''}">${emojis[cat]||'🎁'}</div>`;
-                    const bHtml = benefits.length
-                        ? benefits.slice(0,3).map(b=>`<div class="spc-benefit-item"><i class="${b.icon||'fa-solid fa-check'}"></i><span>${b.text}</span></div>`).join('')
-                          + (benefits.length>3?`<div class="spc-benefit-item"><i class="fa-solid fa-ellipsis"></i><span>+${benefits.length-3} lainnya</span></div>`:'')
-                        : '<div class="spc-no-benefit">—</div>';
-                    const btnColor = cc.accent==='#ffcc00'?'#ffaa00':'#00b4d8';
-                    cards += `<div class="store-prod-card" onclick="buyItem('${sn}','${priceStr}')">
-                        <div class="spc-img-wrap" style="--c1:${cc.c1};--c2:${cc.c2}">
-                            ${imgHtml}${fallbackHtml}
-                            <div class="spc-img-overlay"></div>
-                            <span class="spc-cat-pill">${emojis[cat]||'📦'} ${cc.label}</span>
-                            ${badgeHtml}
+            const cat = _storeCat || 'sewa';
+            const items = config.prices[cat] || [];
+            const cc = cc_map[cat] || cc_map.lainnya;
+            let cards = '';
+            items.forEach((item, idx) => {
+                const name = item.n || item.name || item.nama || 'Produk';
+                const rawP = (item.p || item.price || item.harga || '0').toString().replace(/[^0-9]/g,'');
+                const priceNum = parseInt(rawP) || 0;
+                const priceStr = priceNum > 0 ? 'Rp ' + priceNum.toLocaleString('id-ID') : (item.p || '—');
+                const imgUrl = item.img || '';
+                const benefits = item.b || [];
+                const sn = name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+                const badgeHtml = item.rec ? '<span class="spc-badge" style="background:linear-gradient(90deg,#ff6a00,#ffcc00);color:#000;">⭐ REC</span>' : idx===0 ? '<span class="spc-badge badge-hot">HOT</span>' : idx===1 ? '<span class="spc-badge badge-new">NEW</span>' : '';
+                const imgHtml = imgUrl
+                    ? `<img src="${imgUrl}" alt="${sn}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+                    : '';
+                const fallbackHtml = `<div class="spc-img-fallback" style="${imgUrl?'display:none':''}">${emojis[cat]||'🎁'}</div>`;
+                const bHtml = benefits.length
+                    ? benefits.slice(0,3).map(b=>`<div class="spc-benefit-item"><i class="${b.icon||'fa-solid fa-check'}"></i><span>${b.text}</span></div>`).join('')
+                      + (benefits.length>3?`<div class="spc-benefit-item"><i class="fa-solid fa-ellipsis"></i><span>+${benefits.length-3} lainnya</span></div>`:'')
+                    : '<div class="spc-no-benefit">—</div>';
+                const btnColor = cc.accent==='#ffcc00'?'#ffaa00':'#00b4d8';
+                cards += `<div class="store-prod-card" onclick="buyItem('${sn}','${priceStr}')">
+                    <div class="spc-img-wrap" style="--c1:${cc.c1};--c2:${cc.c2}">
+                        ${imgHtml}${fallbackHtml}
+                        <div class="spc-img-overlay"></div>
+                        <span class="spc-cat-pill">${emojis[cat]||'📦'} ${cc.label}</span>
+                        ${badgeHtml}
+                    </div>
+                    <div class="spc-body">
+                        <div class="spc-name">${name}</div>
+                        <div class="spc-benefits">${bHtml}</div>
+                        <div class="spc-footer">
+                            <div><div class="spc-price-label">HARGA</div><div class="spc-price" style="color:${cc.accent}">${priceStr}</div></div>
+                            <button class="spc-buy-btn" style="background:linear-gradient(90deg,${cc.accent},${btnColor});color:#000;" onclick="event.stopPropagation();buyItem('${sn}','${priceStr}')"><i class="fa-solid fa-cart-shopping"></i> BELI</button>
                         </div>
-                        <div class="spc-body">
-                            <div class="spc-name">${name}</div>
-                            <div class="spc-benefits">${bHtml}</div>
-                            <div class="spc-footer">
-                                <div><div class="spc-price-label">HARGA</div><div class="spc-price" style="color:${cc.accent}">${priceStr}</div></div>
-                                <button class="spc-buy-btn" style="background:linear-gradient(90deg,${cc.accent},${btnColor});color:#000;" onclick="event.stopPropagation();buyItem('${sn}','${priceStr}')"><i class="fa-solid fa-cart-shopping"></i> BELI</button>
-                            </div>
-                        </div>
-                    </div>`;
-                });
+                    </div>
+                </div>`;
             });
-            wrap.innerHTML = hasItems ? `<div class="store-prod-grid">${cards}</div>` : '<div class="store-empty"><i class="fa-solid fa-box-open"></i>Belum ada produk.<br>Cek lagi nanti!</div>';
+            wrap.innerHTML = cards ? `<div class="store-prod-grid">${cards}</div>` : '<div class="store-empty"><i class="fa-solid fa-box-open"></i>Belum ada produk.<br>Cek lagi nanti!</div>';
         }
         // Expose ke global scope agar bisa dipanggil dari script lain
         window.renderStoreGrid = renderStoreGrid;
         window.renderStorePage = renderStorePage;
+        window._syncStoreCatTab = _syncStoreCatTab;
 
                 function updateQuickStats() {
             const prods = config.prices ? Object.values(config.prices).flat().length : 0;
@@ -6884,8 +6961,12 @@ Terima kasih! 🙏
             if (!wrap || !config.prices) return;
             const allProds = Object.entries(config.prices).flatMap(([cat, items]) =>
                 items.map(item => ({...item, cat}))
-            ).slice(0, 8);
+            );
             if (!allProds.length) { wrap.style.display = 'none'; return; }
+            // Ambil yang ditandai rekomendasi, fallback ke 4 pertama jika belum ada yang ditandai
+            let recProds = allProds.filter(p => p.rec === true);
+            if (!recProds.length) recProds = allProds.slice(0, 4);
+            wrap.style.display = '';
             const emojis = { sewa:'🤖', premium:'👑', script:'💜', lainnya:'🎁' };
             const gradients = {
                 sewa:  ['rgba(0,234,255,0.1)','rgba(0,100,255,0.07)'],
@@ -6893,22 +6974,26 @@ Terima kasih! 🙏
                 script: ['rgba(174,0,255,0.1)','rgba(255,0,85,0.06)'],
                 lainnya:['rgba(0,255,100,0.08)','rgba(0,234,255,0.05)'],
             };
-            wrap.innerHTML = allProds.map((p, i) => {
+            wrap.innerHTML = recProds.map((p, i) => {
                 const [c1,c2] = gradients[p.cat] || gradients.lainnya;
-                const badge = i===0?'<div class="prod-badge badge-hot">HOT</div>':i===1?'<div class="prod-badge badge-new">NEW</div>':'';
-                const price = p.price ? 'Rp '+Number(p.price).toLocaleString('id-ID') : p.harga||'—';
-                return `<div class="prod-card" onclick="openModal('paymentModal')">
+                const recBadge = p.rec ? '<div class="prod-badge" style="background:linear-gradient(90deg,#ff6a00,#ffcc00);color:#000;">⭐ REC</div>' : (i===0?'<div class="prod-badge badge-hot">HOT</div>':i===1?'<div class="prod-badge badge-new">NEW</div>':'');
+                const rawP = (p.p || p.price || p.harga || '0').toString().replace(/[^0-9]/g,'');
+                const priceNum = parseInt(rawP) || 0;
+                const price = priceNum > 0 ? 'Rp '+priceNum.toLocaleString('id-ID') : (p.p||'—');
+                const name = p.n || p.name || p.nama || 'Produk';
+                const sn = name.replace(/'/g,"\'");
+                return `<div class="prod-card" onclick="buyItem('${sn}','${price}')">
                     <div class="prod-img" style="--c1:${c1};--c2:${c2}">
                         <div class="prod-img-bg"></div>
-                        ${badge}
-                        <span style="position:relative;z-index:1;">${emojis[p.cat]||'🎁'}</span>
+                        ${recBadge}
+                        <span style="position:relative;z-index:1;">${p.img ? `<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">` : emojis[p.cat]||'🎁'}</span>
                     </div>
                     <div class="prod-body">
-                        <div class="prod-name">${p.name||p.nama||'Produk'}</div>
+                        <div class="prod-name">${name}</div>
                         <div class="prod-desc">${p.cat.toUpperCase()}</div>
                         <div class="prod-foot">
                             <div class="prod-price">${price}</div>
-                            <button class="prod-buy" onclick="event.stopPropagation();"><i class="fa-solid fa-plus"></i></button>
+                            <button class="prod-buy" onclick="event.stopPropagation();buyItem('${sn}','${price}')"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
                 </div>`;
@@ -7208,6 +7293,7 @@ Terima kasih! 🙏
                     renderPopularProducts?.();
                     renderGachaChips?.();
                     updateQuickStats?.();
+                    window._syncStoreCatTab?.();
                     showToast('REFRESH', 'Konten diperbarui', 'success', 2000);
                 });
             }
