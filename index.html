@@ -8055,21 +8055,91 @@ function applyVoucher(){
     if(!v){res.className='voucher-result err';res.textContent='❌ Kode tidak valid atau sudah expired';_activeVoucher=null;return;}
     if(v.expiry&&new Date(v.expiry)<new Date()){res.className='voucher-result err';res.textContent='❌ Voucher sudah expired';_activeVoucher=null;return;}
     if(v.maxUse&&v.usedCount>=v.maxUse){res.className='voucher-result err';res.textContent='❌ Voucher sudah habis digunakan';_activeVoucher=null;return;}
+
+    // ── Validasi target menu ──
+    const forMenu = v.forMenu || 'all';
+    if (forMenu !== 'all') {
+        // Deteksi menu dari produk yang sedang di-checkout
+        const productName = (document.getElementById('pay-item-name')||{}).innerText || '';
+        const pnLow = productName.toLowerCase();
+        let currentMenuType = 'other';
+        if (pnLow.includes('prem') || pnLow.includes('premium')) currentMenuType = 'premium';
+        else if (pnLow.includes('sewa') || pnLow.includes('bot') || pnLow.includes('robot')) currentMenuType = 'sewa_bot';
+        // Juga cek dari tempProd global jika ada
+        if (currentMenuType === 'other' && typeof tempProd !== 'undefined') {
+            const tp = (tempProd||'').toLowerCase();
+            if (tp.includes('prem')) currentMenuType = 'premium';
+            else if (tp.includes('sewa')||tp.includes('bot')) currentMenuType = 'sewa_bot';
+        }
+        if (forMenu !== currentMenuType) {
+            const forMenuLabel = {premium:'👑 Premium',sewa_bot:'🤖 Sewa Bot'}[forMenu]||forMenu;
+            res.className='voucher-result err';
+            res.textContent='❌ Voucher ini hanya berlaku untuk '+forMenuLabel;
+            _activeVoucher=null;
+            return;
+        }
+    }
+
     _activeVoucher={code,...v};
     const dt=v.type==='pct'?v.value+'%':'Rp '+Number(v.value).toLocaleString('id-ID');
-    res.className='voucher-result ok';res.textContent='✅ Diskon '+dt+' aktif!';
+    const forMenuBadge = forMenu==='all'?'🌐 All Menu': forMenu==='premium'?'👑 Premium':'🤖 Sewa Bot';
+    res.className='voucher-result ok';res.textContent='✅ Diskon '+dt+' aktif! ['+forMenuBadge+']';
     showToast('VOUCHER ✅','Diskon '+dt+' berhasil diterapkan!','success',2500);
 }
 window.applyVoucher=applyVoucher;
 
-async function adminAddVoucher(code,type,value,maxUse,expiry){
+async function adminAddVoucher(code,type,value,maxUse,expiry,forMenu){
     if(!code){alert('Masukkan kode voucher!');return;}
-    try{await fbSet('konten/vouchers/'+code.toUpperCase(),{type,value:Number(value),maxUse:Number(maxUse)||999,expiry:expiry||'',usedCount:0,createdAt:Date.now()});alert('✅ Voucher '+code.toUpperCase()+' berhasil dibuat!');loadVouchersFromCloud();}catch(e){alert('❌ Gagal: '+e.message);}
+    const fm = forMenu || 'all'; // all | premium | sewa_bot
+    const vData = {type,value:Number(value),maxUse:Number(maxUse)||999,expiry:expiry||'',usedCount:0,forMenu:fm,createdAt:Date.now()};
+    try{
+        await fbSet('konten/vouchers/'+code.toUpperCase(), vData);
+        if(!window._voucherStore) window._voucherStore={};
+        window._voucherStore[code.toUpperCase()] = vData;
+        const fmLabel = {all:'All Menu 🌐',premium:'Premium 👑',sewa_bot:'Sewa Bot 🤖'}[fm]||'All Menu';
+        showToast('✅ VOUCHER DIBUAT','Kode '+code.toUpperCase()+' — Target: '+fmLabel,'success',3000);
+        loadVouchersFromCloud();
+        // Refresh panel if open
+        setTimeout(()=>{ if(document.getElementById('vc-code')) window.openAdminVoucherPanel(); },400);
+    }catch(e){alert('❌ Gagal: '+e.message);}
 }
 window.adminAddVoucher=adminAddVoucher;
 
 window.openAdminVoucherPanel=function(){
-    const html=`<div style="background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.25);border-radius:12px;padding:14px;">
+    // Build existing vouchers list
+    const vStore = window._voucherStore || {};
+    const vKeys = Object.keys(vStore);
+    const forMenuLabel = { all:'🌐 All Menu', premium:'👑 Premium', sewa_bot:'🤖 Sewa Bot' };
+    const forMenuColor = { all:'#00ff88', premium:'#ffcc00', sewa_bot:'#00eaff' };
+    const existingHtml = vKeys.length === 0
+        ? `<div style="font-size:9px;color:rgba(255,255,255,0.3);text-align:center;padding:10px;font-family:'Orbitron';">Belum ada voucher</div>`
+        : vKeys.map(k => {
+            const v = vStore[k];
+            const fm = v.forMenu || 'all';
+            const fmLbl = forMenuLabel[fm] || '🌐 All Menu';
+            const fmClr = forMenuColor[fm] || '#00ff88';
+            const dt = v.type==='pct' ? v.value+'%' : 'Rp'+Number(v.value).toLocaleString('id-ID');
+            const used = v.usedCount || 0;
+            const maxU = v.maxUse || 999;
+            const exp = v.expiry ? v.expiry : '∞';
+            return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 10px;margin-bottom:6px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Orbitron';font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px;">
+                        🎟️ ${k}
+                        <span style="font-size:7px;padding:2px 6px;border-radius:20px;background:rgba(0,0,0,0.3);border:1px solid ${fmClr};color:${fmClr};">${fmLbl}</span>
+                    </div>
+                    <div style="font-size:8px;color:rgba(255,255,255,0.45);margin-top:3px;font-family:'Orbitron';">
+                        💸 Diskon ${dt} &nbsp;|&nbsp; 👥 ${used}/${maxU==='999'||maxU===999?'∞':maxU} pakai &nbsp;|&nbsp; 📅 ${exp}
+                    </div>
+                </div>
+                <button onclick="adminDeleteVoucher('${k}')" style="background:rgba(255,0,85,0.12);color:#ff0055;border:1px solid rgba(255,0,85,0.25);border-radius:8px;padding:5px 9px;font-size:9px;cursor:pointer;font-family:'Orbitron';white-space:nowrap;min-height:unset;transition:0.2s;" onmouseover="this.style.background='rgba(255,0,85,0.28)'" onmouseout="this.style.background='rgba(255,0,85,0.12)'">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>`;
+        }).join('');
+
+    const html=`
+    <div style="background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.25);border-radius:12px;padding:14px;margin-bottom:12px;">
         <p style="font-family:'Orbitron';font-size:9px;color:#00ff88;margin-bottom:10px;"><i class="fa-solid fa-ticket"></i> BUAT VOUCHER BARU</p>
         <div class="input-group"><i class="fa-solid fa-tag"></i><input type="text" id="vc-code" placeholder="KODE VOUCHER" style="text-transform:uppercase;"></div>
         <select id="vc-type" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;color:#fff;margin-bottom:8px;font-family:'Orbitron';font-size:10px;">
@@ -8079,9 +8149,78 @@ window.openAdminVoucherPanel=function(){
         <div class="input-group"><i class="fa-solid fa-percent"></i><input type="number" id="vc-val" placeholder="Nilai diskon"></div>
         <div class="input-group"><i class="fa-solid fa-users"></i><input type="number" id="vc-max" placeholder="Maks pemakaian (0=unlimited)" value="0"></div>
         <div class="input-group"><i class="fa-solid fa-calendar"></i><input type="date" id="vc-exp"></div>
-        <button class="save-product-btn" onclick="adminAddVoucher(document.getElementById('vc-code').value,document.getElementById('vc-type').value,document.getElementById('vc-val').value,document.getElementById('vc-max').value,document.getElementById('vc-exp').value)" style="background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;"><i class="fa-solid fa-floppy-disk"></i> SIMPAN VOUCHER</button>
+
+        <!-- ✅ TARGET MENU VOUCHER -->
+        <div style="margin-bottom:8px;">
+            <p style="font-family:'Orbitron';font-size:8px;color:rgba(255,255,255,0.5);margin-bottom:6px;display:flex;align-items:center;gap:5px;"><i class="fa-solid fa-bullseye"></i> TARGET BERLAKU UNTUK</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;" id="vc-target-group">
+                <label onclick="vcSetTarget('all',this)" style="cursor:pointer;text-align:center;border:1.5px solid #00ff88;background:rgba(0,255,136,0.12);border-radius:9px;padding:8px 4px;transition:0.2s;" id="vc-target-all">
+                    <div style="font-size:16px;">🌐</div>
+                    <div style="font-family:'Orbitron';font-size:7px;color:#00ff88;margin-top:3px;">ALL MENU</div>
+                </label>
+                <label onclick="vcSetTarget('premium',this)" style="cursor:pointer;text-align:center;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);border-radius:9px;padding:8px 4px;transition:0.2s;" id="vc-target-premium">
+                    <div style="font-size:16px;">👑</div>
+                    <div style="font-family:'Orbitron';font-size:7px;color:rgba(255,255,255,0.4);margin-top:3px;">PREMIUM</div>
+                </label>
+                <label onclick="vcSetTarget('sewa_bot',this)" style="cursor:pointer;text-align:center;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);border-radius:9px;padding:8px 4px;transition:0.2s;" id="vc-target-sewa_bot">
+                    <div style="font-size:16px;">🤖</div>
+                    <div style="font-family:'Orbitron';font-size:7px;color:rgba(255,255,255,0.4);margin-top:3px;">SEWA BOT</div>
+                </label>
+            </div>
+            <input type="hidden" id="vc-target" value="all">
+        </div>
+
+        <button class="save-product-btn" onclick="_vcSubmitVoucher()" style="background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;"><i class="fa-solid fa-floppy-disk"></i> SIMPAN VOUCHER</button>
+    </div>
+    <div style="background:rgba(0,255,136,0.03);border:1px solid rgba(0,255,136,0.15);border-radius:12px;padding:12px;">
+        <p style="font-family:'Orbitron';font-size:9px;color:rgba(0,255,136,0.7);margin-bottom:8px;display:flex;align-items:center;gap:5px;"><i class="fa-solid fa-list"></i> DAFTAR VOUCHER AKTIF</p>
+        <div id="vc-existing-list">${existingHtml}</div>
     </div>`;
     openBottomSheet('VOUCHER MANAGER','Buat & kelola kode diskon',html);
+};
+
+// Helper: set target visual
+window.vcSetTarget = function(val, el) {
+    window._vcCurrentTarget = val;
+    const tInp = document.getElementById('vc-target');
+    if (tInp) tInp.value = val;
+    const colors = { all:'#00ff88', premium:'#ffcc00', sewa_bot:'#00eaff' };
+    ['all','premium','sewa_bot'].forEach(t => {
+        const lbl = document.getElementById('vc-target-'+t);
+        if (!lbl) return;
+        const c = colors[t];
+        if (t === val) {
+            lbl.style.borderColor = c;
+            lbl.style.background = 'rgba('+hexToRgbStr(c)+',0.15)';
+            lbl.querySelector('div:last-child').style.color = c;
+        } else {
+            lbl.style.borderColor = 'rgba(255,255,255,0.1)';
+            lbl.style.background = 'rgba(255,255,255,0.03)';
+            lbl.querySelector('div:last-child').style.color = 'rgba(255,255,255,0.4)';
+        }
+    });
+};
+function hexToRgbStr(hex) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return r+','+g+','+b;
+}
+window._vcSubmitVoucher = function() {
+    const code = (document.getElementById('vc-code')||{}).value || '';
+    const type = (document.getElementById('vc-type')||{}).value || 'pct';
+    const val  = (document.getElementById('vc-val')||{}).value || '';
+    const max  = (document.getElementById('vc-max')||{}).value || '0';
+    const exp  = (document.getElementById('vc-exp')||{}).value || '';
+    const forMenu = (document.getElementById('vc-target')||{}).value || 'all';
+    adminAddVoucher(code, type, val, max, exp, forMenu);
+};
+window.adminDeleteVoucher = async function(code) {
+    if (!confirm('Hapus voucher ' + code + '?')) return;
+    try {
+        await fbSet('konten/vouchers/'+code.toUpperCase(), null);
+        if (window._voucherStore) delete window._voucherStore[code];
+        showToast('🗑️ DIHAPUS', 'Voucher ' + code + ' dihapus!', 'error', 2000);
+        window.openAdminVoucherPanel(); // refresh panel
+    } catch(e) { alert('❌ Gagal hapus: ' + e.message); }
 };
 
 // ─── REFERRAL ───
