@@ -2509,21 +2509,8 @@
 
             <!-- PAGE 1: STORE -->
             <div id="page-store" class="page-slide">
-                <!-- Category filter tabs -->
-                <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; scrollbar-width:none;">
-                    <button class="store-cat-tab" data-cat="sewa" onclick="window.filterStoreTab(this,'sewa')">
-                        🤖 SEWA BOT
-                    </button>
-                    <button class="store-cat-tab" data-cat="premium" onclick="window.filterStoreTab(this,'premium')">
-                        👑 PREMIUM
-                    </button>
-                    <button class="store-cat-tab" data-cat="script" onclick="window.filterStoreTab(this,'script')">
-                        💜 SCRIPT
-                    </button>
-                    <button class="store-cat-tab" data-cat="lainnya" onclick="window.filterStoreTab(this,'lainnya')">
-                        📦 LAINNYA
-                    </button>
-                </div>
+                <!-- Category filter tabs — rendered dynamically -->
+                <div id="store-cat-tabs" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; scrollbar-width:none; -webkit-overflow-scrolling:touch;"></div>
                 <div id="store-product-grid"></div>
                 <div style="height:8px;"></div>
             </div><!-- end page-store -->
@@ -4395,6 +4382,8 @@
         
         ensureCatMeta();
         renderCategoryGrid();
+        // Render store tabs too (may run before DOMContentLoaded store closure — use timeout to ensure closure is set)
+        setTimeout(() => { if (typeof window.renderStoreTabs === 'function') window.renderStoreTabs(); }, 100);
         
         const statusDisplay = document.getElementById('status-cap-display');
         if (statusDisplay) {
@@ -6269,6 +6258,7 @@ Terima kasih! 🙏
         saveLocal();
         renderCategoryGrid();
         renderMenuOrderAdmin();
+        if (typeof renderStoreTabs === 'function') renderStoreTabs();
         publishConfigToCloud();
         showToast('✅ BERHASIL', 'Urutan menu berhasil disimpan!', 'success', 2000);
     }
@@ -6338,6 +6328,8 @@ Terima kasih! 🙏
         renderMenuOrderAdmin();
         renderCategoryGrid();
         renderCategorySelector();
+        if (typeof renderStoreTabs === 'function') renderStoreTabs();
+        if (typeof renderStoreGrid === 'function') renderStoreGrid();
         publishConfigToCloud();
         publishProductsToCloud();
 
@@ -6385,6 +6377,8 @@ Terima kasih! 🙏
         saveLocal();
         renderMenuOrderAdmin();
         renderCategoryGrid();
+        if (typeof renderStoreTabs === 'function') renderStoreTabs();
+        if (typeof renderStoreGrid === 'function') renderStoreGrid();
 
         // Also refresh product category selector
         const sel = document.getElementById('sel-cat-add');
@@ -6415,6 +6409,8 @@ Terima kasih! 🙏
         saveLocal();
         renderMenuOrderAdmin();
         renderCategoryGrid();
+        if (typeof renderStoreTabs === 'function') renderStoreTabs();
+        if (typeof renderStoreGrid === 'function') renderStoreGrid();
         if (typeof renderStoreGrid === 'function') renderStoreGrid();
         if (typeof renderAdminProductList === 'function') renderAdminProductList();
         const sel = document.getElementById('sel-cat-add');
@@ -7616,87 +7612,128 @@ Terima kasih! 🙏
         }, { passive: true });
 
         // ── STORE PAGE ──
-        let _storeCat = 'sewa';
+        let _storeCat = null;
+
+        // Render tab buttons dynamically from config
+        function renderStoreTabs() {
+            const wrap = document.getElementById('store-cat-tabs');
+            if (!wrap) return;
+            ensureCatMeta();
+            const order = getCategoryOrder();
+            if (!_storeCat || !order.includes(_storeCat)) _storeCat = order[0] || 'sewa';
+            wrap.innerHTML = order.map(cat => {
+                const m = getCatMeta(cat);
+                const isActive = cat === _storeCat;
+                return `<button class="store-cat-tab${isActive ? ' active' : ''}" data-cat="${cat}"
+                    onclick="window.filterStoreTab(this,'${cat}')"
+                    style="${isActive ? 'border-color:' + m.color + ';color:' + m.color + ';background:rgba(0,0,0,0.15);' : ''}">
+                    ${m.icon} ${(m.label || cat).toUpperCase()}
+                </button>`;
+            }).join('');
+        }
+
         function filterStoreTab(el, cat) {
             _storeCat = cat;
-            // Update active class pada semua tab
-            document.querySelectorAll('.store-cat-tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.cat === cat);
-            });
-            // Kosongkan grid lalu render ulang
+            renderStoreTabs();
             const grid = document.getElementById('store-product-grid');
             if (grid) grid.innerHTML = '';
             renderStoreGrid();
         }
+
         function _syncStoreCatTab() {
-            document.querySelectorAll('.store-cat-tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.cat === _storeCat);
-            });
+            ensureCatMeta();
+            const order = getCategoryOrder();
+            if (!_storeCat || !order.includes(_storeCat)) _storeCat = order[0] || 'sewa';
+            renderStoreTabs();
         }
+
         function renderStorePage() {
-            // Saat halaman store dibuka, pastikan tab sewa aktif jika belum ada pilihan
-            if (!_storeCat || _storeCat === 'all') _storeCat = 'sewa';
-            _syncStoreCatTab();
+            ensureCatMeta();
+            const order = getCategoryOrder();
+            if (!_storeCat || !order.includes(_storeCat)) _storeCat = order[0] || 'sewa';
+            renderStoreTabs();
             renderStoreGrid();
         }
+
         function renderStoreGrid() {
             const wrap = document.getElementById('store-product-grid');
             if (!wrap || !config.prices) return;
             wrap.innerHTML = '';
-            const emojis = { sewa:'🤖', premium:'👑', script:'💜', lainnya:'🎁' };
-            const cc_map = {
-                sewa:    { c1:'rgba(0,234,255,0.12)',  c2:'rgba(0,100,255,0.08)',  accent:'#00eaff', label:'Sewa Bot' },
-                premium: { c1:'rgba(255,204,0,0.12)',  c2:'rgba(255,100,0,0.07)',  accent:'#ffcc00', label:'Premium'  },
-                script:  { c1:'rgba(174,0,255,0.12)',  c2:'rgba(255,0,85,0.07)',   accent:'#ae00ff', label:'Script'   },
-                lainnya: { c1:'rgba(0,255,100,0.10)',  c2:'rgba(0,234,255,0.06)',  accent:'#00ff88', label:'Lainnya'  },
-            };
-            const cat = _storeCat || 'sewa';
+            ensureCatMeta();
+            const order = getCategoryOrder();
+            if (!_storeCat || !order.includes(_storeCat)) _storeCat = order[0] || 'sewa';
+
+            const cat = _storeCat;
+            const m   = getCatMeta(cat);
             const items = config.prices[cat] || [];
-            const cc = cc_map[cat] || cc_map.lainnya;
+
+            // Build color config from meta
+            const accentColor = m.color && m.color.startsWith('#') ? m.color : '#00eaff';
+            const isLight = accentColor === '#ffcc00' || accentColor === '#00ff88' || accentColor === '#ffffff';
+            const btnTextColor = isLight ? '#000' : '#fff';
+            // Generate subtle gradient from accent color
+            function hexToRgb(hex) {
+                const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return r ? { r: parseInt(r[1],16), g: parseInt(r[2],16), b: parseInt(r[3],16) } : { r:0, g:234, b:255 };
+            }
+            const rgb = hexToRgb(accentColor);
+            const c1 = `rgba(${rgb.r},${rgb.g},${rgb.b},0.12)`;
+            const c2 = `rgba(${rgb.r},${rgb.g},${rgb.b},0.05)`;
+            const btnColor2 = `rgba(${rgb.r},${rgb.g},${rgb.b},0.7)`;
+
+            const catLabel = m.label || cat;
+            const catIcon  = m.icon  || '📦';
+
+            if (!items.length) {
+                wrap.innerHTML = `<div class="store-empty"><i class="fa-solid fa-box-open"></i>Belum ada produk di kategori ini.<br>Cek lagi nanti!</div>`;
+                return;
+            }
+
             let cards = '';
             items.forEach((item, idx) => {
-                const name = item.n || item.name || item.nama || 'Produk';
-                const rawP = (item.p || item.price || item.harga || '0').toString().replace(/[^0-9]/g,'');
+                const name    = item.n || item.name || item.nama || 'Produk';
+                const rawP    = (item.p || item.price || item.harga || '0').toString().replace(/[^0-9]/g,'');
                 const priceNum = parseInt(rawP) || 0;
                 const priceStr = priceNum > 0 ? 'Rp ' + priceNum.toLocaleString('id-ID') : (item.p || '—');
-                const imgUrl = item.img || '';
+                const imgUrl  = item.img || '';
                 const benefits = item.b || [];
                 const sn = name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-                const badgeHtml = item.rec ? '<span class="spc-badge" style="background:linear-gradient(90deg,#ff6a00,#ffcc00);color:#000;">⭐ REC</span>' : idx===0 ? '<span class="spc-badge badge-hot">HOT</span>' : idx===1 ? '<span class="spc-badge badge-new">NEW</span>' : '';
-                const imgHtml = imgUrl
-                    ? `<img src="${imgUrl}" alt="${sn}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
-                    : '';
-                const fallbackHtml = `<div class="spc-img-fallback" style="${imgUrl?'display:none':''}">${emojis[cat]||'🎁'}</div>`;
+                const badgeHtml = item.rec
+                    ? '<span class="spc-badge" style="background:linear-gradient(90deg,#ff6a00,#ffcc00);color:#000;">⭐ REC</span>'
+                    : idx===0 ? '<span class="spc-badge badge-hot">HOT</span>'
+                    : idx===1 ? '<span class="spc-badge badge-new">NEW</span>' : '';
+                const imgHtml     = imgUrl ? `<img src="${imgUrl}" alt="${sn}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">` : '';
+                const fallbackHtml = `<div class="spc-img-fallback" style="${imgUrl?'display:none':''}">${catIcon}</div>`;
                 const bHtml = benefits.length
                     ? benefits.slice(0,3).map(b=>`<div class="spc-benefit-item"><i class="${b.icon||'fa-solid fa-check'}"></i><span>${b.text}</span></div>`).join('')
                       + (benefits.length>3?`<div class="spc-benefit-item"><i class="fa-solid fa-ellipsis"></i><span>+${benefits.length-3} lainnya</span></div>`:'')
                     : '<div class="spc-no-benefit">—</div>';
-                const btnColor = cc.accent==='#ffcc00'?'#ffaa00':'#00b4d8';
                 cards += `<div class="store-prod-card" onclick="buyItem('${sn}','${priceStr}')">
-                    <div class="spc-img-wrap" style="--c1:${cc.c1};--c2:${cc.c2}">
+                    <div class="spc-img-wrap" style="--c1:${c1};--c2:${c2}">
                         ${imgHtml}${fallbackHtml}
                         <div class="spc-img-overlay"></div>
-                        <span class="spc-cat-pill">${emojis[cat]||'📦'} ${cc.label}</span>
+                        <span class="spc-cat-pill">${catIcon} ${catLabel}</span>
                         ${badgeHtml}
                     </div>
                     <div class="spc-body">
                         <div class="spc-name">${name}</div>
                         <div class="spc-benefits">${bHtml}</div>
                         <div class="spc-footer">
-                            <div><div class="spc-price-label">HARGA</div><div class="spc-price" style="color:${cc.accent}">${priceStr}</div></div>
-                            <button class="spc-buy-btn" style="background:linear-gradient(90deg,${cc.accent},${btnColor});color:#000;" onclick="event.stopPropagation();buyItem('${sn}','${priceStr}')"><i class="fa-solid fa-cart-shopping"></i> BELI</button>
+                            <div><div class="spc-price-label">HARGA</div><div class="spc-price" style="color:${accentColor}">${priceStr}</div></div>
+                            <button class="spc-buy-btn" style="background:linear-gradient(90deg,${accentColor},${btnColor2});color:${btnTextColor};" onclick="event.stopPropagation();buyItem('${sn}','${priceStr}')"><i class="fa-solid fa-cart-shopping"></i> BELI</button>
                         </div>
                     </div>
                 </div>`;
             });
-            wrap.innerHTML = cards ? `<div class="store-prod-grid">${cards}</div>` : '<div class="store-empty"><i class="fa-solid fa-box-open"></i>Belum ada produk.<br>Cek lagi nanti!</div>';
+            wrap.innerHTML = `<div class="store-prod-grid">${cards}</div>`;
         }
-        // Expose ke global scope agar bisa dipanggil dari script lain
+
+        // Expose to global scope
         window.renderStoreGrid  = renderStoreGrid;
         window.renderStorePage  = renderStorePage;
+        window.renderStoreTabs  = renderStoreTabs;
         window._syncStoreCatTab = _syncStoreCatTab;
         window.buyItem          = function(name, price) { openPay(name, price); };
-        // PENTING: expose filterStoreTab agar onclick di HTML selalu pakai closure yg sama
         window.filterStoreTab   = filterStoreTab;
 
                 function updateQuickStats() {
