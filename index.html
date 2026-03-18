@@ -5155,8 +5155,11 @@ Terima kasih! 🙏
                         <div onclick="moveProdUp('${category}',${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;">▲</div>
                         <div onclick="moveProdDown('${category}',${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;">▼</div>
                         <button class="admin-rec-btn ${item.rec ? 'active' : ''}" title="${item.rec ? 'Hapus dari Rekomendasi' : 'Tandai sebagai Rekomendasi'}" onclick="toggleRekomendasi('${category}',${idx})">⭐</button>
-                        <div class="delete-product-btn" onclick="openEditBenefit('${category}',${idx})" style="background:rgba(0,234,255,0.1);border-color:var(--accent);color:var(--accent);">
+                        <div class="delete-product-btn" onclick="openEditBenefit('${category}',${idx})" style="background:rgba(0,234,255,0.1);border-color:var(--accent);color:var(--accent);" title="Edit Benefit">
                             <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div class="delete-product-btn" onclick="openEditPrice('${category}',${idx})" style="background:rgba(255,204,0,0.1);border-color:var(--gold);color:var(--gold);" title="Ubah Harga">
+                            <i class="fa-solid fa-tag"></i>
                         </div>
                         <div class="delete-product-btn" onclick="deleteProduct('${category}', ${idx})">
                             <i class="fa-solid fa-trash-can"></i>
@@ -5184,6 +5187,56 @@ Terima kasih! 🙏
             }
         }
     }
+
+    // ── EDIT PRICE ──────────────────────────────
+    let _editPriceCat = null;
+    let _editPriceIdx = null;
+
+    function openEditPrice(cat, idx) {
+        if (!config.prices[cat] || !config.prices[cat][idx]) return;
+        _editPriceCat = cat;
+        _editPriceIdx = idx;
+        const item = config.prices[cat][idx];
+        const modal = document.getElementById('editPriceModal');
+        document.getElementById('edit-price-name').textContent = item.n || 'Produk';
+        document.getElementById('edit-price-current').innerHTML = '<i class="fa-solid fa-coins"></i> Rp ' + (item.p || '0');
+        const inp = document.getElementById('edit-price-input');
+        inp.value = (item.p || '').toString().replace(/[^0-9]/g, '');
+        modal.style.display = 'flex';
+        setTimeout(() => inp.focus(), 150);
+    }
+
+    function closeEditPrice() {
+        document.getElementById('editPriceModal').style.display = 'none';
+        _editPriceCat = null;
+        _editPriceIdx = null;
+    }
+
+    function saveEditPrice() {
+        if (_editPriceCat === null || _editPriceIdx === null) return;
+        const inp = document.getElementById('edit-price-input');
+        const newPrice = inp.value.trim();
+        if (!newPrice || isNaN(newPrice) || parseInt(newPrice) < 0) {
+            showToast('⚠️ ERROR', 'Masukkan harga yang valid!', 'error', 2000);
+            inp.focus();
+            return;
+        }
+        const oldPrice = config.prices[_editPriceCat][_editPriceIdx].p || '0';
+        config.prices[_editPriceCat][_editPriceIdx].p = newPrice;
+        saveLocal();
+        renderAdminProductList();
+        publishProductsToCloud();
+        const activeCat = document.querySelector('.cat-btn.active span')?.innerText.toLowerCase() || 'sewa';
+        if (activeCat === _editPriceCat) loadCategory(_editPriceCat);
+        if (typeof renderStoreGrid === 'function') renderStoreGrid();
+        if (typeof renderPopularProducts === 'function') renderPopularProducts();
+        showToast('✅ BERHASIL', 'Harga diubah: Rp ' + oldPrice + ' → Rp ' + newPrice, 'success', 3000);
+        closeEditPrice();
+    }
+
+    window.openEditPrice = openEditPrice;
+    window.closeEditPrice = closeEditPrice;
+    window.saveEditPrice = saveEditPrice;
 
 
     function toggleRekomendasi(category, idx) {
@@ -7841,6 +7894,39 @@ Terima kasih! 🙏
     </div>
 </div>
 
+
+<!-- ═══════════════════════════════════════
+     EDIT PRICE MODAL
+═══════════════════════════════════════ -->
+<div id="editPriceModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:360px;">
+        <h2 style="font-family:'Orbitron'; color:var(--gold); font-size:12px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-tag"></i> UBAH HARGA
+        </h2>
+        <p id="edit-price-name" style="font-size:12px; color:var(--accent); font-weight:900; margin-bottom:14px; padding:8px; background:rgba(0,234,255,0.05); border-radius:8px; border:1px solid rgba(0,234,255,0.15);"></p>
+        <div style="margin-bottom:4px; font-size:10px; color:var(--text-muted); letter-spacing:1px;">HARGA SAAT INI</div>
+        <div id="edit-price-current" style="font-family:'Orbitron'; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:5px;">
+            <i class="fa-solid fa-coins"></i> Rp 0
+        </div>
+        <div style="margin-bottom:6px; font-size:10px; color:var(--text-muted); letter-spacing:1px;">HARGA BARU</div>
+        <div style="position:relative; margin-bottom:16px;">
+            <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--text-muted); font-family:'Orbitron'; pointer-events:none;">Rp</span>
+            <input type="number" id="edit-price-input" placeholder="Masukkan harga baru..."
+                style="width:100%; padding:10px 12px 10px 36px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,204,0,0.3); border-radius:10px; color:#fff; font-size:14px; font-family:'Orbitron'; outline:none; transition:0.2s;"
+                onfocus="this.style.borderColor='var(--gold)'"
+                onblur="this.style.borderColor='rgba(255,204,0,0.3)'"
+                onkeydown="if(event.key==='Enter') saveEditPrice()">
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="buy-btn" onclick="saveEditPrice()" style="flex:1; background:linear-gradient(90deg,var(--gold),#ff9900); color:#000; font-family:'Orbitron'; font-size:10px; font-weight:700; letter-spacing:1px;">
+                <i class="fa-solid fa-floppy-disk"></i> SIMPAN
+            </button>
+            <button class="buy-btn" onclick="closeEditPrice()" style="flex:1; background:rgba(255,255,255,0.05); color:#fff;">
+                BATAL
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- ═══════════════════════════════════════
      SUBS WARNING OVERLAY
