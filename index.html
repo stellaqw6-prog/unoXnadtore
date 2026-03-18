@@ -1518,14 +1518,15 @@
         .benefit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,234,255,0.08); border: 1px solid rgba(0,234,255,0.2); border-radius: 16px; padding: 2px 8px; font-size: 8px; color: var(--accent); margin: 2px; }
 
         /* ===== MENU ORDER DRAG DROP ===== */
-        .menu-order-item { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; padding:10px 12px; cursor:grab; transition:0.2s; user-select:none; }
+        .menu-order-item { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:10px; padding:9px 10px; cursor:grab; transition:0.2s; user-select:none; }
         .menu-order-item:active { cursor:grabbing; }
         .menu-order-item.dragging { opacity:0.4; border:1px dashed var(--accent); }
         .menu-order-item.drag-over { border:1px solid var(--accent); background:rgba(0,234,255,0.08); transform:scale(1.02); }
-        .menu-order-item .drag-handle { color:#555; font-size:14px; cursor:grab; }
-        .menu-order-item .menu-icon { font-size:16px; width:24px; text-align:center; }
-        .menu-order-item .menu-label { flex:1; font-family:'Orbitron'; font-size:10px; font-weight:700; }
-        .menu-order-item .menu-badge { font-size:7px; background:rgba(255,255,255,0.07); padding:2px 7px; border-radius:10px; color:#aaa; }
+        .menu-order-item .drag-handle { color:#444; font-size:13px; cursor:grab; flex-shrink:0; }
+        .menu-order-item .menu-icon { font-size:16px; width:22px; text-align:center; flex-shrink:0; }
+        .menu-order-item .menu-label { flex:1; font-family:'Orbitron'; font-size:10px; font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .menu-order-item .menu-badge { font-size:7px; background:rgba(255,255,255,0.07); padding:2px 7px; border-radius:10px; color:#aaa; white-space:nowrap; flex-shrink:0; }
+        .menu-order-item button { min-height:unset !important; }
 
 
         /* ===== PRODUCT ORDER DRAG DROP ===== */
@@ -2936,10 +2937,10 @@
             
             <div class="category-selector">
                 <select id="sel-cat-add" onchange="renderAdminProductList()">
-                    <option value="sewa">🤖 SEWA BOT</option>
-                    <option value="premium">👑 PREMIUM</option>
-                    <option value="script">📜 SCRIPT</option>
-                    <option value="lainnya">📦 LAINNYA</option>
+                    <option value="sewa">🤖 Sewa</option>
+                    <option value="premium">👑 Premium</option>
+                    <option value="script">💻 Script</option>
+                    <option value="lainnya">📦 Lainnya</option>
                 </select>
             </div>
             
@@ -3273,15 +3274,89 @@
                     <i class="fa-solid fa-floppy-disk"></i> SIMPAN & PUBLISH NAMA TOKO
                 </button>
             </div>
+            <!-- ═══ CATEGORY MANAGER ═══ -->
             <div style="background:rgba(0,234,255,0.04); border:1px solid var(--accent); border-radius:12px; padding:12px; margin-bottom:14px;">
-                <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; margin-bottom:6px; letter-spacing:1px;">
-                    <i class="fa-solid fa-bars"></i> ATUR URUTAN MENU
+                <p style="font-size:9px; color:var(--accent); font-family:'Orbitron'; margin-bottom:2px; letter-spacing:1px; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-table-columns"></i> MANAJEMEN KOLOM MENU
                 </p>
-                <p style="font-size:8px; color:#aaa; margin-bottom:10px;">Drag & drop atau pakai ▲▼ untuk atur urutan kategori di STORE</p>
-                <div id="menu-order-list" style="display:flex; flex-direction:column; gap:6px;"></div>
-                <button class="save-product-btn" onclick="saveMenuOrder()" style="margin-top:10px; background:var(--accent); color:#000;">
+                <p style="font-size:8px; color:rgba(255,255,255,0.35); margin-bottom:10px;">Tambah, edit, hapus & atur urutan kolom di halaman STORE</p>
+
+                <!-- List all categories -->
+                <div id="menu-order-list" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
+
+                <!-- Save order button -->
+                <button onclick="saveMenuOrder()" style="width:100%;padding:9px;background:linear-gradient(90deg,rgba(0,234,255,0.15),rgba(174,0,255,0.1));border:1px solid rgba(0,234,255,0.3);border-radius:8px;color:var(--accent);font-family:'Orbitron';font-size:9px;font-weight:700;cursor:pointer;letter-spacing:1px;margin-bottom:12px;">
                     <i class="fa-solid fa-floppy-disk"></i> SIMPAN URUTAN
                 </button>
+
+                <!-- Divider -->
+                <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,234,255,0.2),transparent);margin-bottom:12px;"></div>
+
+                <!-- Add new category form -->
+                <div style="background:rgba(255,255,255,0.02); border:1px dashed rgba(0,234,255,0.2); border-radius:10px; padding:12px;">
+                    <div style="font-size:9px; color:var(--accent); font-family:'Orbitron'; margin-bottom:10px; display:flex; align-items:center; gap:5px; letter-spacing:1px;">
+                        <i class="fa-solid fa-plus-circle"></i> TAMBAH KOLOM BARU
+                    </div>
+
+                    <!-- Emoji picker row -->
+                    <div style="margin-bottom:8px;">
+                        <div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:5px;letter-spacing:1px;">PILIH IKON</div>
+                        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;" id="emoji-quick-pick">
+                            <span onclick="setNewCatEmoji('🎮')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">🎮</span>
+                            <span onclick="setNewCatEmoji('💎')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">💎</span>
+                            <span onclick="setNewCatEmoji('🔥')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">🔥</span>
+                            <span onclick="setNewCatEmoji('⚡')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">⚡</span>
+                            <span onclick="setNewCatEmoji('🛡️')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">🛡️</span>
+                            <span onclick="setNewCatEmoji('🎯')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">🎯</span>
+                            <span onclick="setNewCatEmoji('🚀')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">🚀</span>
+                            <span onclick="setNewCatEmoji('🌟')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">🌟</span>
+                            <span onclick="setNewCatEmoji('💰')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">💰</span>
+                            <span onclick="setNewCatEmoji('🎁')" style="cursor:pointer;font-size:20px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">🎁</span>
+                        </div>
+                        <input type="text" id="new-cat-icon" placeholder="Atau ketik emoji sendiri..." maxlength="4"
+                            style="width:100%;text-align:center;font-size:16px;padding:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;outline:none;">
+                    </div>
+
+                    <!-- Name input -->
+                    <div style="margin-bottom:8px;">
+                        <div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:5px;letter-spacing:1px;">NAMA KOLOM</div>
+                        <input type="text" id="new-cat-label" placeholder="Contoh: Bundle, Event, Vip..." maxlength="20"
+                            style="width:100%;font-size:12px;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;outline:none;font-family:'Orbitron';">
+                    </div>
+
+                    <!-- Color picker -->
+                    <div style="margin-bottom:10px;">
+                        <div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:5px;letter-spacing:1px;">WARNA AKSEN</div>
+                        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">
+                            <div onclick="setNewCatColor('#00eaff')" style="width:26px;height:26px;border-radius:6px;background:#00eaff;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Cyan"></div>
+                            <div onclick="setNewCatColor('#ffcc00')" style="width:26px;height:26px;border-radius:6px;background:#ffcc00;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Gold"></div>
+                            <div onclick="setNewCatColor('#ae00ff')" style="width:26px;height:26px;border-radius:6px;background:#ae00ff;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Purple"></div>
+                            <div onclick="setNewCatColor('#ff0055')" style="width:26px;height:26px;border-radius:6px;background:#ff0055;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Red"></div>
+                            <div onclick="setNewCatColor('#00ff88')" style="width:26px;height:26px;border-radius:6px;background:#00ff88;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Green"></div>
+                            <div onclick="setNewCatColor('#f97316')" style="width:26px;height:26px;border-radius:6px;background:#f97316;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Orange"></div>
+                            <div onclick="setNewCatColor('#a855f7')" style="width:26px;height:26px;border-radius:6px;background:#a855f7;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Violet"></div>
+                            <div onclick="setNewCatColor('#ec4899')" style="width:26px;height:26px;border-radius:6px;background:#ec4899;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Pink"></div>
+                            <div onclick="setNewCatColor('#06b6d4')" style="width:26px;height:26px;border-radius:6px;background:#06b6d4;cursor:pointer;border:2px solid rgba(255,255,255,0.15);" title="Teal"></div>
+                            <div id="new-cat-color-preview" style="width:26px;height:26px;border-radius:6px;background:#00eaff;border:2px solid rgba(255,255,255,0.4);cursor:pointer;" title="Warna dipilih"></div>
+                        </div>
+                        <input type="text" id="new-cat-color" placeholder="#00eaff"
+                            oninput="document.getElementById('new-cat-color-preview').style.background=this.value"
+                            style="width:100%;font-size:11px;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;outline:none;font-family:monospace;">
+                    </div>
+
+                    <!-- Preview & submit -->
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.06);">
+                        <div id="new-cat-preview" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;min-width:60px;">
+                            <span id="prev-icon" style="font-size:20px;">📦</span>
+                            <span id="prev-label" style="font-size:8px;font-family:'Orbitron';color:#aaa;">NAMA</span>
+                        </div>
+                        <span style="font-size:9px;color:rgba(255,255,255,0.3);">← Preview tampilan tombol di STORE</span>
+                    </div>
+
+                    <button onclick="addNewCategory()" style="width:100%;padding:11px;background:linear-gradient(90deg,var(--accent),var(--purple));border:none;border-radius:8px;color:#000;font-family:'Orbitron';font-size:10px;font-weight:900;cursor:pointer;letter-spacing:1px;">
+                        <i class="fa-solid fa-plus"></i> BUAT KOLOM MENU
+                    </button>
+                </div>
             </div>
             <p style="font-size:9px; color:var(--accent); margin-bottom:4px;">SYSTEM MEDIA</p>
             <input type="text" id="cfg-video" placeholder="Video Link (MP4)">
@@ -4318,6 +4393,7 @@
             devBtn.style.display = currentUser.role === 'developer' ? 'flex' : 'none';
         }
         
+        ensureCatMeta();
         renderCategoryGrid();
         
         const statusDisplay = document.getElementById('status-cap-display');
@@ -4804,6 +4880,7 @@ Terima kasih! 🙏
         }
         if (t === 'config') {
             renderAdminBannerList();
+            ensureCatMeta();
             renderMenuOrderAdmin();
             adminLoadChatStats();
             // Isi input dengan nilai yang tersimpan
@@ -4820,7 +4897,7 @@ Terima kasih! 🙏
                 sn.value = currentName;
             }
         }
-        if (t === 'prices') renderAdminProductList();
+        if (t === 'prices') { ensureCatMeta(); renderCategorySelector(); renderAdminProductList(); }
         if (t === 'gacha') {
             renderGachaPrizeListAdmin();
             updateTotalWeight();
@@ -6076,27 +6153,55 @@ Terima kasih! 🙏
 
 
     // ===== MENU ORDER SYSTEM =====
-    const CAT_META = {
-        sewa:    { icon: 'fa-solid fa-robot',      label: 'Sewa', color: 'var(--accent)' },
-        premium: { icon: 'fa-solid fa-crown',       label: 'Prem', color: 'var(--gold)' },
-        script:  { icon: 'fa-solid fa-code',        label: 'Code', color: '#a855f7' },
-        lainnya: { icon: 'fa-solid fa-layer-group', label: 'Misc', color: '#f97316' },
+    // ===== MENU ORDER SYSTEM =====
+    // CAT_META is now dynamic — built from config.categoryMeta + defaults
+    const CAT_META_DEFAULT = {
+        sewa:    { icon: '🤖', label: 'Sewa',    color: 'var(--accent)' },
+        premium: { icon: '👑', label: 'Premium', color: 'var(--gold)' },
+        script:  { icon: '💻', label: 'Script',  color: '#a855f7' },
+        lainnya: { icon: '📦', label: 'Lainnya', color: '#f97316' },
     };
 
+    function getCatMeta(key) {
+        if (config.categoryMeta && config.categoryMeta[key]) return config.categoryMeta[key];
+        return CAT_META_DEFAULT[key] || { icon: '📦', label: key, color: '#aaa' };
+    }
+
+    // Legacy CAT_META reference (compat)
+    const CAT_META = new Proxy({}, { get(_, key) { return getCatMeta(key); } });
+
     function getCategoryOrder() {
-        return (config.categoryOrder && config.categoryOrder.length === 4)
-            ? config.categoryOrder
-            : ['sewa', 'premium', 'script', 'lainnya'];
+        if (config.categoryOrder && Array.isArray(config.categoryOrder) && config.categoryOrder.length > 0)
+            return config.categoryOrder;
+        return ['sewa', 'premium', 'script', 'lainnya'];
+    }
+
+    // Ensure categoryMeta exists and is in sync
+    function ensureCatMeta() {
+        if (!config.categoryMeta) config.categoryMeta = {};
+        // Migrate defaults for built-in cats if not in meta
+        Object.entries(CAT_META_DEFAULT).forEach(([k, v]) => {
+            if (!config.categoryMeta[k]) config.categoryMeta[k] = { ...v };
+        });
+        // Ensure categoryOrder includes all keys that have data
+        if (!config.categoryOrder || config.categoryOrder.length === 0) {
+            config.categoryOrder = Object.keys(CAT_META_DEFAULT);
+        }
+        // Ensure prices exist for every category in order
+        config.categoryOrder.forEach(k => {
+            if (!config.prices[k]) config.prices[k] = [];
+        });
     }
 
     function renderCategoryGrid() {
         const grid = document.getElementById('category-grid');
         if (!grid) return;
+        ensureCatMeta();
         const order = getCategoryOrder();
         grid.innerHTML = order.map((cat, idx) => {
-            const m = CAT_META[cat] || { icon: 'fa-solid fa-box', label: cat, color: '#fff' };
+            const m = getCatMeta(cat);
             return `<div class="cat-btn${idx === 0 ? ' active' : ''}" data-cat="${cat}" onclick="loadCategory('${cat}', this)">
-                <i class="${m.icon}"></i><span>${m.label}</span>
+                <span class="cat-icon">${m.icon}</span><span class="cat-name">${m.label}</span>
             </div>`;
         }).join('');
         loadCategory(order[0]);
@@ -6107,23 +6212,33 @@ Terima kasih! 🙏
     function renderMenuOrderAdmin() {
         const list = document.getElementById('menu-order-list');
         if (!list) return;
+        ensureCatMeta();
         const order = getCategoryOrder();
+        if (order.length === 0) {
+            list.innerHTML = `<div style="text-align:center;padding:16px;color:rgba(255,255,255,0.3);font-size:11px;">Belum ada kolom menu</div>`;
+            return;
+        }
         list.innerHTML = order.map((cat, idx) => {
-            const m = CAT_META[cat] || { icon: 'fa-solid fa-box', label: cat, color: '#fff' };
+            const m = getCatMeta(cat);
             const count = (config.prices[cat] || []).length;
+            const iconHtml = (m.icon && m.icon.startsWith('fa-'))
+                ? `<i class="${m.icon}" style="font-size:16px;width:24px;text-align:center;flex-shrink:0;color:${m.color};"></i>`
+                : `<span style="font-size:18px;line-height:1;width:24px;text-align:center;flex-shrink:0;">${m.icon || '📦'}</span>`;
             return `<div class="menu-order-item" draggable="true" data-idx="${idx}" data-cat="${cat}"
                 ondragstart="onMenuDragStart(event,${idx})"
                 ondragover="onMenuDragOver(event)"
                 ondrop="onMenuDrop(event,${idx})"
                 ondragend="onMenuDragEnd(event)"
                 ondragleave="onMenuDragLeave(event)">
-                <i class="fa-solid fa-grip-vertical drag-handle"></i>
-                <i class="${m.icon} menu-icon" style="color:${m.color};"></i>
-                <span class="menu-label">${m.label.toUpperCase()}</span>
-                <span class="menu-badge">${count} produk</span>
-                <div style="display:flex;gap:4px;">
-                    <div onclick="moveMenuUp(${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.06);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;">▲</div>
-                    <div onclick="moveMenuDown(${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.06);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;">▼</div>
+                <i class="fa-solid fa-grip-vertical drag-handle" style="color:#444;font-size:13px;cursor:grab;flex-shrink:0;"></i>
+                ${iconHtml}
+                <span class="menu-label" style="flex:1;font-family:'Orbitron';font-size:10px;font-weight:700;color:${m.color};">${(m.label || cat).toUpperCase()}</span>
+                <span class="menu-badge" style="font-size:7px;background:rgba(255,255,255,0.07);padding:2px 7px;border-radius:10px;color:#aaa;white-space:nowrap;">${count} produk</span>
+                <div style="display:flex;gap:3px;flex-shrink:0;">
+                    <button onclick="moveMenuUp(${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.06);border:none;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#fff;" title="Naik">▲</button>
+                    <button onclick="moveMenuDown(${idx})" style="width:26px;height:26px;background:rgba(255,255,255,0.06);border:none;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#fff;" title="Turun">▼</button>
+                    <button onclick="openEditCategory('${cat}')" style="width:26px;height:26px;background:rgba(0,234,255,0.12);border:1px solid rgba(0,234,255,0.35);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:var(--accent);" title="Edit kolom"><i class="fa-solid fa-pen"></i></button>
+                    <button onclick="deleteCategory('${cat}')" style="width:26px;height:26px;background:rgba(255,0,85,0.12);border:1px solid rgba(255,0,85,0.35);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#ff4477;" title="Hapus kolom"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             </div>`;
         }).join('');
@@ -6153,9 +6268,180 @@ Terima kasih! 🙏
     function saveMenuOrder() {
         saveLocal();
         renderCategoryGrid();
+        renderMenuOrderAdmin();
         publishConfigToCloud();
-        alert('✅ Urutan menu berhasil disimpan!');
+        showToast('✅ BERHASIL', 'Urutan menu berhasil disimpan!', 'success', 2000);
     }
+
+    // ── COLOR/EMOJI helpers for new cat form ──
+    function setNewCatEmoji(e) {
+        const inp = document.getElementById('new-cat-icon');
+        if (inp) { inp.value = e; updateNewCatPreview(); }
+        // highlight selected
+        document.querySelectorAll('#emoji-quick-pick span').forEach(s => {
+            s.style.background = s.textContent === e ? 'rgba(0,234,255,0.15)' : 'rgba(255,255,255,0.05)';
+            s.style.borderColor = s.textContent === e ? 'var(--accent)' : 'rgba(255,255,255,0.08)';
+        });
+    }
+    function setNewCatColor(c) {
+        const inp = document.getElementById('new-cat-color');
+        const prev = document.getElementById('new-cat-color-preview');
+        if (inp) inp.value = c;
+        if (prev) prev.style.background = c;
+        updateNewCatPreview();
+    }
+    function updateNewCatPreview() {
+        const icon  = document.getElementById('new-cat-icon')?.value  || '📦';
+        const label = document.getElementById('new-cat-label')?.value || 'NAMA';
+        const color = document.getElementById('new-cat-color')?.value || '#aaa';
+        const pi = document.getElementById('prev-icon');
+        const pl = document.getElementById('prev-label');
+        if (pi) pi.textContent = icon || '📦';
+        if (pl) { pl.textContent = label.toUpperCase() || 'NAMA'; pl.style.color = color; }
+    }
+    // Live preview on typing
+    document.addEventListener('input', function(e) {
+        if (e.target && (e.target.id === 'new-cat-icon' || e.target.id === 'new-cat-label' || e.target.id === 'new-cat-color')) {
+            updateNewCatPreview();
+            if (e.target.id === 'new-cat-color') {
+                const prev = document.getElementById('new-cat-color-preview');
+                if (prev) prev.style.background = e.target.value || '#00eaff';
+            }
+        }
+    });
+    window.setNewCatEmoji = setNewCatEmoji;
+    window.setNewCatColor = setNewCatColor;
+
+    // ── ADD NEW CATEGORY ──
+    function addNewCategory() {
+        ensureCatMeta();
+        const icon  = (document.getElementById('new-cat-icon')?.value  || '').trim() || '📦';
+        const label = (document.getElementById('new-cat-label')?.value || '').trim();
+        const color = (document.getElementById('new-cat-color')?.value || '').trim() || '#00eaff';
+        if (!label) {
+            showToast('⚠️ WAJIB', 'Isi nama kolom terlebih dahulu!', 'error', 2000);
+            document.getElementById('new-cat-label')?.focus();
+            return;
+        }
+
+        // Generate key from label
+        let key = label.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+        if (!key) key = 'cat_' + Date.now();
+        let finalKey = key, attempt = 2;
+        while (config.categoryOrder.includes(finalKey)) finalKey = key + '_' + attempt++;
+
+        config.categoryMeta[finalKey] = { icon, label, color };
+        config.prices[finalKey] = [];
+        config.categoryOrder.push(finalKey);
+
+        saveLocal();
+        renderMenuOrderAdmin();
+        renderCategoryGrid();
+        renderCategorySelector();
+        publishConfigToCloud();
+        publishProductsToCloud();
+
+        // Clear & reset form
+        document.getElementById('new-cat-icon').value  = '';
+        document.getElementById('new-cat-label').value = '';
+        document.getElementById('new-cat-color').value = '';
+        document.getElementById('new-cat-color-preview').style.background = '#00eaff';
+        document.getElementById('prev-icon').textContent  = '📦';
+        document.getElementById('prev-label').textContent = 'NAMA';
+        document.getElementById('prev-label').style.color = '#aaa';
+        document.querySelectorAll('#emoji-quick-pick span').forEach(s => {
+            s.style.background = 'rgba(255,255,255,0.05)'; s.style.borderColor = 'rgba(255,255,255,0.08)';
+        });
+
+        showToast('✅ BERHASIL', 'Kolom "' + label + '" berhasil ditambahkan!', 'success', 2500);
+    }
+
+    // ── EDIT CATEGORY MODAL ──
+    function openEditCategory(key) {
+        ensureCatMeta();
+        const m = getCatMeta(key);
+        document.getElementById('ecat-key').value   = key;
+        document.getElementById('ecat-icon').value  = m.icon  || '📦';
+        document.getElementById('ecat-label').value = m.label || key;
+        document.getElementById('ecat-color').value = m.color || '#00eaff';
+        document.getElementById('ecat-color-preview').style.background = m.color || '#00eaff';
+        document.getElementById('editCategoryModal').style.display = 'flex';
+    }
+
+    function pickEcatColor(c) {
+        document.getElementById('ecat-color').value = c;
+        document.getElementById('ecat-color-preview').style.background = c;
+    }
+
+    function saveEditCategory() {
+        const key   = document.getElementById('ecat-key').value;
+        const icon  = (document.getElementById('ecat-icon').value  || '').trim() || '📦';
+        const label = (document.getElementById('ecat-label').value || '').trim();
+        const color = (document.getElementById('ecat-color').value || '').trim() || '#aaa';
+        if (!label) { showToast('⚠️ WAJIB', 'Isi nama kolom!', 'error', 2000); return; }
+
+        ensureCatMeta();
+        config.categoryMeta[key] = { icon, label, color };
+        saveLocal();
+        renderMenuOrderAdmin();
+        renderCategoryGrid();
+
+        // Also refresh product category selector
+        const sel = document.getElementById('sel-cat-add');
+        if (sel) renderCategorySelector();
+
+        publishConfigToCloud();
+        document.getElementById('editCategoryModal').style.display = 'none';
+        showToast('✅ BERHASIL', 'Kolom "' + label + '" berhasil diperbarui!', 'success', 2500);
+    }
+
+    // ── DELETE CATEGORY ──
+    function deleteCategory(key) {
+        const m = getCatMeta(key);
+        const count = (config.prices[key] || []).length;
+        const warnMsg = count > 0
+            ? `⚠️ Kolom "${m.label}" masih memiliki ${count} produk.\nSemua produk dalam kolom ini juga akan dihapus!\n\nYakin ingin menghapus?`
+            : `Hapus kolom "${m.label}"?`;
+        if (!confirm(warnMsg)) return;
+
+        ensureCatMeta();
+        // Remove from order
+        config.categoryOrder = getCategoryOrder().filter(c => c !== key);
+        // Remove products
+        if (config.prices[key]) delete config.prices[key];
+        // Remove meta
+        if (config.categoryMeta[key]) delete config.categoryMeta[key];
+
+        saveLocal();
+        renderMenuOrderAdmin();
+        renderCategoryGrid();
+        if (typeof renderStoreGrid === 'function') renderStoreGrid();
+        if (typeof renderAdminProductList === 'function') renderAdminProductList();
+        const sel = document.getElementById('sel-cat-add');
+        if (sel) renderCategorySelector();
+        publishConfigToCloud();
+        publishProductsToCloud();
+        showToast('🗑️ DIHAPUS', 'Kolom "' + m.label + '" berhasil dihapus!', 'success', 2500);
+    }
+
+    // ── RENDER CATEGORY SELECTOR (in prices tab) ──
+    function renderCategorySelector() {
+        const sel = document.getElementById('sel-cat-add');
+        if (!sel) return;
+        const order = getCategoryOrder();
+        const cur = sel.value;
+        sel.innerHTML = order.map(k => {
+            const m = getCatMeta(k);
+            return `<option value="${k}"${k === cur ? ' selected' : ''}>${m.icon} ${m.label}</option>`;
+        }).join('');
+    }
+
+    window.addNewCategory    = addNewCategory;
+    window.openEditCategory  = openEditCategory;
+    window.pickEcatColor     = pickEcatColor;
+    window.saveEditCategory  = saveEditCategory;
+    window.deleteCategory    = deleteCategory;
+    window.renderCategorySelector = renderCategorySelector;
 
 
     // ===== PRODUCT ORDER DRAG & DROP =====
@@ -7894,6 +8180,56 @@ Terima kasih! 🙏
     </div>
 </div>
 
+
+<!-- ═══════════════════════════════════════
+     EDIT CATEGORY MODAL
+═══════════════════════════════════════ -->
+<div id="editCategoryModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:360px;">
+        <h2 style="font-family:'Orbitron'; color:var(--accent); font-size:12px; margin-bottom:14px; display:flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-pen-to-square"></i> EDIT KOLOM MENU
+        </h2>
+        <input type="hidden" id="ecat-key">
+
+        <div style="margin-bottom:8px;">
+            <div style="font-size:9px; color:var(--text-muted); letter-spacing:1px; margin-bottom:4px;">IKON (EMOJI)</div>
+            <input type="text" id="ecat-icon" placeholder="Emoji ikon (misal: 🎯)" maxlength="4"
+                style="width:100%; text-align:center; font-size:20px; padding:8px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:10px; color:#fff; outline:none;">
+        </div>
+        <div style="margin-bottom:8px;">
+            <div style="font-size:9px; color:var(--text-muted); letter-spacing:1px; margin-bottom:4px;">NAMA KOLOM</div>
+            <input type="text" id="ecat-label" placeholder="Nama kolom (misal: Bundle)" maxlength="20"
+                style="width:100%; font-size:12px; padding:8px 12px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:10px; color:#fff; outline:none; font-family:'Orbitron';">
+        </div>
+        <div style="margin-bottom:14px;">
+            <div style="font-size:9px; color:var(--text-muted); letter-spacing:1px; margin-bottom:4px;">WARNA AKSEN</div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <input type="text" id="ecat-color" placeholder="#00eaff"
+                    style="flex:1; font-size:12px; padding:8px 12px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:10px; color:#fff; outline:none; font-family:'Orbitron';"
+                    oninput="document.getElementById('ecat-color-preview').style.background=this.value">
+                <div id="ecat-color-preview" style="width:40px; height:40px; border-radius:10px; background:var(--accent); border:1px solid rgba(255,255,255,0.15); flex-shrink:0; transition:0.2s;"></div>
+            </div>
+            <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:8px;">
+                <div onclick="pickEcatColor('#00eaff')" style="width:24px;height:24px;border-radius:6px;background:#00eaff;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Cyan"></div>
+                <div onclick="pickEcatColor('#ffcc00')" style="width:24px;height:24px;border-radius:6px;background:#ffcc00;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Gold"></div>
+                <div onclick="pickEcatColor('#ae00ff')" style="width:24px;height:24px;border-radius:6px;background:#ae00ff;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Purple"></div>
+                <div onclick="pickEcatColor('#ff0055')" style="width:24px;height:24px;border-radius:6px;background:#ff0055;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Red"></div>
+                <div onclick="pickEcatColor('#00ff88')" style="width:24px;height:24px;border-radius:6px;background:#00ff88;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Green"></div>
+                <div onclick="pickEcatColor('#f97316')" style="width:24px;height:24px;border-radius:6px;background:#f97316;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Orange"></div>
+                <div onclick="pickEcatColor('#a855f7')" style="width:24px;height:24px;border-radius:6px;background:#a855f7;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Violet"></div>
+                <div onclick="pickEcatColor('#ec4899')" style="width:24px;height:24px;border-radius:6px;background:#ec4899;cursor:pointer;border:2px solid rgba(255,255,255,0.2);" title="Pink"></div>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="buy-btn" onclick="saveEditCategory()" style="flex:1; background:linear-gradient(90deg,var(--accent),var(--purple)); color:#000; font-family:'Orbitron'; font-size:10px; font-weight:700; letter-spacing:1px;">
+                <i class="fa-solid fa-floppy-disk"></i> SIMPAN
+            </button>
+            <button class="buy-btn" onclick="document.getElementById('editCategoryModal').style.display='none'" style="flex:1; background:rgba(255,255,255,0.05); color:#fff;">
+                BATAL
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- ═══════════════════════════════════════
      EDIT PRICE MODAL
