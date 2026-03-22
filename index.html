@@ -533,6 +533,9 @@
         /* ── GLOW DIVIDER ── */
         .glow-divider { height:1px; margin:12px 0; background:linear-gradient(90deg,transparent,rgba(0,234,255,0.2),rgba(174,0,255,0.15),transparent); }
 
+        /* ── SPIN (for upload indicator) ── */
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         /* ══════════════════════════════════════
            v7 PREMIUM UI ENHANCEMENTS
         ══════════════════════════════════════ */
@@ -2731,49 +2734,146 @@
 </div><!-- end main-app -->
 
 <!-- PAYMENT MODAL -->
-<div id="paymentModal" class="modal">
+<!-- ═══════════════════════════════════════
+     STEP 1 — FORM DATA DIRI
+═══════════════════════════════════════ -->
+<div id="buyerFormModal" class="modal">
     <div class="modal-content" style="max-width:400px;">
-        <h2 style="font-family:'Orbitron'; color:var(--accent); font-size: 14px; text-align:center; margin-bottom:16px;">
-            <i class="fa-solid fa-credit-card"></i> KONFIRMASI PEMBAYARAN
-        </h2>
-        
-        <div class="payment-detail-card">
-            <div class="payment-info-row">
-                <span class="payment-info-label">Produk</span>
-                <span class="payment-info-value" id="pay-item-name">-</span>
+
+        <!-- Header -->
+        <div style="text-align:center; margin-bottom:18px;">
+            <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--purple));display:inline-flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 18px rgba(0,234,255,0.35);margin-bottom:10px;">📋</div>
+            <div style="font-family:'Orbitron';font-size:13px;font-weight:900;color:#fff;letter-spacing:1px;">DATA PEMBELIAN</div>
+            <div style="font-size:9px;color:var(--text-muted);margin-top:3px;letter-spacing:1px;">Lengkapi data sebelum melanjutkan</div>
+        </div>
+
+        <!-- Order summary chip -->
+        <div id="bf-order-chip" style="background:rgba(0,234,255,0.06);border:1px solid rgba(0,234,255,0.18);border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div>
+                <div style="font-size:8px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;">PRODUK</div>
+                <div style="font-size:11px;font-weight:700;color:#fff;margin-top:2px;" id="bf-prod-name">—</div>
             </div>
-            <div class="payment-info-row">
-                <span class="payment-info-label">Harga</span>
-                <span class="payment-info-value highlight" id="pay-item-price">Rp 0</span>
-            </div>
-            <div class="payment-info-row">
-                <span class="payment-info-label">Pembeli</span>
-                <span class="payment-info-value" id="pay-buyer-name">-</span>
+            <div style="text-align:right;">
+                <div style="font-size:8px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;">TOTAL</div>
+                <div style="font-family:'Orbitron';font-size:13px;font-weight:900;color:var(--gold);margin-top:2px;" id="bf-prod-price">Rp 0</div>
             </div>
         </div>
-        
+
+        <!-- Form fields -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <!-- Nama -->
+            <div style="position:relative;">
+                <div style="font-size:8px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;margin-bottom:5px;">NAMA LENGKAP <span style="color:var(--red);">*</span></div>
+                <div style="position:relative;">
+                    <i class="fa-solid fa-user" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:11px;opacity:0.7;"></i>
+                    <input type="text" id="bf-nama" placeholder="Masukkan nama kamu..." maxlength="40" style="padding-left:34px;font-size:13px;margin-bottom:0;" oninput="validateBuyerForm()">
+                </div>
+            </div>
+
+            <!-- Nomor WA -->
+            <div>
+                <div style="font-size:8px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;margin-bottom:5px;">NOMOR WHATSAPP <span style="color:var(--red);">*</span></div>
+                <div style="position:relative;">
+                    <i class="fa-brands fa-whatsapp" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#25d366;font-size:12px;opacity:0.8;"></i>
+                    <input type="tel" id="bf-wa" placeholder="Contoh: 08xxxxxxxxxx" maxlength="16" style="padding-left:34px;font-size:13px;margin-bottom:0;" oninput="validateBuyerForm()">
+                </div>
+            </div>
+
+            <!-- Link Grup Bot — hanya muncul jika produk sewa bot -->
+            <div id="bf-group-section" style="display:none;">
+                <div style="font-size:8px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;margin-bottom:5px;">LINK GRUP WHATSAPP <span style="color:var(--red);">*</span></div>
+                <div style="background:rgba(37,211,102,0.07);border:1px solid rgba(37,211,102,0.25);border-radius:10px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:7px;">
+                    <i class="fa-solid fa-circle-info" style="color:#25d366;font-size:10px;flex-shrink:0;"></i>
+                    <span style="font-size:8px;color:rgba(255,255,255,0.55);line-height:1.4;">Masukkan link invite grup WhatsApp yang akan dipasang bot. Pastikan link masih aktif.</span>
+                </div>
+                <div style="position:relative;">
+                    <i class="fa-brands fa-whatsapp" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#25d366;font-size:13px;opacity:0.9;"></i>
+                    <input type="url" id="bf-group-link" placeholder="https://chat.whatsapp.com/..." style="padding-left:34px;font-size:13px;margin-bottom:0;" oninput="validateBuyerForm()">
+                </div>
+            </div>
+
+            <!-- Catatan (opsional) -->
+            <div>
+                <div style="font-size:8px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;margin-bottom:5px;">CATATAN <span style="font-size:7px;opacity:0.5;">(opsional)</span></div>
+                <div style="position:relative;">
+                    <i class="fa-solid fa-note-sticky" style="position:absolute;left:12px;top:14px;color:var(--gold);font-size:10px;opacity:0.6;"></i>
+                    <textarea id="bf-notes" placeholder="Ada permintaan khusus? Tulis di sini..." maxlength="120" rows="2" style="padding-left:34px;font-size:12px;resize:none;margin-bottom:0;line-height:1.5;"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <button id="bf-next-btn" onclick="proceedToPayment()" style="background:linear-gradient(135deg,var(--accent),var(--purple));color:#000;border:none;padding:14px;border-radius:12px;font-family:'Orbitron';font-size:11px;font-weight:900;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;min-height:48px;transition:0.3s;opacity:0.4;" disabled>
+            <i class="fa-solid fa-arrow-right"></i> LANJUT KE PEMBAYARAN
+        </button>
+        <button onclick="closeModal('buyerFormModal')" style="background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);border:1px solid var(--glass-border);padding:11px;border-radius:12px;font-family:'Orbitron';font-size:9px;cursor:pointer;width:100%;margin-top:8px;min-height:40px;">BATAL</button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     STEP 2 — PAYMENT MODAL (redesigned)
+═══════════════════════════════════════ -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content" style="max-width:400px;">
+
+        <!-- Header -->
+        <div style="text-align:center;margin-bottom:16px;">
+            <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--gold),#ff8800);display:inline-flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 18px rgba(255,204,0,0.3);margin-bottom:10px;">💳</div>
+            <div style="font-family:'Orbitron';font-size:13px;font-weight:900;color:#fff;letter-spacing:1px;">KONFIRMASI PEMBAYARAN</div>
+            <div style="font-size:9px;color:var(--text-muted);margin-top:3px;">Upload bukti transfer untuk menyelesaikan pesanan</div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="payment-detail-card" style="border-radius:14px;overflow:hidden;margin-bottom:14px;">
+            <div style="background:rgba(0,234,255,0.05);padding:8px 12px;border-bottom:1px solid var(--glass-border);">
+                <span style="font-family:'Orbitron';font-size:8px;color:var(--accent);letter-spacing:2px;">RINGKASAN PESANAN</span>
+            </div>
+            <div style="padding:4px 0;">
+                <div class="payment-info-row">
+                    <span class="payment-info-label">Produk</span>
+                    <span class="payment-info-value" id="pay-item-name">-</span>
+                </div>
+                <div class="payment-info-row">
+                    <span class="payment-info-label">Pembeli</span>
+                    <span class="payment-info-value" id="pay-buyer-name">-</span>
+                </div>
+                <div class="payment-info-row">
+                    <span class="payment-info-label">No. WA</span>
+                    <span class="payment-info-value" id="pay-buyer-wa" style="color:var(--accent);">-</span>
+                </div>
+                <div id="pay-group-row" class="payment-info-row" style="display:none;">
+                    <span class="payment-info-label">Grup WA</span>
+                    <span class="payment-info-value" id="pay-group-link" style="color:#25d366;font-size:9px;word-break:break-all;text-align:right;max-width:60%;">-</span>
+                </div>
+                <div id="pay-notes-row" class="payment-info-row" style="display:none;">
+                    <span class="payment-info-label">Catatan</span>
+                    <span class="payment-info-value" id="pay-notes-val" style="font-size:9px;color:rgba(255,255,255,0.6);text-align:right;max-width:65%;">-</span>
+                </div>
+                <div class="payment-info-row" style="border-bottom:none;">
+                    <span class="payment-info-label">Total</span>
+                    <span class="payment-info-value highlight" id="pay-item-price">Rp 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rekening Tujuan -->
         <div class="bank-account">
             <i class="fa-solid fa-building-columns" style="color:var(--gold); font-size: 18px; margin-bottom: 8px;"></i>
             <div class="account-number" id="display-account-number">0823-2615-3257</div>
             <div class="account-name" id="display-account-name">a.n UNO-STOREZZ</div>
         </div>
-        
+
+        <!-- Metode Pembayaran -->
         <div class="payment-method" id="payment-methods-display">
-            <i class="fa-brands fa-whatsapp"></i>
+            <i class="fa-solid fa-wallet" style="color:var(--gold);"></i>
             <div style="flex:1;">
                 <span class="method-name" id="payment-methods-text">DANA • GOPAY • OVO</span><br>
-                <span style="font-size:8px;">Transfer ke nomor di atas</span>
+                <span style="font-size:8px;color:var(--text-muted);">Transfer ke nomor di atas</span>
             </div>
         </div>
-        
-        <div class="upload-section" onclick="document.getElementById('payment-proof').click()" id="upload-box">
-            <i class="fa-solid fa-file-arrow-up" style="font-size:2rem; color:var(--accent); margin-bottom:6px;"></i>
-            <p style="font-size:10px; font-weight:700;">Klik untuk pilih file bukti</p>
-            <p style="font-size:7px; opacity:0.5; margin-top:4px;">JPG, PNG, PDF, atau screenshot (Max 10MB)</p>
-            <div id="file-name-display" class="file-name"></div>
-        </div>
-        <input type="file" id="payment-proof" accept="image/*,.pdf,.jpg,.jpeg,.png,.webp" onchange="handleFileUpload(this)">
-        
+
+        <!-- QR Code -->
         <div class="qr-code-section">
             <img src="" id="qr-code-image" alt="QR Code">
             <p style="font-size:7px; margin-top:4px; opacity:0.5;">Scan QR untuk pembayaran cepat</p>
@@ -2781,20 +2881,45 @@
                 <i class="fa-solid fa-download"></i> DOWNLOAD QR
             </button>
         </div>
-        
-        <!-- VOUCHER -->
+
+        <!-- Voucher -->
         <div class="voucher-section">
-            <div class="voucher-label"><i class="fa-solid fa-ticket"></i> PUNYA KODE VOUCHER / DISKON?</div>
+            <div class="voucher-label"><i class="fa-solid fa-ticket"></i> KODE VOUCHER / DISKON</div>
             <div class="voucher-row">
                 <input class="voucher-input" id="voucher-code-input" placeholder="MASUKKAN KODE..." oninput="this.value=this.value.toUpperCase()">
                 <button class="voucher-apply-btn" onclick="applyVoucher()"><i class="fa-solid fa-check"></i> PAKAI</button>
             </div>
             <div class="voucher-result" id="voucher-result"></div>
         </div>
-        <button class="confirm-btn" onclick="sendPaymentConfirmation()">
-            <i class="fa-brands fa-whatsapp"></i> KIRIM KONFIRMASI
+
+        <!-- Upload Bukti -->
+        <div style="margin:12px 0 4px;">
+            <div style="font-size:8px;color:var(--text-muted);font-family:'Orbitron';letter-spacing:1px;margin-bottom:6px;">BUKTI TRANSFER <span style="color:var(--red);">*</span></div>
+            <div class="upload-section" onclick="document.getElementById('payment-proof').click()" id="upload-box">
+                <i class="fa-solid fa-file-arrow-up" style="font-size:2rem; color:var(--accent); margin-bottom:6px;"></i>
+                <p style="font-size:10px; font-weight:700;">Klik untuk upload bukti</p>
+                <p style="font-size:7px; opacity:0.5; margin-top:4px;">JPG · PNG · PDF (Max 10MB)</p>
+                <div id="file-name-display" class="file-name"></div>
+            </div>
+            <input type="file" id="payment-proof" accept="image/*,.pdf,.jpg,.jpeg,.png,.webp" onchange="handleFileUpload(this)">
+
+            <!-- Upload to imgbb indicator -->
+            <div id="proof-upload-status" style="display:none;background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.25);border-radius:10px;padding:8px 12px;margin-top:8px;display:none;align-items:center;gap:8px;">
+                <i class="fa-solid fa-cloud-arrow-up" style="color:#00ff88;font-size:12px;"></i>
+                <div style="flex:1;">
+                    <div style="font-size:9px;color:#00ff88;font-family:'Orbitron';" id="proof-upload-label">Mengupload ke server...</div>
+                    <div style="font-size:8px;color:rgba(255,255,255,0.4);" id="proof-upload-sub">Admin dapat melihat bukti secara langsung</div>
+                </div>
+                <div id="proof-upload-spinner" style="width:14px;height:14px;border:2px solid rgba(0,255,136,0.3);border-top-color:#00ff88;border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+            </div>
+            <div id="proof-link-badge" style="display:none;background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.3);border-radius:10px;padding:9px 12px;margin-top:8px;"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <button class="confirm-btn" id="send-confirm-btn" onclick="sendPaymentConfirmation()">
+            <i class="fa-brands fa-whatsapp"></i> KIRIM KE ADMIN
         </button>
-        <button class="buy-btn" style="background:rgba(255,255,255,0.05); color:#fff; margin-top:8px;" onclick="closeModal('paymentModal')">BATAL</button>
+        <button style="background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);border:1px solid var(--glass-border);padding:11px;border-radius:12px;font-family:'Orbitron';font-size:9px;cursor:pointer;width:100%;margin-top:8px;min-height:40px;" onclick="closeModal('paymentModal')">KEMBALI</button>
     </div>
 </div>
 
@@ -4674,159 +4799,280 @@ Terima kasih! 🙏
         alert("✅ Nama berhasil diubah menjadi " + newName);
     }
 
-    // ========== PAYMENT FUNCTIONS (ASLI) ==========
+    // ╔══════════════════════════════════════════════════╗
+    // ║        PAYMENT FLOW v2 — WITH BUYER FORM        ║
+    // ╚══════════════════════════════════════════════════╝
+
+    let _buyerWA = '', _buyerNotes = '', _buyerGroupLink = '', _proofPublicUrl = '';
+
+    // STEP 1 — Buka form data diri dulu
     function openPay(n, p) {
         if (!currentUser) {
-            alert("❌ Silakan login terlebih dahulu!");
+            showToast('❌ LOGIN DULU', 'Silakan login sebelum melanjutkan', 'error', 2500);
             return;
         }
-        
+
         tempProd = n;
         tempPrice = p;
-        
-        const nameEl = document.getElementById('pay-item-name');
+        _buyerWA = ''; _buyerNotes = ''; _buyerGroupLink = ''; _proofPublicUrl = '';
+
+        // Isi chip ringkasan
+        const bfName = document.getElementById('bf-prod-name');
+        const bfPrice = document.getElementById('bf-prod-price');
+        if (bfName) bfName.textContent = n;
+        if (bfPrice) bfPrice.textContent = 'Rp ' + p;
+
+        // Prefill nama dari akun
+        const bfNama = document.getElementById('bf-nama');
+        if (bfNama) bfNama.value = currentUser.name || '';
+
+        // Tampilkan / sembunyikan field link grup
+        const isBotRental = /sewa\s*bot|bot\s*rental|rental\s*bot/i.test(n);
+        const groupSec = document.getElementById('bf-group-section');
+        if (groupSec) groupSec.style.display = isBotRental ? 'block' : 'none';
+
+        // Reset group link & catatan
+        const bfWa = document.getElementById('bf-wa');
+        const bfGroup = document.getElementById('bf-group-link');
+        const bfNotes = document.getElementById('bf-notes');
+        if (bfWa) bfWa.value = '';
+        if (bfGroup) bfGroup.value = '';
+        if (bfNotes) bfNotes.value = '';
+
+        validateBuyerForm();
+        openModal('buyerFormModal');
+    }
+
+    // Validasi form — aktifkan tombol jika semua wajib terisi
+    function validateBuyerForm() {
+        const nama = (document.getElementById('bf-nama')?.value || '').trim();
+        const wa   = (document.getElementById('bf-wa')?.value || '').trim();
+        const isBotRental = /sewa\s*bot|bot\s*rental|rental\s*bot/i.test(tempProd || '');
+        const group = (document.getElementById('bf-group-link')?.value || '').trim();
+
+        const valid = nama.length >= 2 && wa.length >= 8 && (!isBotRental || group.length > 5);
+        const btn = document.getElementById('bf-next-btn');
+        if (btn) {
+            btn.disabled = !valid;
+            btn.style.opacity = valid ? '1' : '0.4';
+            btn.style.cursor  = valid ? 'pointer' : 'not-allowed';
+        }
+    }
+    window.validateBuyerForm = validateBuyerForm;
+
+    // STEP 2 — Simpan data form, lalu buka paymentModal
+    function proceedToPayment() {
+        const nama  = (document.getElementById('bf-nama')?.value || '').trim();
+        const wa    = (document.getElementById('bf-wa')?.value || '').trim();
+        const group = (document.getElementById('bf-group-link')?.value || '').trim();
+        const notes = (document.getElementById('bf-notes')?.value || '').trim();
+
+        _buyerWA = wa;
+        _buyerNotes = notes;
+        _buyerGroupLink = group;
+
+        // Isi payment modal summary
+        const nameEl  = document.getElementById('pay-item-name');
         const priceEl = document.getElementById('pay-item-price');
         const buyerEl = document.getElementById('pay-buyer-name');
-        
-        if (nameEl) nameEl.innerText = n;
-        if (priceEl) priceEl.innerText = "Rp " + p;
-        if (buyerEl) buyerEl.innerText = currentUser.name;
-        
-        uploadedFile = null;
-        const fileNameDisplay = document.getElementById('file-name-display');
-        if (fileNameDisplay) fileNameDisplay.innerHTML = '';
-        
+        const waEl    = document.getElementById('pay-buyer-wa');
+        const groupRow = document.getElementById('pay-group-row');
+        const groupEl  = document.getElementById('pay-group-link');
+        const notesRow = document.getElementById('pay-notes-row');
+        const notesEl  = document.getElementById('pay-notes-val');
+
+        if (nameEl)  nameEl.innerText  = tempProd;
+        if (priceEl) priceEl.innerText = 'Rp ' + tempPrice;
+        if (buyerEl) buyerEl.innerText = nama;
+        if (waEl)    waEl.innerText    = wa;
+
+        if (groupRow && groupEl) {
+            groupRow.style.display = group ? 'flex' : 'none';
+            groupEl.innerText = group;
+        }
+        if (notesRow && notesEl) {
+            notesRow.style.display = notes ? 'flex' : 'none';
+            notesEl.innerText = notes;
+        }
+
+        // Reset upload state
+        uploadedFile = null; _proofPublicUrl = '';
+        const fnd = document.getElementById('file-name-display');
+        if (fnd) fnd.innerHTML = '';
+        const ub = document.getElementById('upload-box');
+        if (ub) { ub.style.borderColor = ''; ub.style.background = ''; }
+        const status = document.getElementById('proof-upload-status');
+        const badge  = document.getElementById('proof-link-badge');
+        if (status) status.style.display = 'none';
+        if (badge)  badge.style.display  = 'none';
+        const vResult = document.getElementById('voucher-result');
+        if (vResult) vResult.innerHTML = '';
+        const vInput = document.getElementById('voucher-code-input');
+        if (vInput) vInput.value = '';
+
         loadPaymentSettings();
-        
+        closeModal('buyerFormModal');
         openModal('paymentModal');
     }
-    
+    window.proceedToPayment = proceedToPayment;
+
+    // Upload bukti ke imgbb agar admin bisa cek langsung
+    async function uploadProofToImgbb(file) {
+        const IMGBB_KEY = '6faadb795960be644410c4211ebb0558';
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) return data.data.url;
+        } catch(e) {}
+        return null;
+    }
+
     function handleFileUpload(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
 
             if (file.size > 10 * 1024 * 1024) {
-                alert("⚠️ File terlalu besar! Maksimal 10MB.");
+                showToast('⚠️ TERLALU BESAR', 'Maksimal ukuran file 10MB', 'error', 2500);
                 return;
             }
 
             uploadedFile = file;
+            _proofPublicUrl = ''; // reset
 
-            // Tentukan icon berdasarkan tipe file
             const isPDF = file.type === 'application/pdf';
             const isImg = file.type.match('image.*');
             const icon = isPDF ? 'fa-file-pdf' : isImg ? 'fa-file-image' : 'fa-file';
             const iconColor = isPDF ? '#ff5555' : 'var(--gold)';
             const sizeKB = (file.size / 1024).toFixed(1);
 
-            const fileNameDisplay = document.getElementById('file-name-display');
-            if (fileNameDisplay) {
-                fileNameDisplay.innerHTML = `
-                    <div style="background:rgba(0,234,255,0.08); border:1px solid var(--accent); border-radius:8px; padding:8px 10px; margin-top:8px; display:flex; align-items:center; gap:8px; text-align:left;">
-                        <i class="fa-solid ${icon}" style="font-size:1.4rem; color:${iconColor};"></i>
-                        <div>
-                            <div style="font-size:9px; color:#fff; font-weight:700; word-break:break-all;">${file.name}</div>
-                            <div style="font-size:7px; color:#aaa; margin-top:2px;">${sizeKB} KB • Siap dikirim</div>
+            const fnd = document.getElementById('file-name-display');
+            if (fnd) {
+                fnd.innerHTML = `
+                    <div style="background:rgba(0,234,255,0.08);border:1px solid var(--accent);border-radius:8px;padding:8px 10px;margin-top:8px;display:flex;align-items:center;gap:8px;text-align:left;">
+                        <i class="fa-solid ${icon}" style="font-size:1.4rem;color:${iconColor};"></i>
+                        <div style="flex:1;">
+                            <div style="font-size:9px;color:#fff;font-weight:700;word-break:break-all;">${file.name}</div>
+                            <div style="font-size:7px;color:#aaa;margin-top:2px;">${sizeKB} KB · Siap dikirim</div>
                         </div>
-                        <i class="fa-solid fa-check-circle" style="color:#00ff88; margin-left:auto; font-size:1rem;"></i>
+                        <i class="fa-solid fa-check-circle" style="color:#00ff88;font-size:1rem;"></i>
                     </div>`;
             }
 
-            // Update upload box style
-            const uploadBox = document.getElementById('upload-box');
-            if (uploadBox) {
-                uploadBox.style.borderColor = '#00ff88';
-                uploadBox.style.background = 'rgba(0,255,136,0.05)';
+            const ub = document.getElementById('upload-box');
+            if (ub) { ub.style.borderColor = '#00ff88'; ub.style.background = 'rgba(0,255,136,0.05)'; }
+
+            // Hanya upload gambar ke imgbb (PDF skip)
+            if (isImg) {
+                const status = document.getElementById('proof-upload-status');
+                const badge  = document.getElementById('proof-link-badge');
+                if (status) { status.style.display = 'flex'; }
+                if (badge)  { badge.style.display  = 'none'; }
+
+                uploadProofToImgbb(file).then(url => {
+                    if (status) status.style.display = 'none';
+                    if (url) {
+                        _proofPublicUrl = url;
+                        if (badge) {
+                            badge.style.display = 'flex';
+                            badge.style.alignItems = 'center';
+                            badge.style.gap = '8px';
+                            badge.innerHTML = `
+                                <i class="fa-solid fa-circle-check" style="color:#00ff88;font-size:13px;flex-shrink:0;"></i>
+                                <div style="flex:1;">
+                                    <div style="font-size:9px;color:#00ff88;font-family:'Orbitron';">Bukti berhasil diupload</div>
+                                    <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">Admin dapat melihat bukti secara langsung</div>
+                                </div>
+                                <a href="${url}" target="_blank" style="font-size:8px;color:var(--accent);text-decoration:none;font-family:'Orbitron';flex-shrink:0;">LIHAT →</a>`;
+                        }
+                    } else {
+                        // Upload gagal — tidak masalah, tetap lanjut manual
+                        if (badge) {
+                            badge.style.display = 'flex';
+                            badge.style.alignItems = 'center';
+                            badge.style.gap = '8px';
+                            badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);font-size:12px;"></i><div style="font-size:8px;color:rgba(255,255,255,0.4);">Upload otomatis gagal — kirim manual setelah chat terbuka</div>`;
+                        }
+                    }
+                });
             }
         }
     }
-    
+
     function sendPaymentConfirmation() {
         if (!uploadedFile) {
-            alert("⚠️ Mohon upload bukti transfer terlebih dahulu!");
+            showToast('⚠️ BUKTI DIPERLUKAN', 'Upload bukti transfer terlebih dahulu', 'error', 2500);
             return;
         }
-        
+
         const waNumber = window.WA_NUMBER || "6283856169422";
+        const isBotRental = /sewa\s*bot|bot\s*rental|rental\s*bot/i.test(tempProd || '');
         const currentDate = new Date().toLocaleString('id-ID', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
         });
-        
-        const methods = [];
-        if (config.payment.methods.dana) methods.push("DANA");
-        if (config.payment.methods.gopay) methods.push("GOPAY");
-        if (config.payment.methods.ovo) methods.push("OVO");
-        const methodsText = methods.join(" / ");
-        
-        const reader = new FileReader();
-        reader.onload = function() {
-            const message = `┏━━━━━━━━━━━━━━━━━━━┓
-┃  *KONFIRMASI PEMBAYARAN*  ┃
-┃    *UNO-STOREZZ*    ┃
-┗━━━━━━━━━━━━━━━━━━━┛
 
-━━━━━━━━━━━━━━━━━━━
-*📋 DETAIL PEMBELIAN*
-━━━━━━━━━━━━━━━━━━━
-👤 *Pembeli* : ${currentUser.name}
-📦 *Produk*  : ${tempProd}
-💰 *Harga*   : Rp ${tempPrice}
-📅 *Waktu*   : ${currentDate}
+        const buyerName = document.getElementById('pay-buyer-name')?.innerText || currentUser.name;
 
-━━━━━━━━━━━━━━━━━━━
-*💳 INFO PEMBAYARAN*
-━━━━━━━━━━━━━━━━━━━
-🏦 *Rekening* : ${config.payment.accountNumber}
-📝 *Atas Nama* : ${config.payment.accountName}
-💸 *Metode*   : ${methodsText}
+        // Format WA — clean, premium, tidak alay
+        let msg = `*ORDER CONFIRMATION*
+_UNO-STOREZZ · ${currentDate}_
 
-━━━━━━━━━━━━━━━━━━━
-*💳 BUKTI TRANSFER*
-━━━━━━━━━━━━━━━━━━━
-✅ *Berhasil diupload*
-📎 *Nama File* : ${uploadedFile.name}
-📊 *Ukuran*    : ${(uploadedFile.size / 1024).toFixed(2)} KB
+*Produk* — ${tempProd}
+*Pembeli* — ${buyerName}
+*No. WA* — ${_buyerWA}
+*Total* — Rp ${tempPrice}`;
 
-━━━━━━━━━━━━━━━━━━━
-*📸 SCREENSHOT BUKTI*
-━━━━━━━━━━━━━━━━━━━
-[ Bukti transfer terlampir di bawah ]
+        if (isBotRental && _buyerGroupLink) {
+            msg += `\n*Link Grup* — ${_buyerGroupLink}`;
+        }
 
-Mohon segera diproses ya, Admin!
-Terima kasih! 🙏
+        if (_buyerNotes) {
+            msg += `\n*Catatan* — ${_buyerNotes}`;
+        }
 
-━━━━━━━━━━━━━━━━━━━
-*UNO-STOREZZ | UNO XALYA EDITION*`;
-            
-            const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-            window.open(waLink, '_blank');
+        msg += `\n\n*Bukti Transfer*`;
 
-            // Auto tambah subs berdasarkan produk yang dibeli
-            const activeCat = document.querySelector('.cat-btn.active')?.dataset?.cat || 
-                              (tempProd.toLowerCase().includes('prem') ? 'premium' :
-                               tempProd.toLowerCase().includes('sewa') ? 'sewa' :
-                               tempProd.toLowerCase().includes('script') ? 'script' : 'lainnya');
-            const newSub = addSubsToMember(tempProd, activeCat);
-            if (newSub) {
-                alert(`✅ Konfirmasi terkirim!\n\n📦 ${tempProd}\n⏳ Subs ${newSub.days} hari ditambahkan\n📅 Berlaku hingga: ${newSub.expiry}\n\nSilakan kirim bukti transfer setelah chat terbuka!`);
-            } else {
-                alert("✅ Silakan kirim file bukti transfer secara manual setelah chat terbuka!");
-            }
+        if (_proofPublicUrl) {
+            msg += `\n${_proofPublicUrl}`;
+        } else {
+            msg += `\n_(Terlampir di bawah — kirim setelah chat terbuka)_`;
+        }
 
-            uploadedFile = null;
-            const fileNameDisplay = document.getElementById('file-name-display');
-            if (fileNameDisplay) fileNameDisplay.innerHTML = '';
-            const uploadBox = document.getElementById('upload-box');
-            if (uploadBox) { uploadBox.style.borderColor = ''; uploadBox.style.background = ''; }
-            
-            closeModal('paymentModal');
-        };
-        
-        reader.readAsDataURL(uploadedFile);
+        msg += `\n\n_Mohon segera diproses. Terima kasih!_`;
+
+        const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
+        window.open(waLink, '_blank');
+
+        // Auto tambah subs
+        const activeCat = document.querySelector('.cat-btn.active')?.dataset?.cat ||
+                          (tempProd.toLowerCase().includes('prem') ? 'premium' :
+                           tempProd.toLowerCase().includes('sewa') ? 'sewa' :
+                           tempProd.toLowerCase().includes('script') ? 'script' : 'lainnya');
+        const newSub = addSubsToMember(tempProd, activeCat);
+        if (newSub) {
+            showToast('✅ ORDER DIKIRIM', `${tempProd} · aktif hingga ${newSub.expiry}`, 'success', 4000);
+        } else {
+            showToast('✅ ORDER DIKIRIM', 'Kirim bukti transfer di chat yang baru terbuka', 'success', 3500);
+        }
+
+        // Reset state
+        uploadedFile = null; _proofPublicUrl = '';
+        const fnd = document.getElementById('file-name-display');
+        if (fnd) fnd.innerHTML = '';
+        const ub = document.getElementById('upload-box');
+        if (ub) { ub.style.borderColor = ''; ub.style.background = ''; }
+        const status = document.getElementById('proof-upload-status');
+        const badge  = document.getElementById('proof-link-badge');
+        if (status) status.style.display = 'none';
+        if (badge)  badge.style.display  = 'none';
+
+        closeModal('paymentModal');
     }
 
     // ========== ADMIN FUNCTIONS (ASLI) ==========
