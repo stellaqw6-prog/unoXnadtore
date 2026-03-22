@@ -7803,13 +7803,33 @@ _UNO-STOREZZ · ${currentDate}_
         if (config.members && config.members.length > 0) syncMembersToCloud();
     }, 300000);
 
+    // ── Real-time coin sync dari Firebase setiap 15 detik ──
+    // Pastikan koin yang diubah admin langsung tampil di store user
+    setInterval(async () => {
+        if (!currentUser) return;
+        try {
+            const key = currentUser.name.replace(/[.#$\[\]]/g, '_');
+            const fresh = await fbGet('members/' + key);
+            if (fresh && typeof fresh.coins === 'number') {
+                const mIdx = config.members.findIndex(m => m.name === currentUser.name);
+                if (mIdx !== -1 && config.members[mIdx].coins !== fresh.coins) {
+                    config.members[mIdx].coins = fresh.coins;
+                    currentUser.coins = fresh.coins;
+                    saveLocal();
+                    updateCoinUI();
+                }
+            }
+        } catch(e) {}
+    }, 15000);
+
     // Real-time refresh konten dari Firebase setiap 30 detik
-    // renderStoreGrid hanya dipanggil jika user sedang di halaman store
     setInterval(async () => {
         await Promise.all([
             loadProductsFromCloud(),
             loadGachaFromCloud(),
             loadBannersFromCloud(),
+            loadConfigFromCloud(),
+            loadVouchersFromCloud(),
         ]);
         if(window.renderPopularProducts) renderPopularProducts();
         if(window.renderGachaChips) renderGachaChips();
